@@ -1,0 +1,61 @@
+1	localhost/api/signup  method=post  
+
+		(new user(patiant) creation )
+		required_parameter_fields{
+
+			name,
+			username,	
+			password,
+			email,
+			birth_date   (ex: formate =2018/12/23),
+			address,
+			gps_location  (when user signup it will auto genatere in backend of app),
+			phone_number,
+			job,
+			gender,
+			gardiant_phone_number,
+			stress_level (initialy defali value =0),
+			profile_pic_name,
+			type (user or consulter or admin)
+		}
+
+		(new consulter creation)
+		required_parameter_fields{
+			name,
+			address,
+			certificate,
+			gender,
+			gpslocation,
+			password,
+			phone_number,
+			profile_pic_name,
+			qulification,
+			username,
+			birth_date,
+			type
+
+		}
+
+		**  the age and current_date created automatically in backend... 
+		** id is primary key and auto Increment....
+
+		if(success){
+			user creation is success!!
+		}if(user enter alreday used username & password){
+			Allredy has a account change user name or password
+		}
+
+
+3		localhost/api/signin  method=post{
+			username,
+			password
+
+		}  	
+
+		if(login success){
+			return user details as json
+		}else{
+			return failure msg; 
+		}
+
+		
