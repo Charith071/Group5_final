@@ -1,61 +1,193 @@
-1	localhost/api/signup  method=post  
-
-		(new user(patiant) creation )
-		required_parameter_fields{
-
-			name,
-			username,	
-			password,
-			email,
-			birth_date   (ex: formate =2018/12/23),
-			address,
-			gps_location  (when user signup it will auto genatere in backend of app),
-			phone_number,
-			job,
-			gender,
-			gardiant_phone_number,
-			stress_level (initialy defali value =0),
-			profile_pic_name,
-			type (user or consulter or admin)
-		}
-
-		(new consulter creation)
-		required_parameter_fields{
-			name,
-			address,
-			certificate,
-			gender,
-			gpslocation,
-			password,
-			phone_number,
-			profile_pic_name,
-			qulification,
-			username,
-			birth_date,
-			type
-
-		}
-
-		**  the age and current_date created automatically in backend... 
-		** id is primary key and auto Increment....
-
-		if(success){
-			user creation is success!!
-		}if(user enter alreday used username & password){
-			Allredy has a account change user name or password
-		}
-
-
-3		localhost/api/signin  method=post{
-			username,
+1:	localhost:8081/api/signin  				(method=post)
+		parameters:
+			username
 			password
 
-		}  	
+			if(success){
+					status:200 (OK)
+					return json object ;
+			}else{
+				status:400(BAD REQUEST)
+				invalid username or password
+			}
 
-		if(login success){
-			return user details as json
-		}else{
-			return failure msg; 
-		}
 
-		
+
+
+2: 	localhost:8081/api/signup  				(method=post)
+		******for user registration*************
+		parameters:
+			
+			name
+			address
+			email
+			gender
+			username
+			password
+			type       			**(user)
+			birth_date			**format=1994-5-19
+			phone_number       	** no spaces between numbers
+			gps
+			guadiant_phone_number
+			job
+			profile_pic_name
+
+
+			if(success){
+					status:200 (OK)
+					user registration is succcess!!
+			}else{
+				status:400(BAD REQUEST)
+				registration fail...change username or password
+			}
+
+			******for counceller registration*************
+		parameters:
+			
+			name
+			address
+			email
+			gender
+			username
+			password
+			type       			**(counceller)
+			birth_date			**format=1994-5-19
+			phone_number       	** no spaces between numbers
+			gps
+			job
+			qualification       **string
+			certificate			**string
+			profile_pic_name
+
+
+			if(success){
+					status:200 (OK)
+					counceller registration is succcess!!
+			}else{
+				status:400(BAD REQUEST)
+				registration fail...change username or password
+			}
+
+
+
+
+***********update stress level of user*********************8
+3: localhost:8081/api/level  				(method=get)
+		parameters:
+			id          ** id of user
+			level		** stress level
+
+			if(success){
+					status:200 (OK)
+					return success ;
+			}elseif(inalid user input){
+					status :409 (CONFLICT)
+					invalid user input
+			}else{
+				status:400(BAD REQUEST)
+				update fail!! cannot find user
+			}
+
+
+
+
+
+
+4:localhost:8081/api/user/gps				(method=get)
+	**update user current gps location
+
+		parameters:
+			id          ** id of user
+			gps			** gps location
+
+			if(success){
+					status:200 (OK)
+					gps update success!!
+			}elseif(inalid user input){
+					status :409 (CONFLICT)
+					invalid user input
+			}else{
+				status:400(BAD REQUEST)
+				cannot find user
+			}
+
+
+
+
+
+5: localhost:8081/api/counceller/gps				(method=get)
+	**update counceller gps location
+
+		parameters:
+			id          ** id of counceller
+			gps			** gps location
+
+			if(success){
+					status:200 (OK)
+					gps update success!!
+			}elseif(inalid user input){
+					status :409 (CONFLICT)
+					invalid user input
+			}else{
+				status:400(BAD REQUEST)
+				cannot find counceller
+			}
+			
+
+
+
+6: localhost:8081/api/ChangeProfilePicture				(method=get)
+	**change profile picture
+
+		parameters:
+			id          				** id of counceller or user
+			profile_pic_name			** profile pic name
+
+			if(success){
+					status:200 (OK)
+					update success!!
+			}else{
+				status:400(BAD REQUEST)
+				update fail!! , Cannot find user
+			}
+
+
+			if(inalid user input){
+					status :409 (CONFLICT)
+					invalid user input
+			}
+
+
+			if(non exist id){
+				status:400(BAD REQUEST)
+				user is not exist!
+			}
+
+
+
+
+7: localhost:8081/api/getLevel				(method=get)
+	**get user stress level
+
+		parameters:
+			id          				** id of  user
+			
+
+			if(success){
+					status:200 (OK)
+					return strees level;
+			}else{
+				status:400(BAD REQUEST)
+				cannot find user
+			}
+
+
+			if(inalid user input){
+					status :409 (CONFLICT)
+					invalid user input
+			}
+
+
+
+
+********************thats it for now***************************

@@ -11,29 +11,30 @@ public class Map {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
-	private Long user_id; //(foreign key os user.id)
-	private Long counceller_id;
-	
-	
-	
+	private Long userId; //(foreign key os user.id)
+	private Long councellerId;
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Long getUser_id() {
-		return user_id;
+	public Long getUserId() {
+		return userId;
 	}
-	public void setUser_id(Long user_id) {
-		this.user_id = user_id;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
-	public Long getCounceller_id() {
-		return counceller_id;
+	public Long getCouncellerId() {
+		return councellerId;
 	}
-	public void setCounceller_id(Long counceller_id) {
-		this.counceller_id = counceller_id;
+	public void setCouncellerId(Long councellerId) {
+		this.councellerId = councellerId;
 	}
+	
+	
+	
+	
 	
 	
 	
