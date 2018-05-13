@@ -190,4 +190,46 @@
 
 
 
+
+
+8:  localhost:8081/api/user/mapCounceller			(method=post)
+	**map counceller by user*******
+
+		parameters:
+			*user_id          				** id of  user
+			*counceller_id					**id of counceller that selected by user
+
+
+
+			if(mapping success){
+					status: 200 (OK)
+					counceller mapping  success
+			}else{
+				status:400  (BAD REQUEST)
+				mapping fail
+			}
+
+
+			if(user already have two councellers){
+				status:400  (BAD REQUEST)
+				u have already two councellers
+			}
+
+			if(user already has counceler that try to map again){
+				status:400  (BAD REQUEST)
+				alredy has a this counceller
+			}
+
+
+			if(user send non exist ids){
+				status:400  (BAD REQUEST)
+				user or counceller does not exist
+
+			}
+
+			if(user send invalid inputs){
+				status:409  (CONFLICT)
+				invalid user input
+			}
+
 ********************thats it for now***************************

@@ -35,9 +35,11 @@ public class AllusersService {
 		
 		boolean is_duplicate_user=false;
 		for(AllUsers users:alluserDao.findAll()) {
-			if(alluserDao.existsByUsername(req.getParameter("username"))) {
-				if(alluserDao.existsByPassword(cmnFunction.string_encript(req.getParameter("password")))) {
+			
+			if(users.getUsername().equals(req.getParameter("username"))) {
+				if(users.getPassword().equals(cmnFunction.string_encript(req.getParameter("password")))) {
 					is_duplicate_user=true;
+					break;
 				}
 			}
 		}
@@ -56,7 +58,7 @@ public class AllusersService {
 				u1.setName(req.getParameter("name"));
 				u1.setPassword(cmnFunction.string_encript(req.getParameter("password")));
 				u1.setPhone_number(Integer.parseInt(req.getParameter("phone_number")));
-				u1.setStatus("enable"); //only for concellers
+				u1.setStatus("enable"); 
 				u1.setType(req.getParameter("type"));
 				u1.setUsername(req.getParameter("username"));
 				alluserDao.save(u1);
@@ -71,10 +73,15 @@ public class AllusersService {
 	
 	
 	//============validate login==================================
-	public boolean validate_login(HttpServletRequest req) {
-		if(alluserDao.existsByPassword(cmnFunction.string_encript(req.getParameter("password")))) {
-			if(alluserDao.existsByUsername(req.getParameter("username"))) {
-				return true;
+	public boolean validate_login(String username,String password) {
+		if(alluserDao.existsByPassword(cmnFunction.string_encript(password))) {
+			if(alluserDao.existsByUsername(username)) {
+				if(getuserfrom_username_password(username, password).getStatus().equals("enable")) {
+					return true;
+				}else {
+					return false;
+				}
+				
 			}else {
 				return false;
 			}
@@ -92,8 +99,8 @@ public class AllusersService {
 	
 	
 	//==============return alluser instance using username and password=====
-	public AllUsers getuserfrom_username_password(HttpServletRequest req){
-		AllUsers user3=alluserDao.findByLogin(req.getParameter("username"), func.string_encript(req.getParameter("password")));
+	public AllUsers getuserfrom_username_password(String username,String password){
+		AllUsers user3=alluserDao.findByLogin(username, func.string_encript(password));
 		return user3;
 	}
 	
@@ -105,8 +112,8 @@ public class AllusersService {
 	}
 	
 	//============check user is exist by id==============
-	public boolean is_user_exist(HttpServletRequest req) {
-		if(alluserDao.existsById(Long.parseLong(req.getParameter("id")))) {
+	public boolean is_user_exist(String id) {
+		if(alluserDao.existsById(Long.parseLong(id))) {
 			return true;
 		}else {
 			return false;
@@ -120,9 +127,10 @@ public class AllusersService {
 	//*********************************************************************************
 	
 	//================get all councellers===========================
-	public Object get_all_councellers() {
+	public Object get_all_councellers(String status) {
 		
-		return alluserDao.findAllByType("counceller");
+		return alluserDao.findByTypeAndStatus("counceller",status);
+		//return alluserDao.findAllByType("counceller");
 	}
 	
 	

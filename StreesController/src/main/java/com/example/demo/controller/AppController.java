@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.Entity.AllUsers;
 import com.example.demo.Entity.Counceller;
+import com.example.demo.Entity.Map;
 import com.example.demo.Entity.User;
 import com.example.demo.Service.AdminNotificationService;
 import com.example.demo.Service.AllusersService;
@@ -25,6 +26,7 @@ import com.example.demo.Service.MusicTrackService;
 import com.example.demo.Service.StressLevelHistoryService;
 import com.example.demo.Service.TipsService;
 import com.example.demo.Service.UserService;
+import com.example.demo.dao.MapDao;
 
 @RestController
 @RequestMapping("/api")
@@ -75,8 +77,7 @@ public class AppController {
 	public ResponseEntity<?> registration(HttpServletRequest req){
 		try {
 			if(allusersService.update_tables(req)) {
-				AllUsers alluser=allusersService.getuserfrom_username_password(req);
-				
+				AllUsers alluser=allusersService.getuserfrom_username_password(req.getParameter("username"), req.getParameter("password"));
 				if(alluser.getType().equals("user")) {
 					userService.update_table(req, alluser.getId());
 					return ResponseEntity.ok("user registration is succcess!!");
@@ -101,8 +102,8 @@ public class AppController {
 	//=============login===========================
 	@RequestMapping(value="/signin",method=RequestMethod.POST)
 	public ResponseEntity<?> login(HttpServletRequest req){
-		if(allusersService.validate_login(req)) {
-			AllUsers u3=allusersService.getuserfrom_username_password(req);
+		if(allusersService.validate_login(req.getParameter("username"),req.getParameter("password"))) {
+			AllUsers u3=allusersService.getuserfrom_username_password(req.getParameter("username"),req.getParameter("password"));
 			return ResponseEntity.ok(u3);
 		}else {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid username or password");
@@ -164,7 +165,7 @@ public class AppController {
 	public ResponseEntity<?> changeProfilePicture(HttpServletRequest req){
 		
 		try {
-			if(allusersService.is_user_exist(req)) {
+			if(allusersService.is_user_exist(req.getParameter("id"))) {
 				AllUsers au1=allusersService.getuserfrom_id(Integer.parseInt(req.getParameter("id")));
 				if(au1.getType().equals("user")) {
 					if(userService.change_profile(req)) {
@@ -212,35 +213,83 @@ public class AppController {
 	}
 	
 	
+	
+	//=================map councellers by user======================
+		@RequestMapping(value="/user/mapCounceller",method=RequestMethod.POST)
+		public ResponseEntity<?> mapcounceller(HttpServletRequest req){
+			try {
+				if(allusersService.getuserfrom_id(Integer.parseInt(req.getParameter("user_id"))).getType().equals("user") && allusersService.getuserfrom_id(Integer.parseInt(req.getParameter("counceller_id"))).getType().equals("counceller")) {
+					
+					if(mapService.numberOfinstance_by_userId(req.getParameter("user_id"))==1 || mapService.numberOfinstance_by_userId(req.getParameter("user_id"))==0) {
+						if(mapService.is_counceller_already_exist(req.getParameter("user_id"), req.getParameter("counceller_id"))) {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("alredy has a this counceller");
+						}else {
+							if(mapService.updateMapDetails(req.getParameter("user_id"),req.getParameter("counceller_id"))) {
+								return ResponseEntity.ok("counceller mapping  success");
+							}else {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("mapping fail");
+							}
+						}
+						
+						
+					
+					}else {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("u have already two councellers");
+					}
+					
+				}else {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("user or counceller does not exist");
+				}
+				
+				
+				
+			} catch (Exception e) {
+				return ResponseEntity.status(HttpStatus.CONFLICT).body("invalid user input");
+			}
+		}
+	
+	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	
 	//*****************************************************************************************	
 	
 	
 	
 	//=================get_all_councellerIds========================================
-	@GetMapping(value="user/getAllCouncellers")
+	@RequestMapping(value="user/getAllCouncellers",method=RequestMethod.POST)
 	public ResponseEntity<?> getAllCouncellers(){
 		
-		return ResponseEntity.ok(allusersService.get_all_councellers());
+		return ResponseEntity.ok(allusersService.get_all_councellers("enable"));
 	}
 	
 	
-//=================counceller mapping(by user)================================
-	@GetMapping(value="user/mapCounceller")
-	public ResponseEntity<?> mapCounceller(HttpServletRequest req){
-		/*if(mapService.existByuser_id(req)) {
-			return ResponseEntity.ok(mapService.numberOfinstance_by_userId(req));
-			
-		}else {
-			return ResponseEntity.ok("cannot find");
-		}*/
+//===================remove exist maped counceller by user=======================================
+	/*@RequestMapping(value="/user/removeCounceller",method=RequestMethod.POST)
+	public ResponseEntity<?> removeExistCouncellerByUser(HttpServletRequest req){
 		
+	}*/
 		
-		return ResponseEntity.ok(mapService.numberOfinstance_by_userId(req));
+	
+	
+	/*@RequestMapping(value="/test",method=RequestMethod.POST)
+	public ResponseEntity<?> testing(HttpServletRequest req){
+		
+		 return ResponseEntity.ok(  JSONObject("{'aa':'bb'}"));
 	}
-		
-	//=================get counceller======================
-	
-	
+	*/
 	
 	
 	

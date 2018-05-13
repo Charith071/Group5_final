@@ -5,6 +5,7 @@ import javax.persistence.Id;
 
 @Entity
 public class User {
+	
 	@Id //(should be foreign key of alluser.id)
 	private Long id;
 	private Integer guadiant_phone_no;
@@ -53,6 +54,10 @@ public class User {
 		this.profile_pic_name = profile_pic_name;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", guadiant_phone_no=" + guadiant_phone_no + ", gps_location=" + gps_location
+				+ ", job=" + job + ", stress_level=" + stress_level + ", profile_pic_name=" + profile_pic_name + "]";
+	}
 		
 }

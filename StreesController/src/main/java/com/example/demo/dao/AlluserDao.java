@@ -22,6 +22,9 @@ public interface AlluserDao extends CrudRepository<AllUsers, Long>{
 	@Query(value="select * from all_users where id= ?1",nativeQuery=true)
 	AllUsers findByIds(Integer id);
 	
+	@Query(value="select * from all_users where type= ?1 and status= ?2",nativeQuery=true)
+	Iterable<AllUsers> findByTypeAndStatus(String type ,String status);
+	
 	/*@Query(value="SELECT * FROM all_users RIGHT JOIN counceller ON all_users.id=counceller.id " , nativeQuery = true)
 	Object findJoin();*/
 }

@@ -18,4 +18,5 @@ public interface MapDao extends CrudRepository<Map, Long>{
 	
 	@Query(value="select * from map where councellerId= ?1",nativeQuery=true)
 	Map findByUserCouncellerId(Integer id);
+	
 }

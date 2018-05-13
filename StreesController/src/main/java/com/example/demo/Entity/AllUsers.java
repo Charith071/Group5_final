@@ -104,6 +104,13 @@ public class AllUsers {
 	}
 	
 	
-	
+
+	@Override
+	public String toString() {
+		return "AllUsers [id=" + id + ", name=" + name + ", age=" + age + ", address=" + address + ", birth_date="
+				+ birth_date + ", create_date=" + create_date + ", email=" + email + ", gender=" + gender
+				+ ", username=" + username + ", password=" + password + ", phone_number=" + phone_number + ", type="
+				+ type + ", status=" + status + "]";
+	}
 	
 }
