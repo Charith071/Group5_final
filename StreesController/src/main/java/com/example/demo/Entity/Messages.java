@@ -6,12 +6,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class Message {
+public class Messages {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
-	private Long from; //(foreign key of alluser.id)
-	private Long to;
+	private Long sender;
+	private Long receiver;
 	private String msg;
 	private String date_time;
 	private String status;
@@ -23,17 +23,17 @@ public class Message {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Long getFrom() {
-		return from;
+	public Long getSender() {
+		return sender;
 	}
-	public void setFrom(Long from) {
-		this.from = from;
+	public void setSender(Long sender) {
+		this.sender = sender;
 	}
-	public Long getTo() {
-		return to;
+	public Long getReceiver() {
+		return receiver;
 	}
-	public void setTo(Long to) {
-		this.to = to;
+	public void setReceiver(Long receiver) {
+		this.receiver = receiver;
 	}
 	public String getMsg() {
 		return msg;

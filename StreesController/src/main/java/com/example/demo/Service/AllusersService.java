@@ -16,6 +16,7 @@ import com.example.demo.commonFunction.CommnFunction;
 import com.example.demo.dao.AlluserDao;
 import com.example.demo.dao.CouncellerDao;
 import com.example.demo.dao.UserDao;
+import com.example.demo.extra.Signupjson;
 
 
 @Service
@@ -31,13 +32,13 @@ public class AllusersService {
 	private CommnFunction cmnFunction=new CommnFunction(); 
 	
 	//====registraion(updating database)============
-	public boolean update_tables(HttpServletRequest req) {
+	public boolean update_tables(Signupjson signupjson) {
 		
 		boolean is_duplicate_user=false;
 		for(AllUsers users:alluserDao.findAll()) {
 			
-			if(users.getUsername().equals(req.getParameter("username"))) {
-				if(users.getPassword().equals(cmnFunction.string_encript(req.getParameter("password")))) {
+			if(users.getUsername().equals(signupjson.getUsername())) {
+				if(users.getPassword().equals(cmnFunction.string_encript(signupjson.getPassword()))) {
 					is_duplicate_user=true;
 					break;
 				}
@@ -47,20 +48,20 @@ public class AllusersService {
 		if(is_duplicate_user) {
 			return false;
 		}else {
-			if(req.getParameter("type").equals("user") || req.getParameter("type").equals("counceller")) {
+			if(signupjson.getType().equals("user") || signupjson.getType().equals("counceller")) {
 				AllUsers u1=new AllUsers();
-				u1.setAddress(req.getParameter("address"));
-				u1.setAge(cmnFunction.cal_age(req.getParameter("birth_date")));
-				u1.setBirth_date(req.getParameter("birth_date"));
+				u1.setAddress(signupjson.getAddress());
+				u1.setAge(cmnFunction.cal_age(signupjson.getBirth_date()));
+				u1.setBirth_date(signupjson.getBirth_date());
 				u1.setCreate_date(cmnFunction.getCurrentdate());
-				u1.setEmail(req.getParameter("email"));
-				u1.setGender(req.getParameter("gender"));
-				u1.setName(req.getParameter("name"));
-				u1.setPassword(cmnFunction.string_encript(req.getParameter("password")));
-				u1.setPhone_number(Integer.parseInt(req.getParameter("phone_number")));
+				u1.setEmail(signupjson.getEmail());
+				u1.setGender(signupjson.getGender());
+				u1.setName(signupjson.getName());
+				u1.setPassword(cmnFunction.string_encript(signupjson.getPassword()));
+				u1.setPhone_number(signupjson.getPhone_number());
 				u1.setStatus("enable"); 
-				u1.setType(req.getParameter("type"));
-				u1.setUsername(req.getParameter("username"));
+				u1.setType(signupjson.getType());
+				u1.setUsername(signupjson.getUsername());
 				alluserDao.save(u1);
 				
 				return true;

@@ -4,9 +4,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.demo.Entity.User;
 import com.example.demo.dao.UserDao;
+import com.example.demo.extra.Gpsjson;
+import com.example.demo.extra.Profilepicjson;
+import com.example.demo.extra.Signupjson;
 
 @Service
 public class UserService {
@@ -15,15 +19,14 @@ public class UserService {
 	
 	
 	//=========for user registration========================
-	public boolean update_table(HttpServletRequest req,Long id) {
+	public boolean update_table(Signupjson signupjson1,Long id) {
 		User u2=new User();
-		
-		u2.setGps_location(Double.parseDouble(req.getParameter("gps")));
-		u2.setGuadiant_phone_no(Integer.parseInt(req.getParameter("guadiant_phone_number")));
+		u2.setGps_location(Double.parseDouble(signupjson1.getGps()));
+		u2.setGuadiant_phone_no(signupjson1.getGuadiant_phone_number());
 		u2.setId(id);
-		u2.setJob(req.getParameter("job"));
+		u2.setJob(signupjson1.getJob());
 		
-		u2.setProfile_pic_name(req.getParameter("profile_pic_name")+id.toString());
+		u2.setProfile_pic_name(signupjson1.getProfile_pic_name()+id.toString());
 		u2.setStress_level(Float.parseFloat("0"));
 		userDao.save(u2);
 		return true;
@@ -32,10 +35,10 @@ public class UserService {
 	
 	
 	//==========update user stress level=============
-	public boolean update_user_stress_level(HttpServletRequest req) {
-		if(userDao.existsById(Long.parseLong(req.getParameter("id")))) {
-			User u1=userDao.findByIds(Integer.parseInt(req.getParameter("id")));
-			u1.setStress_level(Float.parseFloat(req.getParameter("level")));
+	public boolean update_user_stress_level(String id,String level) {
+		if(userDao.existsById(Long.parseLong(id))) {
+			User u1=userDao.findByIds(Integer.parseInt(id));
+			u1.setStress_level(Float.parseFloat(level));
 			userDao.save(u1);
 			return true;
 		}else {
@@ -45,10 +48,10 @@ public class UserService {
 	} 
 	
 	//====================update user gps location=============================
-	public boolean update_user_gps_location(HttpServletRequest req) {
-		if(userDao.existsById(Long.parseLong(req.getParameter("id")))) {
-			User u2=userDao.findByIds(Integer.parseInt(req.getParameter("id")));
-			u2.setGps_location(Double.parseDouble(req.getParameter("gps")));
+	public boolean update_user_gps_location( Gpsjson gpsjson) {
+		if(userDao.existsById(Long.parseLong(gpsjson.getId()))) {
+			User u2=userDao.findByIds(Integer.parseInt(gpsjson.getId()));
+			u2.setGps_location(Double.parseDouble(gpsjson.getGps()));
 			userDao.save(u2);
 			return true;
 		}else {
@@ -59,10 +62,10 @@ public class UserService {
 	
 	
 	//==============chnage user profile picture ===============================
-	public boolean change_profile(HttpServletRequest req) {
-		if(userDao.existsById(Long.parseLong(req.getParameter("id")))) {
-			User u3=userDao.findByIds(Integer.parseInt(req.getParameter("id")));
-			u3.setProfile_pic_name(req.getParameter("profile_pic_name")+req.getParameter("id"));
+	public boolean change_profile(Profilepicjson profilepicjson) {
+		if(userDao.existsById(Long.parseLong(profilepicjson.getId()))) {
+			User u3=userDao.findByIds(Integer.parseInt(profilepicjson.getId()));
+			u3.setProfile_pic_name(profilepicjson.getProfile_pic_name()+profilepicjson.getId());
 			userDao.save(u3);
 			
 			return true;
@@ -72,14 +75,14 @@ public class UserService {
 	}
 
 	//================return user instance by id===================
-	public User getUserby_id(HttpServletRequest req) {
-		User u4=userDao.findByIds(Integer.parseInt(req.getParameter("id")));
+	public User getUserby_id( String id) {
+		User u4=userDao.findByIds(Integer.parseInt(id));
 		return u4;
 	}
 	
 	//=================check user existance==================
-	public boolean is_user_exist(HttpServletRequest req) {
-		return userDao.existsById(Long.parseLong(req.getParameter("id")));
+	public boolean is_user_exist(String id) {
+		return userDao.existsById(Long.parseLong(id));
 	}
 	
 	

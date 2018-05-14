@@ -46,7 +46,7 @@ public class MapService {
 	//================check_counceller is already exist for particular user=====================
 	public boolean is_counceller_already_exist(String user_id,String counceller_id) {
 		
-		boolean is_counceller_exist=true;
+		boolean is_counceller_exist=false;
 		
 		for(Map m:mapDao.findAll()) {
 			if(m.getUserId()==Long.parseLong(user_id)) {
@@ -64,7 +64,13 @@ public class MapService {
 		return is_counceller_exist;
 	}
 	
+
 	
 	
+	
+	//===get number of instance=======================
+	public Long count_number_of_instance() {
+		return mapDao.count();
+	}
 	
 }

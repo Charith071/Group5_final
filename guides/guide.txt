@@ -1,7 +1,9 @@
 1:	localhost:8081/api/signin  				(method=post)
-		parameters:
-			username
-			password
+		parameters should be json object like below
+			{
+				"username":"user",
+				"password":"pass"
+			}
 
 			if(success){
 					status:200 (OK)
@@ -16,7 +18,7 @@
 
 2: 	localhost:8081/api/signup  				(method=post)
 		******for user registration*************
-		parameters:
+		parameters should be json object
 			
 			name
 			address
@@ -42,7 +44,7 @@
 			}
 
 			******for counceller registration*************
-		parameters:
+		parameters should be json object
 			
 			name
 			address
@@ -54,7 +56,6 @@
 			birth_date			**format=1994-5-19
 			phone_number       	** no spaces between numbers
 			gps
-			job
 			qualification       **string
 			certificate			**string
 			profile_pic_name
@@ -72,8 +73,9 @@
 
 
 ***********update stress level of user*********************8
-3: localhost:8081/api/level  				(method=get)
-		parameters:
+3: localhost:8081/api/level  				(method=post)
+		parameters should be json object
+
 			id          ** id of user
 			level		** stress level
 
@@ -93,10 +95,10 @@
 
 
 
-4:localhost:8081/api/user/gps				(method=get)
+4:localhost:8081/api/user/gps				(method=post)
 	**update user current gps location
 
-		parameters:
+		parameters should be json object
 			id          ** id of user
 			gps			** gps location
 
@@ -115,10 +117,10 @@
 
 
 
-5: localhost:8081/api/counceller/gps				(method=get)
+5: localhost:8081/api/counceller/gps				(method=post)
 	**update counceller gps location
 
-		parameters:
+		parameters should be json object
 			id          ** id of counceller
 			gps			** gps location
 
@@ -136,10 +138,10 @@
 
 
 
-6: localhost:8081/api/ChangeProfilePicture				(method=get)
+6: localhost:8081/api/ChangeProfilePicture				(method=post)
 	**change profile picture
 
-		parameters:
+		parameters should be json object
 			id          				** id of counceller or user
 			profile_pic_name			** profile pic name
 
@@ -166,10 +168,10 @@
 
 
 
-7: localhost:8081/api/getLevel				(method=get)
+7: localhost:8081/api/getLevel				(method=post)
 	**get user stress level
 
-		parameters:
+		parameters should be json object
 			id          				** id of  user
 			
 
@@ -195,7 +197,7 @@
 8:  localhost:8081/api/user/mapCounceller			(method=post)
 	**map counceller by user*******
 
-		parameters:
+		parameters:should be json object
 			*user_id          				** id of  user
 			*counceller_id					**id of counceller that selected by user
 
@@ -231,5 +233,18 @@
 				status:409  (CONFLICT)
 				invalid user input
 			}
+
+
+
+8: localhost:8081/api/chat			(method=post)
+*****************chat counceller vs user*******************
+(pre requariments:for chat....user have mapped councellers)
+
+
+	json parametes:
+			sender_id
+			receiver_id
+			date_time
+			msg
 
 ********************thats it for now***************************

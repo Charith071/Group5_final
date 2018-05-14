@@ -19,7 +19,7 @@ public class AllUsers {
 	private String gender;
 	private String username;
 	private String password;
-	private Integer phone_number;
+	private String phone_number;
 	private String type;
 	private String status;
 	
@@ -84,10 +84,10 @@ public class AllUsers {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public Integer getPhone_number() {
+	public String getPhone_number() {
 		return phone_number;
 	}
-	public void setPhone_number(Integer phone_number) {
+	public void setPhone_number(String phone_number) {
 		this.phone_number = phone_number;
 	}
 	public String getType() {
