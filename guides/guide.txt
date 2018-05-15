@@ -330,4 +330,104 @@
 		}
 
 
+
+12: http://localhost:8081/api/addTrack    (method =post)
+++++++++++++++++++(counceller or admin can add misuc track=============)
+	the parameter should be json object
+
+	parameter:
+		{
+			"counceller_id":"6",          **(who add the track)
+			"description":"lol", 
+			"name":"ndormalmudsic", 	**(name of the track)
+			"max_stress_level":"5", 	
+			"min_stress_level": "4"
+		}
+
+
+		if(update success){
+			return status:200
+			update success
+		}
+
+		if(is not valid counceller or admin){
+			return status:400
+			Not a valid Counceller
+		}
+
+
+		if(counceller not exist in tha database){
+			return status:400
+			Cannot find Counceller
+		}
+
+
+		if(max and min stress level are invalid){
+			return status:400
+			max stress level should grater than min stress level
+		}
+
+
+		if(track name is already exist){
+			return status:400
+			the track name is already exist!!
+		}
+
+		if(invalid user inputs){
+			return status:400
+			invalid user inputs
+		}
+
+
+
+13: http://localhost:8081/api/admin/controllTracks    (methos=get)
+	+++++++++++++++controll music track by admin+++++++++++++
+		admin can cotroll music track by changig status as enable,disable,delete
+
+		parameters:
+			*admin_id       	(admin id)
+			*track_id 			(track id that want to controll)
+			*status				(enable or disable or delete)
+
+
+			if(status is delete){
+				return status: 200
+				delete successfully!	
+			}
+
+			if(status is enable or disable){
+				return status: 200
+				status changed!
+			}
+
+
+			if(invalid user input){
+				return status: 400
+				invalid user inputs
+			}
+
+
+			if(admin id is not exist){
+				return status: 400
+				Cannot find Admin
+			}
+
+			if(id type is not admin){
+				return status: 400
+				Invalid admin
+			}
+
+
+			if(music track is not exist in database){
+				return status: 400
+				Cannot find music Track
+			}
+
+			if(type not equal to enable or disable or delete){
+				return status: 400
+				Invalid status
+			}
+
+
+
 ********************thats it for now***************************

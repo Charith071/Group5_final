@@ -1,6 +1,7 @@
 package com.example.demo.commonFunction;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 
@@ -29,6 +30,13 @@ public class CommnFunction {
 		return currentdate.toString();				
 	}
 	
+	//==============return date_time+++++++++++++++
+	public String getCurrentdateTime() {
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+		LocalDateTime now = LocalDateTime.now();
+		return now.toString();
+	}
+	
 	//============calculate age=========================
 	public  Integer cal_age(String bdate){
 		String[] words =bdate.split("-");
@@ -42,6 +50,8 @@ public class CommnFunction {
 		Integer age= Integer.parseInt(currentyear)-Integer.parseInt(birth_year);
 		return age;
 	}
+	
+	
 	
 	
 }

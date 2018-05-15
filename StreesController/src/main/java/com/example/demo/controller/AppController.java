@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.Entity.AllUsers;
 import com.example.demo.Entity.Counceller;
 import com.example.demo.Entity.Map;
+import com.example.demo.Entity.MusicTrack;
 import com.example.demo.Entity.User;
 import com.example.demo.Service.AdminNotificationService;
 import com.example.demo.Service.AllusersService;
@@ -36,6 +37,8 @@ import com.example.demo.Service.StressLevelHistoryService;
 import com.example.demo.Service.TipsService;
 import com.example.demo.Service.UserService;
 import com.example.demo.dao.MapDao;
+import com.example.demo.extra.AccountSettingjson;
+import com.example.demo.extra.AddTrackjson;
 import com.example.demo.extra.Chatjson;
 import com.example.demo.extra.Getleveljson;
 import com.example.demo.extra.Gpsjson;
@@ -91,25 +94,29 @@ public class AppController {
 	}
 	
 	
-	//=========registration====================================
+	// (2) =========registration====================================
 	@RequestMapping(value="/signup",method=RequestMethod.POST)
 	public ResponseEntity<?> registration(@RequestBody Signupjson signupjson){
 		try {
-			if(allusersService.update_tables(signupjson)) {
-				AllUsers alluser=allusersService.getuserfrom_username_password(signupjson.getUsername(),signupjson.getPassword());
-				if(alluser.getType().equals("user")) {
-					//also update stress level and history
-					userService.update_table(signupjson,alluser.getId());
-					return ResponseEntity.ok("user registration is succcess!!");
-				}else if(alluser.getType().equals("counceller")) {
-					councellerService.update_table(signupjson,alluser.getId());
-					return ResponseEntity.ok("Counceller registration is succcess!!");
+			if(signupjson.getUsername().length()>0 && signupjson.getPassword().length()>0) {
+				if(allusersService.update_tables(signupjson)) {
+					AllUsers alluser=allusersService.getuserfrom_username_password(signupjson.getUsername(),signupjson.getPassword());
+					if(alluser.getType().equals("user")) {
+						//also update stress level and history
+						userService.update_table(signupjson,alluser.getId());
+						return ResponseEntity.ok("user registration is succcess!!");
+					}else if(alluser.getType().equals("counceller")) {
+						councellerService.update_table(signupjson,alluser.getId());
+						return ResponseEntity.ok("Counceller registration is succcess!!");
+					}else {
+						return ResponseEntity.status(HttpStatus.CONFLICT).body("invalid user input");
+					}
+					//return ResponseEntity.ok("Counceller registration is succcess!!");
 				}else {
-					return ResponseEntity.status(HttpStatus.CONFLICT).body("invalid user input");
+					return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("registration fail...change username or password");
 				}
-				//return ResponseEntity.ok("Counceller registration is succcess!!");
 			}else {
-				return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("registration fail...change username or password");
+				return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("required user name and password !");
 			}
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("invalid user input");
@@ -119,7 +126,7 @@ public class AppController {
 		
 	}
 	
-	//=============login===========================
+	// (1) =============login===================================
 	@RequestMapping(value="/signin",method=RequestMethod.POST)
 	public ResponseEntity<?> login(@RequestBody Loginjson lj){
 		
@@ -138,7 +145,7 @@ public class AppController {
 	}
 	
 	
-	//==============update stresslevel of user=======================
+	// (3) ==============update stresslevel of user=======================
 	@RequestMapping(value="/level",method=RequestMethod.POST)
 	public ResponseEntity<?> level_update(@RequestBody Leveljson leveljson){
 		try {
@@ -157,7 +164,7 @@ public class AppController {
 	}
 	
 	
-	//==================update user current gps location=========================
+	// (4) ==================update user current gps location=========================
 	@RequestMapping(value="/user/gps",method=RequestMethod.POST)
 	public ResponseEntity<?> update_user_gps_location( @RequestBody Gpsjson gpsjson){
 		try {
@@ -173,7 +180,7 @@ public class AppController {
 		
 	}
 	
-	//===================update counceller gps location===================
+	// (5) ===================update counceller gps location===================
 	@RequestMapping(value="/counceller/gps",method=RequestMethod.POST)
 	public ResponseEntity<?> update_counceller_gps( @RequestBody Gpsjson gpsjson1){
 		try {
@@ -189,7 +196,7 @@ public class AppController {
 		
 	}
 	
-	//================change profile picture=======================
+	// (6) ================change profile picture=======================
 	@RequestMapping(value="/ChangeProfilePicture",method=RequestMethod.POST)
 	public ResponseEntity<?> changeProfilePicture(@RequestBody Profilepicjson profilepicjson){
 		
@@ -224,7 +231,7 @@ public class AppController {
 	}
 	
 	
-	//=====================get user stress level=============================
+	// (7) =====================get user stress level=============================
 	@RequestMapping(value="/getLevel",method=RequestMethod.POST)
 	public ResponseEntity<?> getStressLevel(@RequestBody Getleveljson getleveljson){
 		
@@ -243,7 +250,7 @@ public class AppController {
 	
 	
 	
-	//=================map councellers by user======================
+	// (8) =================map councellers by user======================
 		@RequestMapping(value="/user/mapCounceller",method=RequestMethod.POST)
 		public ResponseEntity<?> mapcounceller(@RequestBody Mappingjson mappingjson){
 			try {
@@ -282,7 +289,7 @@ public class AppController {
 		
 		
 		
-		//==================online chat with  counceller vs users==============================
+		// (9)==================online chat with  counceller vs users==============================
 		@RequestMapping(value="/chat",method=RequestMethod.POST)
 		public ResponseEntity<?> chat(@RequestBody Chatjson chatjson){
 			try {
@@ -336,7 +343,7 @@ public class AppController {
 		
 
 		
-		//======================view user details by counceller============================
+		// (10) ======================view user details by counceller============================
 		@RequestMapping(value="/PatientDetails",method=RequestMethod.POST)
 		public ResponseEntity<?> getpatiantDetails(@RequestBody PatiantDetailsjson details){
 			try {
@@ -386,7 +393,7 @@ public class AppController {
 		
 		
 		
-		//=============================controll conceller access by admin==============================
+		// (11) =============================controll conceller access by admin==============================
 		@RequestMapping(value="/admin/accessControll",params= {"admin_id","controller_id","status"}, method=RequestMethod.GET)
 		public ResponseEntity<?> accessControll(@RequestParam("admin_id") String admin_id,@RequestParam("controller_id") String controller_id,@RequestParam("status") String status){
 			
@@ -424,9 +431,83 @@ public class AppController {
 					
 		
 		
+		// (12) ====================add music track by counceller=================================
+		@RequestMapping(value="/addTrack",method=RequestMethod.POST)
+		public ResponseEntity<?> addMusicTrack(@RequestBody AddTrackjson addTrackjson){
+			try {
+				if(allusersService.is_user_exist(addTrackjson.getCounceller_id())) {
+					if((allusersService.getuserfrom_id(Integer.parseInt(addTrackjson.getCounceller_id())).getType().equals("counceller")
+							&& allusersService.getuserfrom_id(Integer.parseInt(addTrackjson.getCounceller_id())).getStatus().equals("enable")) ||
+							(allusersService.getuserfrom_id(Integer.parseInt(addTrackjson.getCounceller_id())).getType().equals("admin"))) 
+					{
+						if(Double.parseDouble(addTrackjson.getMax_stress_level())> Double.parseDouble(addTrackjson.getMin_stress_level())) {
+							if(musicTrackService.is_duplicate_name_exist(addTrackjson.getName())) {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("the track name is already exist!!");
+							}else {
+								musicTrackService.updateMusicTracktable(addTrackjson);
+								return ResponseEntity.ok("update success");
+							}
+							
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("max stress level should grater than min stress level");
+						}
+						
+					}else {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not a valid Counceller");
+					}
+				}else {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot find Counceller");
+				}
+			} catch (Exception e) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user inputs");
+			}
+			
+			
+			
+			
+		}
+			
 		
+	
 		
-		
+		// (13) ===============controll music track by admin==========================
+		@RequestMapping(value="/admin/controllTracks",params= {"admin_id","track_id","status"},method=RequestMethod.GET)
+		public ResponseEntity<?> music_track_controll(@RequestParam("admin_id") String admin_id,@RequestParam("track_id") String track_id,@RequestParam("status") String status){
+			
+			try {
+				if(allusersService.is_user_exist(admin_id) ) {
+					if(allusersService.getuserfrom_id(Integer.parseInt(admin_id)).getType().equals("admin")) {
+						if(musicTrackService.is_exist_by_id(Long.parseLong(track_id))) {
+							if(status.equals("delete")) {
+								musicTrackService.delete_track_by_id(Long.parseLong(track_id));
+								return ResponseEntity.ok(" delete successfully!!");
+							}else if(status.equals("enable") || status.equals("disable")) {
+								MusicTrack track=new MusicTrack();
+								track=musicTrackService.get_instance_by_id(Integer.parseInt(track_id));
+								track.setStatus(status);
+								musicTrackService.update_instance(track);
+								return ResponseEntity.ok("status changed!!");
+							}else {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid status");
+							}
+							
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot find music Track");
+						}
+					}else {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid admin");
+					}
+				}else {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot find Admin ");
+				}
+			} catch (Exception e) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid user inputs ");
+			}
+			
+			
+			
+			
+		}
 		
 		
 //*****************************************************************************************	***********
@@ -460,10 +541,48 @@ public class AppController {
 	}
 	*/
 	
-
-
-	
-	
+/*
+// (14) ==================update account details=================================
+	@RequestMapping(value="/accountSetting",method=RequestMethod.POST)
+	public ResponseEntity<?> updateAccountDetails(@RequestBody AccountSettingjson account){
+		
+		if(allusersService.is_user_exist(account.getId())) {
+				AllUsers user=new AllUsers();
+				user=allusersService.getuserfrom_id(Integer.parseInt(account.getId()));
+				if(account.getAddress().length()>0) {
+					user.setAddress(account.getAddress());
+				}
+				if(account.getBirth_date().length()>0) {
+					user.setBirth_date(account.getBirth_date());
+				}if(account.getEmail().length()>0) {
+					user.setEmail(account.getEmail());
+				}if(account.getGender().length()>0) {
+					user.setGender(account.getGender());
+				}if(account.getName().length()>0) {
+					user.setName(account.getName());
+				}if(account.getUsername().length()>0) {
+					user.setUsername(account.getUsername());
+				}if(account.getPassword().length()>0) {
+					user.setPassword(account.getPassword());
+				}if(account.getPhone_number().length()>0) {
+					user.setPhone_number(account.getPhone_number());
+				}
+			if(allusersService.getuserfrom_id(Integer.parseInt(account.getId())).getType().equals("user")) {
+				
+			}else if(allusersService.getuserfrom_id(Integer.parseInt(account.getId())).getType().equals("counceller")) {
+				return ResponseEntity.ok("lol");
+			}else if(allusersService.getuserfrom_id(Integer.parseInt(account.getId())).getType().equals("admin")) {
+				return ResponseEntity.ok("lol");
+			}else {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not a valid user");
+			}
+		}else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot find user");
+		}
+		
+		
+	}
+	*/
 	
 	
 	
