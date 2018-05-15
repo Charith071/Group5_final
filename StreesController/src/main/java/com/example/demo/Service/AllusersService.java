@@ -75,20 +75,33 @@ public class AllusersService {
 	
 	//============validate login==================================
 	public boolean validate_login(String username,String password) {
-		if(alluserDao.existsByPassword(cmnFunction.string_encript(password))) {
-			if(alluserDao.existsByUsername(username)) {
-				if(getuserfrom_username_password(username, password).getStatus().equals("enable")) {
-					return true;
+		boolean validity=false;
+		for(AllUsers a:alluserDao.findAll()) {
+			if(a.getUsername().equals(username)) {
+				if(a.getPassword().equals(cmnFunction.string_encript(password))) {
+					AllUsers b=getuserfrom_username_password(username, password);
+					if(b.getType().equals("admin")) {
+						validity=true;
+						break;
+						
+					}else {
+						if(b.getType().equals("counceller") || b.getType().equals("user")) {
+							validity=true;
+							break;
+						}else {
+							validity=false;
+						}
+					}
 				}else {
-					return false;
+					validity=false;
 				}
-				
 			}else {
-				return false;
+				validity=false;
 			}
-		}else {
-			return false;
 		}
+		
+		return validity;
+
 	}
 	
 	
@@ -123,6 +136,12 @@ public class AllusersService {
 	
 	
 	
+	
+	//======================update any alluser instance===============
+	public boolean updateAlluserInstance(AllUsers user) {
+		alluserDao.save(user);
+		return true;
+	}
 	
 	
 	//*********************************************************************************

@@ -236,7 +236,7 @@
 
 
 
-8: localhost:8081/api/chat			(method=post)
+9: localhost:8081/api/chat			(method=post)
 *****************chat counceller vs user*******************
 (pre requariments:for chat....user have mapped councellers)
 
@@ -246,5 +246,88 @@
 			receiver_id
 			date_time
 			msg
+
+
+
+
+10: localhost:8081/api/PatientDetails		(method=post)
+----------------(get patient details by counceller)------------
+	preRequirements: user belongs to counceller(should be map)
+
+	json parameters:
+			*counceller_id    		** counceller id who view his patient details
+			*patient_id				** patient id who belongs to that counceller
+
+
+			if(success){
+				status:200(OK)
+				return json object of patient details
+			}
+
+			if(patient is not belongs to that counceller){
+				status : 400(BADREQUEST)
+				return: Not your patient
+			}
+
+			if(request ids not a valid id){
+				status : 400(BADREQUEST)
+				return: Not valid user or Counceller
+			}
+
+			if(request json object is not valid){
+				status: 409
+				return : invalid user inputs;
+			}
+
+
+
+
+
+
+11: localhost:8081/api/admin/accessControll		(method=get)
+	-------------(admin can cotroll access of any user by changing all_user.status as "enable" or "disable")---------------------------------
+
+	** not a json request...its a like a form type get request........
+
+	request parameters:
+		#admin_id         (adminitartor id)
+		#controller_id		(user or counceller id)
+		#status				(enable or disable)
+
+		if(success){
+			return status:200
+			access controlled success!!
+		}
+
+
+		if(cotroller_id  not belongs to user or counceller){
+			return status:400 (Bad REQUEST)
+			Invalid user or Counceller
+		}
+
+
+		if(status not equals to "enable" or "disable"){
+			return status:400 (Bad REQUEST)
+			Invalid status
+		}
+
+
+		if(admin_id is not not valid){
+			return status:400 (Bad REQUEST)
+			Invalid Admin
+		}
+
+
+		if(users are not exist){
+			return status:400 (Bad REQUEST)
+			Cannot find users
+		}
+
+
+		if(any inputs mistake){
+			return status:400 (Bad REQUEST)
+			invalid user inputs
+		}
+
 
 ********************thats it for now***************************

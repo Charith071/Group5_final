@@ -12,9 +12,12 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.Entity.AllUsers;
@@ -39,8 +42,10 @@ import com.example.demo.extra.Gpsjson;
 import com.example.demo.extra.Leveljson;
 import com.example.demo.extra.Loginjson;
 import com.example.demo.extra.Mappingjson;
+import com.example.demo.extra.PatiantDetailsjson;
 import com.example.demo.extra.Profilepicjson;
 import com.example.demo.extra.Signupjson;
+import com.example.demo.extra.UserdetailsResponse;
 
 @RestController
 @RequestMapping("/api")
@@ -93,6 +98,7 @@ public class AppController {
 			if(allusersService.update_tables(signupjson)) {
 				AllUsers alluser=allusersService.getuserfrom_username_password(signupjson.getUsername(),signupjson.getPassword());
 				if(alluser.getType().equals("user")) {
+					//also update stress level and history
 					userService.update_table(signupjson,alluser.getId());
 					return ResponseEntity.ok("user registration is succcess!!");
 				}else if(alluser.getType().equals("counceller")) {
@@ -119,6 +125,7 @@ public class AppController {
 		
 		try {
 			if(allusersService.validate_login(lj.getUsername(),lj.getPassword())) {
+				//System.out.println(lj.getUsername()+" "+lj.getPassword());
 				AllUsers u3=allusersService.getuserfrom_username_password(lj.getUsername(),lj.getPassword());
 				return ResponseEntity.ok(u3);
 			}else {
@@ -136,6 +143,8 @@ public class AppController {
 	public ResponseEntity<?> level_update(@RequestBody Leveljson leveljson){
 		try {
 			if(userService.update_user_stress_level(leveljson.getId(),leveljson.getLevel())) {
+				// update history table
+				 boolean g=stressLevelHistoryService.update_history_strees_level_details(leveljson.getId(), leveljson.getLevel());
 				return ResponseEntity.ok("success!!");
 			}else {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("update fail!! cannot find user");
@@ -325,7 +334,94 @@ public class AppController {
 			
 		
 		
+
 		
+		//======================view user details by counceller============================
+		@RequestMapping(value="/PatientDetails",method=RequestMethod.POST)
+		public ResponseEntity<?> getpatiantDetails(@RequestBody PatiantDetailsjson details){
+			try {
+				if(allusersService.is_user_exist(details.getPatient_id()) && allusersService.is_user_exist(details.getCounceller_id())
+						&& allusersService.getuserfrom_id(Integer.parseInt(details.getPatient_id())).getType().equals("user")
+						&& allusersService.getuserfrom_id(Integer.parseInt(details.getPatient_id())).getStatus().equals("enable")
+						&& allusersService.getuserfrom_id(Integer.parseInt(details.getCounceller_id())).getType().equals("counceller")
+						&& allusersService.getuserfrom_id(Integer.parseInt(details.getCounceller_id())).getStatus().equals("enable")) 
+				{
+				
+					if(mapService.is_counceller_already_exist( details.getPatient_id(),details.getCounceller_id())) {
+						AllUsers uu2=allusersService.getuserfrom_id(Integer.parseInt(details.getPatient_id()));
+						User uu3=userService.getUserby_id(details.getPatient_id());
+						UserdetailsResponse userdata=new UserdetailsResponse();
+						userdata.setAddress(uu2.getAddress());
+						userdata.setAge(uu2.getAge().toString());
+						userdata.setBirth_date(uu2.getBirth_date());
+						userdata.setEmail(uu2.getEmail());
+						userdata.setGender(uu2.getGender());
+						userdata.setGps_location(uu3.getGps_location().toString());
+						userdata.setGuadiant_phone_no(uu3.getGuadiant_phone_no());
+						userdata.setId(uu2.getId().toString());
+						userdata.setJob(uu3.getJob());
+						userdata.setName(uu2.getName());
+						userdata.setPhone_number(uu2.getPhone_number());
+						userdata.setStress_level(uu3.getStress_level().toString());
+						
+						return ResponseEntity.ok(userdata);
+						
+					}else {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not your patient");
+					}
+					
+					
+				}else {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not valid user or Counceller");
+				}
+				
+				
+				
+			} catch (Exception e) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user inputs!!");
+			}
+				
+			
+		}		
+		
+		
+		
+		//=============================controll conceller access by admin==============================
+		@RequestMapping(value="/admin/accessControll",params= {"admin_id","controller_id","status"}, method=RequestMethod.GET)
+		public ResponseEntity<?> accessControll(@RequestParam("admin_id") String admin_id,@RequestParam("controller_id") String controller_id,@RequestParam("status") String status){
+			
+			try {
+				//System.out.println(admin_id+controller_id+status);
+				if(allusersService.is_user_exist(admin_id) && allusersService.is_user_exist(controller_id)) {
+					AllUsers adminob=allusersService.getuserfrom_id(Integer.parseInt(admin_id));
+					AllUsers userob=allusersService.getuserfrom_id(Integer.parseInt(controller_id));
+					if(adminob.getType().equals("admin")) {
+						if(userob.getType().equals("counceller") || userob.getType().equals("user")) {
+							if(status.equals("enable") || status.equals("disable")) {
+								userob.setStatus(status);
+								allusersService.updateAlluserInstance(userob);
+								return ResponseEntity.ok("access controlled success!! ");
+							}else {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid status ");
+							}
+							
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user or Counceller ");
+						}
+					}else {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Admin ");
+					}
+				}else {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot find users");
+				}
+			} catch (Exception e) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid user inputs");
+			}
+			
+			
+			//return ResponseEntity.ok("lol");
+		}	
+					
 		
 		
 		
@@ -363,6 +459,14 @@ public class AppController {
 		 return ResponseEntity.ok(list);
 	}
 	*/
+	
+
+
+	
+	
+	
+	
+	
 	
 	
 	

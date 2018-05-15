@@ -1,16 +1,23 @@
 package com.example.demo.Entity;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
 public class StressLevelHistory {
 	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private Long id;
 	private Long user_id; //(foreign key of user.id)
 	private String date_time;
 	private Double stress_level;
 	
 	
+	public Long getId() {
+		return id;
+	}
 	public Long getUser_id() {
 		return user_id;
 	}
