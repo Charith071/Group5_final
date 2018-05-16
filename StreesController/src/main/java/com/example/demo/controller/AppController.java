@@ -541,7 +541,7 @@ public class AppController {
 	}
 	*/
 	
-/*
+
 // (14) ==================update account details=================================
 	@RequestMapping(value="/accountSetting",method=RequestMethod.POST)
 	public ResponseEntity<?> updateAccountDetails(@RequestBody AccountSettingjson account){
@@ -567,11 +567,10 @@ public class AppController {
 				}if(account.getPhone_number().length()>0) {
 					user.setPhone_number(account.getPhone_number());
 				}
-			if(allusersService.getuserfrom_id(Integer.parseInt(account.getId())).getType().equals("user")) {
 				
-			}else if(allusersService.getuserfrom_id(Integer.parseInt(account.getId())).getType().equals("counceller")) {
+			if(allusersService.getuserfrom_id(Integer.parseInt(account.getId())).getType().equals("user")) {
 				return ResponseEntity.ok("lol");
-			}else if(allusersService.getuserfrom_id(Integer.parseInt(account.getId())).getType().equals("admin")) {
+			}else if(allusersService.getuserfrom_id(Integer.parseInt(account.getId())).getType().equals("counceller")) {
 				return ResponseEntity.ok("lol");
 			}else {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not a valid user");
@@ -582,7 +581,7 @@ public class AppController {
 		
 		
 	}
-	*/
+	
 	
 	
 	

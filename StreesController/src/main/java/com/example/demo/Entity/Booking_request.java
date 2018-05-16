@@ -8,7 +8,7 @@ import javax.persistence.Id;
 @Entity
 public class Booking_request {
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	private Long user_id; // (freign key of user.id)
 	private Long counceller_id;

@@ -8,7 +8,7 @@ import javax.persistence.Id;
 @Entity
 public class Tips {
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	private Long counceller_id;  //(foreign key of counceler.id)
 	private String date_time;

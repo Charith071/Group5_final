@@ -8,7 +8,7 @@ import javax.persistence.Id;
 @Entity
 public class AdminNotification {
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	private String type; //(to user,counceller,all)
 	private String msg;@GeneratedValue(strategy=GenerationType.AUTO)

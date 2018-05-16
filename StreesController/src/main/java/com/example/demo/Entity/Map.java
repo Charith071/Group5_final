@@ -9,7 +9,7 @@ import javax.persistence.Id;
 public class Map {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	private Long userId; //(foreign key os user.id)
 	private Long councellerId;

@@ -8,7 +8,7 @@ import javax.persistence.Id;
 @Entity
 public class Messages {
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	private Long sender;
 	private Long receiver;
