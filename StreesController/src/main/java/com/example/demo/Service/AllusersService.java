@@ -144,6 +144,30 @@ public class AllusersService {
 	}
 	
 	
+	//================check duplicate user============================
+	public boolean check_is_duplicate_user(String username,String password) {
+		boolean is_duplicate_user=false;
+		for(AllUsers users:alluserDao.findAll()) {
+			
+			if(users.getUsername().equals(username)) {
+				if(users.getPassword().equals(cmnFunction.string_encript(password))) {
+					is_duplicate_user=true;
+					break;
+				}
+			}
+		}
+		return is_duplicate_user;
+	}
+	
+	
+	
+	//=============update account edited details===================
+	public boolean update_Edited_account_detals(AllUsers aa) {
+		alluserDao.save(aa);
+		return true;
+	}
+	
+	
 	//*********************************************************************************
 	
 	//================get all councellers===========================

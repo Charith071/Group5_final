@@ -15,7 +15,17 @@ public class UserdetailsResponse {
 	private String job;
 	private String stress_level;
 	
+	private String res_status;
 	
+	
+	
+	
+	public String getRes_status() {
+		return res_status;
+	}
+	public void setRes_status(String res_status) {
+		this.res_status = res_status;
+	}
 	public String getId() {
 		return id;
 	}

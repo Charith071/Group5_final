@@ -13,8 +13,15 @@ public class AdminNotification {
 	private String type; //(to user,counceller,all)
 	private String msg;@GeneratedValue(strategy=GenerationType.AUTO)
 	private String date_time;
+	private String status;
 	
 	
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	public Long getId() {
 		return id;
 	}

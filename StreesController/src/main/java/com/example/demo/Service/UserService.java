@@ -85,7 +85,11 @@ public class UserService {
 		return userDao.existsById(Long.parseLong(id));
 	}
 	
-	
+	//==========update edited_user_details==========================
+	public boolean update_edited_user_details(User k) {
+		userDao.save(k);
+		return true;
+	}
 	
 	
 	

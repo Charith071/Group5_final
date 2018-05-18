@@ -58,6 +58,34 @@ public class CouncellerService {
 		}
 	
 	
-	
+	//=============return counceller instance by id============================
+		public Counceller get_counceller_by_id(String id) {
+			return councellerDao.findByIds(Integer.parseInt(id));
+		}
+		
+	//==============update edited counceller details=================
+		public boolean update_Edited_counceller_details(Counceller cc) {
+			councellerDao.save(cc);
+			return true;
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	
 }

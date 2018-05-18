@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.Entity.AdminNotification;
 import com.example.demo.Entity.AllUsers;
 import com.example.demo.Entity.Counceller;
 import com.example.demo.Entity.Map;
@@ -36,17 +37,21 @@ import com.example.demo.Service.MusicTrackService;
 import com.example.demo.Service.StressLevelHistoryService;
 import com.example.demo.Service.TipsService;
 import com.example.demo.Service.UserService;
+import com.example.demo.commonFunction.CommnFunction;
 import com.example.demo.dao.MapDao;
 import com.example.demo.extra.AccountSettingjson;
 import com.example.demo.extra.AddTrackjson;
+import com.example.demo.extra.AdminNotificationjson;
 import com.example.demo.extra.Chatjson;
 import com.example.demo.extra.Getleveljson;
 import com.example.demo.extra.Gpsjson;
+import com.example.demo.extra.JsonResponse;
 import com.example.demo.extra.Leveljson;
 import com.example.demo.extra.Loginjson;
 import com.example.demo.extra.Mappingjson;
 import com.example.demo.extra.PatiantDetailsjson;
 import com.example.demo.extra.Profilepicjson;
+import com.example.demo.extra.Return_User_Stress_leveljson;
 import com.example.demo.extra.Signupjson;
 import com.example.demo.extra.UserdetailsResponse;
 
@@ -78,9 +83,9 @@ public class AppController {
 	private UserService userService;
 	
 	
+	private CommnFunction func=new CommnFunction();
 	
-	
-	
+	private JsonResponse jsonResponse=new JsonResponse();
 	
 	
 	
@@ -90,7 +95,8 @@ public class AppController {
 
 	@RequestMapping("")
 	public ResponseEntity<?> home(){
-		return ResponseEntity.ok("Home");
+	
+		return ResponseEntity.ok(new JsonResponse("Home ","success"));
 	}
 	
 	
@@ -104,22 +110,22 @@ public class AppController {
 					if(alluser.getType().equals("user")) {
 						//also update stress level and history
 						userService.update_table(signupjson,alluser.getId());
-						return ResponseEntity.ok("user registration is succcess!!");
+						return ResponseEntity.ok(new JsonResponse("user registration is succcess!! ","success"));
 					}else if(alluser.getType().equals("counceller")) {
 						councellerService.update_table(signupjson,alluser.getId());
-						return ResponseEntity.ok("Counceller registration is succcess!!");
+						return ResponseEntity.ok(new JsonResponse("Counceller registration is succcess!! ","success"));
 					}else {
-						return ResponseEntity.status(HttpStatus.CONFLICT).body("invalid user input");
+						return ResponseEntity.status(HttpStatus.CONFLICT).body(new JsonResponse("invalid user input ","fail"));
 					}
 					//return ResponseEntity.ok("Counceller registration is succcess!!");
 				}else {
-					return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("registration fail...change username or password");
+					return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("registration fail...change username or password ","fail"));
 				}
 			}else {
-				return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("required user name and password !");
+				return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("required user name and password ! ","fail"));
 			}
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("invalid user input");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new JsonResponse("invalid user input ","fail"));
 		}
 		
 		
@@ -136,10 +142,10 @@ public class AppController {
 				AllUsers u3=allusersService.getuserfrom_username_password(lj.getUsername(),lj.getPassword());
 				return ResponseEntity.ok(u3);
 			}else {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid username or password");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("invalid username or password ","fail"));
 			}
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("invalid user input");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new JsonResponse("invalid user input ","fail"));
 		}
 		
 	}
@@ -152,12 +158,12 @@ public class AppController {
 			if(userService.update_user_stress_level(leveljson.getId(),leveljson.getLevel())) {
 				// update history table
 				 boolean g=stressLevelHistoryService.update_history_strees_level_details(leveljson.getId(), leveljson.getLevel());
-				return ResponseEntity.ok("success!!");
+				return ResponseEntity.ok(new JsonResponse("update success ","success"));
 			}else {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("update fail!! cannot find user");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("update fail!! cannot find user ","fail"));
 			}
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("invalid user input");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new JsonResponse(" invalid user input ","fail"));
 		}
 		
 		
@@ -169,12 +175,12 @@ public class AppController {
 	public ResponseEntity<?> update_user_gps_location( @RequestBody Gpsjson gpsjson){
 		try {
 			if(userService.update_user_gps_location(gpsjson)) {
-				return ResponseEntity.ok("gps update success!!");
+				return ResponseEntity.ok(new JsonResponse(" gps update success!! ","success"));
 			}else {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("cannot find user");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse(" cannot find user ","fail"));
 			}
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("invalid user input");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new JsonResponse(" invalid user input ","fail"));
 		}
 		
 		
@@ -185,12 +191,12 @@ public class AppController {
 	public ResponseEntity<?> update_counceller_gps( @RequestBody Gpsjson gpsjson1){
 		try {
 			if(councellerService.update_gps_location(gpsjson1)) {
-				return ResponseEntity.ok("update success!!");
+				return ResponseEntity.ok(new JsonResponse(" update success!! ","success"));
 			}else {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("update fail!! cannot find Counceller");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse(" update fail!! cannot find Counceller ","fail"));
 			}
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("invalid user input");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new JsonResponse(" invalid user input ","fail"));
 		}
 		
 		
@@ -205,26 +211,25 @@ public class AppController {
 				AllUsers au1=allusersService.getuserfrom_id(Integer.parseInt(profilepicjson.getId()));
 				if(au1.getType().equals("user")) {
 					if(userService.change_profile(profilepicjson)) {
-						return ResponseEntity.ok("update success!!");
+						return ResponseEntity.ok(new JsonResponse(" update success!! ","success"));
 					}else {
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("update fail!! , Cannot find user");
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("  update fail!! , Cannot find user ","fail"));
 					}
 				}else if(au1.getType().equals("counceller")) {
 					if(councellerService.change_profile(profilepicjson)) {
-						return ResponseEntity.ok("update successs!!");
+						return ResponseEntity.ok(new JsonResponse(" update successs!! ","success"));
 					}else {
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("update fail!! , Cannot find Counceller");
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse(" update fail!! , Cannot find Counceller ","fail"));
 					}
 				}else {
-					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("update fail!! , Cannot find");
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse(" update fail!! , Cannot find ","fail"));
 				}
 				
 			}else {
-				
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("user is not exist!");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse(" user is not exist! ","fail"));
 			}
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("invalid user input");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new JsonResponse(" invalid user input ","fail"));
 		}
 		
 		
@@ -238,12 +243,14 @@ public class AppController {
 		try {
 			if(userService.is_user_exist(getleveljson.getId())) {
 				User u1=userService.getUserby_id(getleveljson.getId());
-				return ResponseEntity.ok(u1.getStress_level());
+				
+				//return ResponseEntity.ok(u1.getStress_level());
+				return ResponseEntity.ok(new Return_User_Stress_leveljson(u1.getStress_level().toString(),"stress Level","success"));
 			}else {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("cannot find user");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("cannot find user","fail"));
 			}
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("invalid user input");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new JsonResponse(" invalid user input ","fail"));
 		}
 		
 	}
@@ -259,29 +266,29 @@ public class AppController {
 					
 					if(mapService.numberOfinstance_by_userId(mappingjson.getUser_id())==1 || mapService.numberOfinstance_by_userId(mappingjson.getUser_id())==0) {
 						if(mapService.is_counceller_already_exist(mappingjson.getUser_id(), mappingjson.getCounceller_id())) {
-							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("alredy has a this counceller");
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("alredy has a this counceller","fail"));
 						}else {
 							if(mapService.updateMapDetails(mappingjson.getUser_id(),mappingjson.getCounceller_id())) {
-								return ResponseEntity.ok("counceller mapping  success");
+								return ResponseEntity.ok(new JsonResponse("counceller mapping  success","success"));
 							}else {
-								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("mapping fail");
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("mapping fail","fail"));
 							}
 						}
 						
 						
 					
 					}else {
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("u have already two councellers");
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("u have already two councellers","fail"));
 					}
 					
 				}else {
-					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("user or counceller does not exist");
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("user or counceller does not exist","fail"));
 				}
 				
 				
 				
 			} catch (Exception e) {
-				return ResponseEntity.status(HttpStatus.CONFLICT).body("invalid user input");
+				return ResponseEntity.status(HttpStatus.CONFLICT).body(new JsonResponse("invalid user input","fail"));
 			}
 		}
 	
@@ -302,39 +309,39 @@ public class AppController {
 							//===========from user to counceller=============
 							if(mapService.is_counceller_already_exist(chatjson.getSender_id(), chatjson.getReceiver_id())) {
 								if(messagesService.update_msg_details(chatjson)) {
-									return ResponseEntity.ok("msg details update successs!!");
+									return ResponseEntity.ok(new JsonResponse("msg details update successs!!","success"));
 								}else {
-									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("cannot update table!");
+									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("cannot update table!","fail"));
 								}
 							}else {
-								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please map the counceller and re try");
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Please map the counceller and re try","fail"));
 							}
 						}else if(sender.getType().equals("counceller")) {
 							//=====from counceler to user============
 							if(mapService.is_counceller_already_exist(chatjson.getReceiver_id(), chatjson.getSender_id())) {
 								if(messagesService.update_msg_details(chatjson)) {
-									return ResponseEntity.ok("msg details update successs!!");
+									return ResponseEntity.ok(new JsonResponse("msg details update successs!!","success"));
 								}else {
-									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("cannot update table!");
+									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("cannot update table!","fail"));
 								}
 							}else {
-								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please map the counceller and re try");
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Please map the counceller and re try","fail"));
 							}
 							//return ResponseEntity.ok("jshajdh");
 						}else {
-							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Access Denied!!");
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Access Denied!!","fail"));
 						}
 						
 					}else {
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not a valid user or Counceller");
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Not a valid user or Counceller","fail"));
 					}
 				}else {
-					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("user or counceller does not exist!!");
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("user or counceller does not exist!!","fail"));
 				}
 			
 			
 			} catch (Exception e) {
-				return ResponseEntity.status(HttpStatus.CONFLICT).body("Invalid user Inputs");
+				return ResponseEntity.status(HttpStatus.CONFLICT).body(new JsonResponse("invalid user input","fail"));
 			}
 		
 		}
@@ -370,22 +377,24 @@ public class AppController {
 						userdata.setName(uu2.getName());
 						userdata.setPhone_number(uu2.getPhone_number());
 						userdata.setStress_level(uu3.getStress_level().toString());
+						userdata.setRes_status("success");
+						
 						
 						return ResponseEntity.ok(userdata);
 						
 					}else {
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not your patient");
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Not your patient","fail"));
 					}
 					
 					
 				}else {
-					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not valid user or Counceller");
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Not valid user or Counceller","fail"));
 				}
 				
 				
 				
 			} catch (Exception e) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user inputs!!");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("invalid user input","fail"));
 			}
 				
 			
@@ -407,22 +416,22 @@ public class AppController {
 							if(status.equals("enable") || status.equals("disable")) {
 								userob.setStatus(status);
 								allusersService.updateAlluserInstance(userob);
-								return ResponseEntity.ok("access controlled success!! ");
+								return ResponseEntity.ok(new JsonResponse("access controlled success!! ","success"));
 							}else {
-								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid status ");
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid status ","fail"));
 							}
 							
 						}else {
-							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user or Counceller ");
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user or Counceller ","fail"));
 						}
 					}else {
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Admin ");
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid Admin ","fail"));
 					}
 				}else {
-					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot find users");
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find users","fail"));
 				}
 			} catch (Exception e) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid user inputs");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("invalid user input","fail"));
 			}
 			
 			
@@ -442,24 +451,24 @@ public class AppController {
 					{
 						if(Double.parseDouble(addTrackjson.getMax_stress_level())> Double.parseDouble(addTrackjson.getMin_stress_level())) {
 							if(musicTrackService.is_duplicate_name_exist(addTrackjson.getName())) {
-								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("the track name is already exist!!");
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("the track name is already exist!!","fail"));
 							}else {
 								musicTrackService.updateMusicTracktable(addTrackjson);
-								return ResponseEntity.ok("update success");
+								return ResponseEntity.ok(new JsonResponse("update success","success"));
 							}
 							
 						}else {
-							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("max stress level should grater than min stress level");
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("max stress level should grater than min stress level","fail"));
 						}
 						
 					}else {
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not a valid Counceller");
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Not a valid Counceller","fail"));
 					}
 				}else {
-					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot find Counceller");
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find Counceller","fail"));
 				}
 			} catch (Exception e) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user inputs");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user inputs","fail"));
 			}
 			
 			
@@ -480,34 +489,199 @@ public class AppController {
 						if(musicTrackService.is_exist_by_id(Long.parseLong(track_id))) {
 							if(status.equals("delete")) {
 								musicTrackService.delete_track_by_id(Long.parseLong(track_id));
-								return ResponseEntity.ok(" delete successfully!!");
+								return ResponseEntity.ok(new JsonResponse(" delete successfully!!","success"));
 							}else if(status.equals("enable") || status.equals("disable")) {
 								MusicTrack track=new MusicTrack();
 								track=musicTrackService.get_instance_by_id(Integer.parseInt(track_id));
 								track.setStatus(status);
 								musicTrackService.update_instance(track);
-								return ResponseEntity.ok("status changed!!");
+								return ResponseEntity.ok(new JsonResponse("status changed!!","success"));
 							}else {
-								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid status");
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid status","fail"));
 							}
 							
 						}else {
-							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot find music Track");
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find music Track","fail"));
 						}
 					}else {
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid admin");
+					
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid admin","fail"));
 					}
 				}else {
-					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot find Admin ");
+					
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find Admin","fail"));
 				}
 			} catch (Exception e) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid user inputs ");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("invalid user inputs ","fail"));
 			}
 			
 			
 			
 			
 		}
+		
+		
+		
+		
+		// (14) ==================update account details=================================
+		@RequestMapping(value="/accountSetting",method=RequestMethod.POST)
+		public ResponseEntity<?> updateAccountDetails(@RequestBody AccountSettingjson account){
+			
+			try {
+				if(allusersService.is_user_exist(account.getId())) {
+					if(allusersService.getuserfrom_id(Integer.parseInt(account.getId())).getStatus().equals("enable")) {
+						AllUsers user=allusersService.getuserfrom_id(Integer.parseInt(account.getId()));
+						boolean is_password_duplicate=false;
+						boolean is_username_duplicate=false;
+						
+						if(account.getUsername().length()>0 || account.getPassword().length()>0) {
+							
+							if(account.getPassword().length()>0 && account.getUsername().length()>0 ){
+								if(allusersService.check_is_duplicate_user(account.getUsername(), account.getPassword())) {
+									is_password_duplicate=true;
+									is_username_duplicate=true;
+									System.out.println(account.getUsername()+ account.getPassword());
+								}else {
+									user.setUsername(account.getUsername());
+									user.setPassword(func.string_encript(account.getPassword()));
+								}
+							}else if(account.getUsername().length()>0) {
+								if(allusersService.check_is_duplicate_user(account.getUsername(), func.string_decode(user.getPassword()))) {
+									is_username_duplicate=true;
+								}else {
+									user.setUsername(account.getUsername());
+								}
+							}else if(account.getPassword().length()>0) {
+								if(allusersService.check_is_duplicate_user(user.getUsername(), account.getPassword())) {
+									is_password_duplicate=true;
+								}else {
+									user.setPassword(func.string_encript(account.getPassword()));
+								}
+							}
+							
+						}
+						
+						
+						if(is_password_duplicate || is_username_duplicate) {
+							if(is_password_duplicate) {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("please change password!!","fail"));
+							}else if(is_username_duplicate) {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("please change username!!","fail"));
+							}else {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("please change username or password","fail"));
+							}
+						}else {
+							if(account.getAddress().length()>0) {
+								user.setAddress(account.getAddress());
+							}if(account.getBirth_date().length()>0) {
+								user.setBirth_date(account.getBirth_date());
+								user.setAge(func.cal_age(account.getBirth_date()));
+							}if(account.getEmail().length()>0) {
+								user.setEmail(account.getEmail());
+							}if(account.getGender().length()>0) {
+								user.setGender(account.getGender());
+							}if(account.getName().length()>0) {
+								user.setName(account.getName());
+							}if(account.getPhone_number().length()>0) {
+								user.setPhone_number(account.getPhone_number());
+							}
+							
+							if(allusersService.update_Edited_account_detals(user)) {
+								if(user.getType().equals("user")) {
+									User uu=userService.getUserby_id(account.getId());
+									if(account.getGuadiant_phone_no().length()>0) {
+										uu.setGuadiant_phone_no(account.getGuadiant_phone_no());
+									}if(account.getProfile_pic_name().length()>0) {
+										uu.setProfile_pic_name(account.getProfile_pic_name()+account.getId());
+									}if(account.getJob().length()>0) {
+										uu.setJob(account.getJob());
+									}
+									if(userService.update_edited_user_details(uu)) {
+										return ResponseEntity.ok(new JsonResponse("Update success 1","success"));
+									}else {
+										return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("update fail 2 ","fail"));
+									}
+									
+								}else if(user.getType().equals("counceller")) {
+									Counceller cc=councellerService.get_counceller_by_id(account.getId());
+									if(account.getCertificate().length()>0) {
+										cc.setCertificate(account.getCertificate());
+									}if(account.getQualification().length()>0) {
+										cc.setQualification(account.getQualification());
+									}
+									
+									if(councellerService.update_Edited_counceller_details(cc)) {
+										return ResponseEntity.ok(new JsonResponse("Update success 1","success"));
+									}else {
+										return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("update fail 3 ","fail"));
+									}
+								}else {
+									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("update fail 4 ","fail"));
+								}
+							}else {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("update fail 1 ","fail"));
+							}
+							
+							
+						}
+						
+						
+					}else {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Not a valid user","fail"));
+					}
+			}else {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find user","fail"));
+			}
+			} catch (Exception e) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user inputs","fail"));
+			}
+			
+			
+			
+			
+		}
+		
+		
+		
+		
+
+		// (15)=====================add admin_notification by admin==========================
+			@RequestMapping(value="/admin/addNotification",method=RequestMethod.POST)
+			public ResponseEntity<?> add_admin_notification(@RequestBody AdminNotificationjson notice){
+				
+				try {
+					if(allusersService.getuserfrom_id(Integer.parseInt(notice.getAdmin_id())).getType().equals("admin")) {
+						if(notice.getType().equals("all") || notice.getType().equals("user") || notice.getType().equals("counceller")) {
+							AdminNotification nn=new AdminNotification();
+							nn.setDate_time(func.getCurrentdateTime());
+							nn.setMsg(notice.getNotice());
+							nn.setStatus("enable");
+							nn.setType(notice.getType());
+							if(adminNotificationService.update_admin_notifcation(nn)) {
+								return ResponseEntity.ok(new JsonResponse("Notice Entered Success!!","success"));
+							}else {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot enter Notice","fail"));
+							}
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid  type","fail"));
+						}
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid  admin id","fail"));
+						}
+						
+				} catch (Exception e) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user inputs","fail"));
+				}
+				
+			}
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		
 //*****************************************************************************************	***********
@@ -542,45 +716,52 @@ public class AppController {
 	*/
 	
 
-// (14) ==================update account details=================================
-	@RequestMapping(value="/accountSetting",method=RequestMethod.POST)
-	public ResponseEntity<?> updateAccountDetails(@RequestBody AccountSettingjson account){
+	
+	/*//  (16)============controlling notice by admin==========================
+	@RequestMapping(value="/admin/ControllNotice",method=RequestMethod.POST)
+	public ResponseEntity<?> Controll_notice(@RequestBody AdminNotificationjson noty){
 		
-		if(allusersService.is_user_exist(account.getId())) {
-				AllUsers user=new AllUsers();
-				user=allusersService.getuserfrom_id(Integer.parseInt(account.getId()));
-				if(account.getAddress().length()>0) {
-					user.setAddress(account.getAddress());
-				}
-				if(account.getBirth_date().length()>0) {
-					user.setBirth_date(account.getBirth_date());
-				}if(account.getEmail().length()>0) {
-					user.setEmail(account.getEmail());
-				}if(account.getGender().length()>0) {
-					user.setGender(account.getGender());
-				}if(account.getName().length()>0) {
-					user.setName(account.getName());
-				}if(account.getUsername().length()>0) {
-					user.setUsername(account.getUsername());
-				}if(account.getPassword().length()>0) {
-					user.setPassword(account.getPassword());
-				}if(account.getPhone_number().length()>0) {
-					user.setPhone_number(account.getPhone_number());
-				}
+		try {
+			if(allusersService.getuserfrom_id(Integer.parseInt(noty.getAdmin_id())).getType().equals("admin")) {
 				
-			if(allusersService.getuserfrom_id(Integer.parseInt(account.getId())).getType().equals("user")) {
-				return ResponseEntity.ok("lol");
-			}else if(allusersService.getuserfrom_id(Integer.parseInt(account.getId())).getType().equals("counceller")) {
-				return ResponseEntity.ok("lol");
+				if(adminNotificationService.is_notice_exisit(noty.getNotice_id())) {
+					AdminNotification note=adminNotificationService.get_instace_by_id(noty.getNotice_id());
+					if(noty.getType().equals("delete")) {
+						if(adminNotificationService.delete_by_id(noty.getNotice_id())) {
+							return ResponseEntity.ok("delete Success!!");
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot delete");
+						}
+					}else {
+							if(noty.getType().equals("enable") || noty.getType().equals("disable")) {
+								
+								note.setStatus(noty.getStatus());
+								if(adminNotificationService.update_admin_notifcation(note)) {
+									return ResponseEntity.ok("update success");
+								}else {
+									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("update fail");
+								}
+							}else {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(" Invalid status");
+							}
+					}
+					
+				}else {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot find notice");
+				}
 			}else {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not a valid user");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid admin id");
 			}
-		}else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot find user");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid User  Inputs");
 		}
 		
 		
-	}
+	}*/
+ 	
+	
+	
+
 	
 	
 	
@@ -597,4 +778,39 @@ public class AppController {
 	
 	
 	
-}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}	
+	
+	
+	
+	
+	
+
