@@ -22,9 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.Entity.AdminNotification;
 import com.example.demo.Entity.AllUsers;
+import com.example.demo.Entity.Booking_details;
+import com.example.demo.Entity.Booking_request;
 import com.example.demo.Entity.Counceller;
 import com.example.demo.Entity.Map;
 import com.example.demo.Entity.MusicTrack;
+import com.example.demo.Entity.Tips;
 import com.example.demo.Entity.User;
 import com.example.demo.Service.AdminNotificationService;
 import com.example.demo.Service.AllusersService;
@@ -40,9 +43,13 @@ import com.example.demo.Service.UserService;
 import com.example.demo.commonFunction.CommnFunction;
 import com.example.demo.dao.MapDao;
 import com.example.demo.extra.AccountSettingjson;
+import com.example.demo.extra.AddTipsjson;
 import com.example.demo.extra.AddTrackjson;
 import com.example.demo.extra.AdminNotificationjson;
+import com.example.demo.extra.BookingRequestJson;
 import com.example.demo.extra.Chatjson;
+import com.example.demo.extra.Confirmjson;
+import com.example.demo.extra.DeleteRequestJson;
 import com.example.demo.extra.Getleveljson;
 import com.example.demo.extra.Gpsjson;
 import com.example.demo.extra.JsonResponse;
@@ -51,6 +58,7 @@ import com.example.demo.extra.Loginjson;
 import com.example.demo.extra.Mappingjson;
 import com.example.demo.extra.PatiantDetailsjson;
 import com.example.demo.extra.Profilepicjson;
+import com.example.demo.extra.ResponseJson;
 import com.example.demo.extra.Return_User_Stress_leveljson;
 import com.example.demo.extra.Signupjson;
 import com.example.demo.extra.UserdetailsResponse;
@@ -676,17 +684,316 @@ public class AppController {
 			}
 		
 		
+		//  (16)============controlling notice by admin==========================
+			@RequestMapping(value="/admin/ControllNotice",method=RequestMethod.POST)
+			public ResponseEntity<?> Controll_notice(@RequestBody AdminNotificationjson noty){
+				
+				try {
+					if(allusersService.is_user_exist(noty.getAdmin_id())) {
+						if(allusersService.getuserfrom_id(Integer.parseInt(noty.getAdmin_id())).getType().equals("admin")) {
+							if(adminNotificationService.is_notice_exisit(noty.getNotice_id())) {
+								AdminNotification note=adminNotificationService.get_instace_by_id(noty.getNotice_id());
+								if(noty.getStatus().equals("delete")) {
+									adminNotificationService.delete_by_id(noty.getNotice_id());
+									return ResponseEntity.ok(new JsonResponse("Notice deleted","success"));
+								}else if(noty.getStatus().equals("enable")) {
+									note.setStatus("enable");
+									adminNotificationService.update_admin_notifcation(note);
+									return ResponseEntity.ok(new JsonResponse("status update success","success"));
+								}else if(noty.getStatus().equals("disable")) {
+									note.setStatus("disable");
+									adminNotificationService.update_admin_notifcation(note);
+									return ResponseEntity.ok(new JsonResponse("status update success","success"));
+								}else {
+									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid Status","fail"));
+								}
+							}else {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find Notification","fail"));
+							}
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid Admin","fail"));
+						}
+						
+					}else {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find Admin","fail"));
+					}
+				} catch (Exception e) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user inputs","fail"));
+					
+				}
+				
+				
+				
+			}
+		
+			// (17) ================send bookinng request by patient to counceller===============================
+				@RequestMapping(value="/user/Request",method=RequestMethod.POST)
+				public ResponseEntity<?> send_request_to_counceller(@RequestBody BookingRequestJson req){
+							try {
+								if(allusersService.is_user_exist(req.getUser_id())) {
+									if(allusersService.is_user_exist(req.getCounceller_id())) {
+										AllUsers u=allusersService.getuserfrom_id(Integer.parseInt(req.getUser_id()));
+										AllUsers c=allusersService.getuserfrom_id(Integer.parseInt(req.getCounceller_id()));
+										if(u.getType().equals("user") && u.getStatus().equals("enable") && c.getType().equals("counceller") && c.getStatus().equals("enable")) {
+											if(mapService.is_counceller_already_exist(req.getUser_id(), req.getCounceller_id())) {
+												Booking_request bb=new Booking_request();
+												bb.setCounceller_id(Long.parseLong(req.getCounceller_id()));
+												bb.setDate_time(func.getCurrentdateTime());
+												bb.setUser_id(Long.parseLong(req.getUser_id()));
+												bb.setStatus("true");
+												if(bookingRequestService.update_booking_request(bb)) {
+													return ResponseEntity.ok(new JsonResponse("request updated!","success"));
+												}else {
+													return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot update table","fail"));
+
+												}
+											}else {
+												return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Initialy you want to map this counceller","fail"));
+											}
+										}else {
+											return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user or counceller","fail"));
+										}
+									}else {
+										return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Connot find Counceller","fail"));
+									}
+								}else {
+									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Connot find user","fail"));
+								}
+							} catch (Exception e) {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user inputs","fail"));
+
+							}		
+							
+				}
+				
+				
+				
+				
+				
+		//(18) ==========delete submited booking  request by user==========================================
+		@RequestMapping(value="/user/deleterequest",method=RequestMethod.POST)				
+		public ResponseEntity<?> delete_request(@RequestBody DeleteRequestJson param){
+			try {
+				if(allusersService.is_user_exist(param.getUser_id())) {
+					if(allusersService.getuserfrom_id(Integer.parseInt(param.getUser_id())).getType().equals("user") && allusersService.getuserfrom_id(Integer.parseInt(param.getUser_id())).getStatus().equals("enable")) {
+						if(bookingRequestService.is_request_exist_by_id(param.getRequest_id())) {
+							Booking_request req=bookingRequestService.get_instance_by_id(param.getRequest_id());
+							if(req.getUser_id().toString().equals(param.getUser_id())) {
+								bookingRequestService.delete_request_by_id(param.getRequest_id());
+								return ResponseEntity.ok(new JsonResponse("Request delete Successfully!","success"));
+							}else {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find request","fail"));
+							}
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find request","fail"));
+						}
+					}else {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user","fail"));
+					}
+							
+				}else {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find user","fail"));
+				}
+			} catch (Exception e) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user inputs","fail"));
+			}
+					
+		}
+		
+		
+				
+		//(19) ====================response to booking request by counceller===========================
+		
+			@RequestMapping(value="/counceller/Response",method=RequestMethod.POST)
+			public ResponseEntity<?> Response_to_booking_request(@RequestBody ResponseJson para){
+				try {
+					if(allusersService.is_user_exist(para.getCounceller_id())) {
+						AllUsers cc=allusersService.getuserfrom_id(Integer.parseInt(para.getCounceller_id()));
+						if(cc.getType().equals("counceller") && cc.getStatus().equals("enable")) {
+							if(bookingRequestService.is_request_exist_by_id(para.getRequest_id().toString())) {
+								Booking_request bb=bookingRequestService.get_instance_by_id(para.getRequest_id());
+								if(bb.getCounceller_id().toString().equals(para.getCounceller_id())) {
+									//==========when counceller cansal the request counceller_status="disable"  =======================
+									if(para.getCounceller_status().equals("disable")) {
+										Booking_request re=bookingRequestService.get_instance_by_id(para.getRequest_id());
+										re.setStatus("false");
+										bookingRequestService.update_booking_request(re);
+										return ResponseEntity.ok(new JsonResponse("Request Cansal","success"));
+									}else if(para.getCounceller_status().equals("enable")){
+										//=============when counceller accept the request and send details to user==============
+										Booking_details data=new Booking_details();
+										data.setDate_time(para.getDate_time());
+										data.setDetails(para.getDetails());
+										data.setLocation(para.getLocation());
+										data.setPayment(Double.parseDouble(para.getPayment()));
+										data.setStatus("disable");
+										data.setRequestId(Long.parseLong(para.getRequest_id()));
+										bookingDetailsService.update_booking_details(data);
+										bb.setStatus("false");
+										bookingRequestService.update_booking_request(bb);
+										return ResponseEntity.ok(new JsonResponse("Detail updated successfully!","success"));
+									}else {
+										return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid counceller status","fail"));
+
+									}
+									
+									
+								}else {
+									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find any request","fail"));
+								}
+							}else {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find any request","fail"));
+							}
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("invalid Counceller","fail"));
+						}
+					}else {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find Counceller","fail"));
+					}
+				} catch (Exception e) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid inputs","fail"));
+				}
+				
+				
+			}
+			
+					
+				
+				
+	
+		// (20) ================confirm counceller booking reply by patient==============================
+			@RequestMapping(value="/user/confirm",method=RequestMethod.POST)
+			public ResponseEntity<?> Confirm_counceller_booking_reply_by_user(@RequestBody Confirmjson para){
+				try {
+					if(allusersService.is_user_exist(para.getUser_id())) {
+						AllUsers aa=allusersService.getuserfrom_id(Integer.parseInt(para.getUser_id()));
+						if(aa.getType().equals("user") && aa.getStatus().equals("enable")) {
+							if(bookingRequestService.is_request_exist_by_id(para.getBooking_request_id())) {
+								Booking_request re=bookingRequestService.get_instance_by_id(para.getBooking_request_id());
+								if(re.getUser_id().toString().equals(para.getUser_id())) {
+									if(bookingDetailsService.is_details_exist_by_booking_request_id(para.getBooking_request_id())) {
+										Booking_details dd=bookingDetailsService.get_instance_by_booking_request_id(para.getBooking_request_id());
+										dd.setStatus("enable");
+										bookingDetailsService.update_booking_details(dd);
+										return ResponseEntity.ok(new JsonResponse("Reply confirmed!!","success"));
+									}else {
+										return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Reply is not exist!","fail"));
+									}
+								}else {
+									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Reply is not for you","fail"));
+								}
+							}else {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find any request","fail"));
+							}
+						
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user","fail"));
+						}
+					}else {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find user","fail"));
+					}
+				} catch (Exception e) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user inputs","fail"));
+				}
+					
+				
+			}
+						
+						
+		// (21)=============================add tips by counceller============================================
+			@RequestMapping(value="/counceller/AddTips",method=RequestMethod.POST)
+			public ResponseEntity<?> add_tips(@RequestBody AddTipsjson para){
+				try {
+					if(allusersService.is_user_exist(para.getCounceller_id())) {
+						AllUsers user=allusersService.getuserfrom_id(Integer.parseInt(para.getCounceller_id()));
+						if(user.getType().equals("counceller") && user.getStatus().equals("enable")) {
+							Tips tip=new Tips();
+							tip.setCouncellerId(Long.parseLong(para.getCounceller_id()));
+							tip.setDateTime(func.getCurrentdate());
+							tip.setStatus("enable");
+							tip.setTip(para.getTip());
+							tipsService.update_table(tip);
+							return ResponseEntity.ok(new JsonResponse("Tips entered Success!!","success"));
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid Counceller","fail"));
+						}
+					}else {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find Counceller","fail"));
+					}
+				} catch (Exception e) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid inputs","fail"));
+				}
+				
+				
+			}
+						
+						
+					
+		
+						
+						
+					
+						
+						
+						
+	
+						
 		
 		
 		
-		
-		
-		
-		
-		
+						
 //*****************************************************************************************	***********
+						
+  
 	
+			
+		
+		
+				
+				
+
+				
+						
+						
 	
+			
+			
+		
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 	
 	//=================get_all_councellerIds========================================
 	@RequestMapping(value="user/getAllCouncellers",method=RequestMethod.POST)
@@ -717,47 +1024,7 @@ public class AppController {
 	
 
 	
-	/*//  (16)============controlling notice by admin==========================
-	@RequestMapping(value="/admin/ControllNotice",method=RequestMethod.POST)
-	public ResponseEntity<?> Controll_notice(@RequestBody AdminNotificationjson noty){
-		
-		try {
-			if(allusersService.getuserfrom_id(Integer.parseInt(noty.getAdmin_id())).getType().equals("admin")) {
-				
-				if(adminNotificationService.is_notice_exisit(noty.getNotice_id())) {
-					AdminNotification note=adminNotificationService.get_instace_by_id(noty.getNotice_id());
-					if(noty.getType().equals("delete")) {
-						if(adminNotificationService.delete_by_id(noty.getNotice_id())) {
-							return ResponseEntity.ok("delete Success!!");
-						}else {
-							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot delete");
-						}
-					}else {
-							if(noty.getType().equals("enable") || noty.getType().equals("disable")) {
-								
-								note.setStatus(noty.getStatus());
-								if(adminNotificationService.update_admin_notifcation(note)) {
-									return ResponseEntity.ok("update success");
-								}else {
-									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("update fail");
-								}
-							}else {
-								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(" Invalid status");
-							}
-					}
-					
-				}else {
-					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot find notice");
-				}
-			}else {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid admin id");
-			}
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid User  Inputs");
-		}
-		
-		
-	}*/
+	
  	
 	
 	

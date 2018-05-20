@@ -430,4 +430,227 @@
 
 
 
+14: http://localhost:8081/api/accountSetting    (method=post)
+++++++++++++update account details+++++++++++++++++++++++
+
+	you can change anything y want to change
+
+	parameters:
+			{
+				"id": "1",
+				"name":"Charith madushanka liyanage",
+				"address": "",
+				"birth_date":"1990-4-5", 
+				"email":"",  
+				"gender":"male", 
+				"username": "",  
+				"password": "",  
+				"phone_number": "", 
+				"guadiant_phone_no": "dfgfg",
+				"gps_location": "",  
+				"job": "student", 
+				"profile_pic_name": "",  
+				"certificate": "dsasdadsad", 
+				"qualification": ""
+			}
+
+
+				** change karanna ooni eva witharak fill karala anith eva 
+				uda widihata nullva thiyanna....oya change karana eva witharak update venava...anith eva kalin thibba defalt values ma assign venava********************
+
+
+
+
+15: http://localhost:8081/api/admin/addNotification    method:post
+++++++++++++++++++++++add admin_notification by admin++++++++++++++++++++++
+
+adminitrator can enter notice to all,or to councellers or to users
+
+	parameters:
+
+		{
+	
+			"admin_id": "7",                         
+			"notice": "this is a first notice",
+			"type": "counceller"                    **(counceller or user or all)
+		}
+
+
+if type is all ....any one can view this notice,,
+if type is counceller  ..only counceller can view this notice   like vice
+
+
+
+		if(invalid user input){
+			return : 400
+			Invalid user inputs
+		}
+
+		if(admin id is not exist){
+			return : 400
+			Invalid  admin id
+		}
+
+
+		if(type is not equal to user or all or counceller){
+			return : 400
+			Invalid  type
+		}
+
+
+		if(any databse insert error){
+			return : 400
+			Cannot enter Notice
+		}
+
+
+		if(success){
+			return : 200
+			Notice Entered Success!
+		}
+
+
+
+16:  http://localhost:8081/api/admin/ControllNotice  method (post)
+	++++++++admin can delete or change status of exist notification by changing status to delete or enable or disable;
+
+	pre requirements: notice must exist in admin_notification table
+
+	parameters:
+				{
+					"admin_id":"7", 
+					"notice_id":"2",
+					"status":"delete"
+				}
+
+
+				status can be delete or enable or disable
+
+
+
+************************Counceller booking request scenario*********************
+		**patient ta conceller booking request ekk yavanna puluvn map karapu 
+		counceller kenekta..(see 17) (mekedi booking_request table eke "status" eka "true" venava)
+
+
+		**evagema patienta yavapu request ekata councellergen response eka enna
+		kalin eka delete karannath puluvan  (see 18)
+
+		**councellerta request eka aavama eka balala ekata reply eka daanna puluvan
+		reply eke booking ekata adala details thinava (see 19 part 1)
+			ethanadi counceller reply karama booking_request table eke "status" eka
+			"false" venava...
+
+			thva booking_details table eka update venava...(booking_details.status="disable"  meka enable venne user councellerge reply eka confirm karama   see 20)
+
+		**councellerta patient gen ena booking request eka cansal karanna puluvn (see 19 part2)
+			ekedi booking_request.status="false" wenava..
+			and booking_details table eka update venne ne...
+
+		** patient councellerge reply eka confrim karama thamai Booking_details (see 20)table eke "status"="enable " wenne..
+			...thakota thamai booking part eka success vennne..
+			...nethnm book vimak siduvenne nee
+
+
+
+17:   http://localhost:8081/api/user/Request    method (post)
+	++++++++send bookinng request by patient to counceller+++++++++++
+
+	patiant can send booking request to mapped counceller
+
+		*****please See the Scenario in top*****************
+
+	paramters:
+					{
+						"user_id":"2",
+						"counceller_id":"4"
+					}
+
+
+
+18: 	http://localhost:8081/api/user/deleterequest   method(POSt)
+	+++++++++++++delete submited booking  request by user+++++++++++++++
+
+	*****please See the Scenario in top*****************
+
+	patiant can delete his booking request
+
+			parameters:
+						{
+							"user_id":"7",
+							"request_id":"2"
+						}
+
+19:  	http://localhost:8081/api/counceller/Response   method(post)
+	+++++++++++++++response to booking request by counceller++++++++++++++++
+
+		*****please See the Scenario in top*****************
+
+	part 1:  reponse for booking request
+		parametrs:
+				{
+					"counceller_id": "5", 
+					"request_id": "5", 
+					"date_time": "2018-5-23  at 9.30 am",
+					"location": "kaluthara",
+					"details": "noneed",
+					"payment": "1200",
+					"counceller_status": "enable"
+				}
+
+
+	part 2: cansal booking request
+			parameters:
+						{
+							"counceller_id": "4", 
+							"request_id": "6", 
+							"counceller_status": "disable"
+						}
+
+
+
+
+20:  http://localhost:8081/api/user/confirm   (methos=post)
+++++++++++++++++++confirm counceller booking reply by patient++++++++++++++++++
+
+	user can confrom rreply that send by the counceller
+
+	when user confrim the request the Booking_details.status="enable";
+
+		*****please See the Scenario in top*****************
+	parametrs:
+
+				{
+					"user_id": "2",
+					"booking_request_id":"4"
+				}
+
+	success responce
+
+					{
+					    "response": "Reply confirmed!!",
+					    "res_status": "success"
+					}
+
+
+
+
+
+21:  http://localhost:8081/api/counceller/AddTips  (method post)
+++++++++++++++add tips by counceller++++++++++++++++++++++++++
+
+		parametrs:
+					{
+						"counceller_id": "4",
+						"tip":"this is a advice"
+					}
+
+		success response:
+						{
+						    "response": "Tips entered Success!!",
+						    "res_status": "success"
+						}
+
+
+
 ********************thats it for now***************************
