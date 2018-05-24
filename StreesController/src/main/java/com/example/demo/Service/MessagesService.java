@@ -23,4 +23,24 @@ public class MessagesService {
 		messagesDao.save(msg);
 		return true;
 	}
+	
+	
+	//============= realtime====================
+		public String getLastUptadeTime() {
+			return messagesDao.getLastUptadeTime();
+		}
+	
+	//===============get number of rows======================
+	public Long get_number_of_rows() {
+		return messagesDao.count();
+	}
+	
+	//====================get last recode=======================
+	public Messages getLastRecorde() {
+		return messagesDao.getLastRecord();
+	}
+	
+	
+	
+	
 }

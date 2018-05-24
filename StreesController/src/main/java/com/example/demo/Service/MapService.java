@@ -73,4 +73,26 @@ public class MapService {
 		return mapDao.count();
 	}
 	
+	//============= realtime====================
+		public String getLastUptadeTime() {
+			return mapDao.getLastUptadeTime();
+		}
+	
+	
+	//===============get number of rows======================
+	public Long get_number_of_rows() {
+		return mapDao.count();
+	}
+	
+	//====================get last recode=======================
+	public Map getLastRecorde() {
+		return mapDao.getLastRecord();
+	}
+	
+	//==============get instance by counceller id and user id=========================
+	public Map getInstanceBy_councellerId_and_userId(String CouncellerId,String userId) {
+		return mapDao.getInstanceBycouncellerId_and_userId(Integer.parseInt(CouncellerId),Integer.parseInt(userId));
+	}
+	
+	
 }

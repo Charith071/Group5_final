@@ -10,4 +10,11 @@ public interface AdminNotificationDao extends CrudRepository<AdminNotification, 
 
 	@Query(value="select * from admin_notification where id= ?1",nativeQuery=true)
 	AdminNotification findByIds(Integer id);
+	
+	@Query(value="SELECT UPDATE_TIME FROM   information_schema.tables WHERE  TABLE_SCHEMA = 'mind' AND TABLE_NAME = 'admin_notification'",nativeQuery=true)
+	String getLastUptadeTime();
+	
+	@Query(value="select * from admin_notification order by id desc limit 1",nativeQuery=true)
+	AdminNotification getLastRecord();
+	
 }

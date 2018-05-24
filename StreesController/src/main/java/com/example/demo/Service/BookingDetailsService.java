@@ -44,9 +44,20 @@ public class BookingDetailsService {
 		return true;
 	}
 	
+	//============= realtime====================
+		public String getLastUptadeTime() {
+			return bookingDetailsDao.getLastUptadeTime();
+		}
+		
+	//===============get number of rows======================
+	public Long get_number_of_rows() {
+		return bookingDetailsDao.count();
+	}
 	
-	
-	
+	//====================get last recode=======================
+	public Booking_details getLastRecorde() {
+		return bookingDetailsDao.getLastRecord();
+	}
 	
 	
 	

@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.awt.PageAttributes.MediaType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,23 +26,28 @@ import com.example.demo.Entity.AdminNotification;
 import com.example.demo.Entity.AllUsers;
 import com.example.demo.Entity.Booking_details;
 import com.example.demo.Entity.Booking_request;
+import com.example.demo.Entity.Changes;
 import com.example.demo.Entity.Counceller;
 import com.example.demo.Entity.Map;
 import com.example.demo.Entity.MusicTrack;
+import com.example.demo.Entity.TableInfomation;
 import com.example.demo.Entity.Tips;
 import com.example.demo.Entity.User;
 import com.example.demo.Service.AdminNotificationService;
 import com.example.demo.Service.AllusersService;
 import com.example.demo.Service.BookingDetailsService;
 import com.example.demo.Service.BookingRequestService;
+import com.example.demo.Service.ChangesService;
 import com.example.demo.Service.CouncellerService;
 import com.example.demo.Service.MapService;
 import com.example.demo.Service.MessagesService;
 import com.example.demo.Service.MusicTrackService;
 import com.example.demo.Service.StressLevelHistoryService;
+import com.example.demo.Service.TableInformationService;
 import com.example.demo.Service.TipsService;
 import com.example.demo.Service.UserService;
 import com.example.demo.commonFunction.CommnFunction;
+import com.example.demo.dao.CouncellerDao;
 import com.example.demo.dao.MapDao;
 import com.example.demo.extra.AccountSettingjson;
 import com.example.demo.extra.AddTipsjson;
@@ -55,9 +62,12 @@ import com.example.demo.extra.Gpsjson;
 import com.example.demo.extra.JsonResponse;
 import com.example.demo.extra.Leveljson;
 import com.example.demo.extra.Loginjson;
+import com.example.demo.extra.Loginout;
 import com.example.demo.extra.Mappingjson;
 import com.example.demo.extra.PatiantDetailsjson;
 import com.example.demo.extra.Profilepicjson;
+import com.example.demo.extra.RealtimeOut;
+import com.example.demo.extra.Realtimejson;
 import com.example.demo.extra.ResponseJson;
 import com.example.demo.extra.Return_User_Stress_leveljson;
 import com.example.demo.extra.Signupjson;
@@ -89,6 +99,10 @@ public class AppController {
 	private TipsService tipsService;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private TableInformationService tableInformationService;
+	@Autowired
+	private ChangesService changesService;
 	
 	
 	private CommnFunction func=new CommnFunction();
@@ -121,6 +135,8 @@ public class AppController {
 						return ResponseEntity.ok(new JsonResponse("user registration is succcess!! ","success"));
 					}else if(alluser.getType().equals("counceller")) {
 						councellerService.update_table(signupjson,alluser.getId());
+						changesService.update_changed_table(new Changes("all_users",alluser.getId(),"Join New Counceller",Long.parseLong("1"),"false","notification"));
+						//changesService.update_changed_table(new Changes("all_users",alluser.getId(),"Access Denied By Administrator",Long.parseLong(alluser.getId().toString()),"false","notification"));
 						return ResponseEntity.ok(new JsonResponse("Counceller registration is succcess!! ","success"));
 					}else {
 						return ResponseEntity.status(HttpStatus.CONFLICT).body(new JsonResponse("invalid user input ","fail"));
@@ -148,7 +164,13 @@ public class AppController {
 			if(allusersService.validate_login(lj.getUsername(),lj.getPassword())) {
 				//System.out.println(lj.getUsername()+" "+lj.getPassword());
 				AllUsers u3=allusersService.getuserfrom_username_password(lj.getUsername(),lj.getPassword());
-				return ResponseEntity.ok(u3);
+				if(u3.getStatus().equals("enable")) {
+					Loginout out=new Loginout("login success", "success", u3.getId().toString(), u3.getName(), u3.getAge().toString(), u3.getAddress(), u3.getBirth_date(), u3.getCreate_date(), u3.getEmail(), u3.getGender(), u3.getPhone_number(), u3.getType(), "add in Future ");
+					return ResponseEntity.ok(out);
+				}else {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Access Denied By Administrator","fail"));
+				}
+				
 			}else {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("invalid username or password ","fail"));
 			}
@@ -277,6 +299,8 @@ public class AppController {
 							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("alredy has a this counceller","fail"));
 						}else {
 							if(mapService.updateMapDetails(mappingjson.getUser_id(),mappingjson.getCounceller_id())) {
+								Map m=mapService.getInstanceBy_councellerId_and_userId(mappingjson.getCounceller_id(), mappingjson.getUser_id());
+								changesService.update_changed_table(new Changes("map", m.getId(), "Counceller Was Mapped", Long.parseLong(mappingjson.getCounceller_id()), "false", "notification"));
 								return ResponseEntity.ok(new JsonResponse("counceller mapping  success","success"));
 							}else {
 								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("mapping fail","fail"));
@@ -424,6 +448,16 @@ public class AppController {
 							if(status.equals("enable") || status.equals("disable")) {
 								userob.setStatus(status);
 								allusersService.updateAlluserInstance(userob);
+								
+								//========update changes table==============
+								
+									/*if(status.equals("disable")) {
+										changesService.update_changed_table(new Changes("all_users",userob.getId(),"Access Denied By Administrator",Long.parseLong(userob.getId().toString()),"false","notification"));
+									}else {
+										changesService.update_changed_table(new Changes("all_users",userob.getId(),"Access Confirm By Administrator",Long.parseLong(userob.getId().toString()),"false","notification"));
+									}*/
+								
+								//============================================
 								return ResponseEntity.ok(new JsonResponse("access controlled success!! ","success"));
 							}else {
 								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid status ","fail"));
@@ -738,10 +772,14 @@ public class AppController {
 											if(mapService.is_counceller_already_exist(req.getUser_id(), req.getCounceller_id())) {
 												Booking_request bb=new Booking_request();
 												bb.setCounceller_id(Long.parseLong(req.getCounceller_id()));
-												bb.setDate_time(func.getCurrentdateTime());
+												String dd=func.getCurrentdateTime();
+												bb.setDate_time(dd);
 												bb.setUser_id(Long.parseLong(req.getUser_id()));
 												bb.setStatus("true");
 												if(bookingRequestService.update_booking_request(bb)) {
+													Booking_request req2=bookingRequestService.get_instance_by_councellerId_userId_status_date(req.getCounceller_id(), req.getUser_id(), dd);
+													changesService.update_changed_table(new Changes("booking_request",req2.getId(), "You Have New Booking Request", Long.parseLong(req.getCounceller_id()), "false", "notification"));
+													
 													return ResponseEntity.ok(new JsonResponse("request updated!","success"));
 												}else {
 													return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot update table","fail"));
@@ -818,6 +856,8 @@ public class AppController {
 										Booking_request re=bookingRequestService.get_instance_by_id(para.getRequest_id());
 										re.setStatus("false");
 										bookingRequestService.update_booking_request(re);
+										changesService.update_changed_table(new Changes("booking_request", re.getId(), "Cansal Booking Request By Counceller", re.getUser_id(), "false", "notification"));
+										
 										return ResponseEntity.ok(new JsonResponse("Request Cansal","success"));
 									}else if(para.getCounceller_status().equals("enable")){
 										//=============when counceller accept the request and send details to user==============
@@ -831,6 +871,9 @@ public class AppController {
 										bookingDetailsService.update_booking_details(data);
 										bb.setStatus("false");
 										bookingRequestService.update_booking_request(bb);
+										
+										Booking_details bd=bookingDetailsService.get_instance_by_booking_request_id(para.getRequest_id());
+										changesService.update_changed_table(new Changes("booking_details",bd.getId(), "Counceller Sent Your Booking Details Please Check And Confirm",bb.getUser_id(), "false", "notification"));
 										return ResponseEntity.ok(new JsonResponse("Detail updated successfully!","success"));
 									}else {
 										return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid counceller status","fail"));
@@ -875,6 +918,8 @@ public class AppController {
 										Booking_details dd=bookingDetailsService.get_instance_by_booking_request_id(para.getBooking_request_id());
 										dd.setStatus("enable");
 										bookingDetailsService.update_booking_details(dd);
+										
+										changesService.update_changed_table(new Changes("booking_details", dd.getId(), "Patient Confirm Your Booking Details",bookingRequestService.get_instance_by_id(dd.getRequestId().toString()).getCounceller_id(), "false", "notification"));
 										return ResponseEntity.ok(new JsonResponse("Reply confirmed!!","success"));
 									}else {
 										return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Reply is not exist!","fail"));
@@ -948,10 +993,55 @@ public class AppController {
 	
 			
 		
+		@RequestMapping(value="/realtime",method=RequestMethod.POST)
+		public ResponseEntity<?> test(@RequestBody Realtimejson para){
+			
+			 String AdminNotification_status=adminNotificationService.getLastUptadeTime();
+			 String AllUser_status=allusersService.getLastUptadeTime();
+			 String BookingDetails_status=bookingDetailsService.getLastUptadeTime();
+			 String BookingRequest_status=bookingRequestService.getLastUptadeTime();
+			 String Counceller_status=councellerService.getLastUptadeTime();
+			 String Map_status=mapService.getLastUptadeTime();
+			 String Message_status=messagesService.getLastUptadeTime();
+			 String MusicTrack_status=musicTrackService.getLastUptadeTime();
+			 String StressLevelHistory_status=stressLevelHistoryService.getLastUptadeTime();
+			 String Tips_status=tipsService.getLastUptadeTime();
+			 String User_status=userService.getLastUptadeTime();
+			 
+		//	 changesService.update_changed_table(new Changes("all_users",alluser.getId(),"Join New Counceller",Long.parseLong("1"),"false","notification"));
+			 
+			
+			boolean is_any_new_changes_found=false;
+			RealtimeOut out=new RealtimeOut();
+			if(changesService.is_exist_by_affected_user_id(para.getId())) {
+				List<Changes> l=(List<Changes>) changesService.get_all_insatnce_by_affected_id_and_notsend(para.getId());
+				
+				out.setStatus(true);
+				out.setList(l);
+				
+				for(Changes c:l) {
+					c.setIs_notification_send("true");
+					c.setNotificationSendDate(func.getCurrentdate());
+					changesService.update_changed_table(c);
+					is_any_new_changes_found=true;
+				}
+				
+			}
+			
+			
+			if(is_any_new_changes_found) {
+				return ResponseEntity.ok(out);
+			}else {
+				out.setStatus(false);
+				return ResponseEntity.ok(out);
+			}
+			 
+			
+		}
 		
 				
 				
-
+		
 				
 						
 						
@@ -1013,12 +1103,9 @@ public class AppController {
 	
 	/*@RequestMapping(value="/test",method=RequestMethod.POST)
 	public ResponseEntity<?> testing(){
-		List<String> list = new ArrayList<>();
-	      list.add("One");
-	      list.add("Two");
-	      list.add("Three");
+		
 		 
-		 return ResponseEntity.ok(list);
+		 return ResponseEntity.ok(bookingRequestService.get_instance_by_councellerId_userId_status("5", "2","2018-05-19T17:32:24.490"));
 	}
 	*/
 	

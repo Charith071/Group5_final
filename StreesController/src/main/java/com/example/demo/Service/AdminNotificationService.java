@@ -35,6 +35,31 @@ public class AdminNotificationService {
 	}
 	
 	
+	//============= realtime====================
+	public String getLastUptadeTime() {
+		return adminNotificationDao.getLastUptadeTime();
+	}
+	
+	//===============get number of rows======================
+	public Long get_number_of_rows() {
+		return adminNotificationDao.count();
+	}
+	
+	//====================get last recode=======================
+	public AdminNotification getLastRecorde() {
+		return adminNotificationDao.getLastRecord();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 }

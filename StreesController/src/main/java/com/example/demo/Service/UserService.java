@@ -92,5 +92,19 @@ public class UserService {
 	}
 	
 	
+	//============= realtime====================
+		public String getLastUptadeTime() {
+			return userDao.getLastUptadeTime();
+		}
+	
+	//===============get number of rows======================
+	public Long get_number_of_rows() {
+		return userDao.count();
+	}
+	
+	//====================get last recode=======================
+	public User getLastRecorde() {
+		return userDao.getLastRecord();
+	}
 	
 }

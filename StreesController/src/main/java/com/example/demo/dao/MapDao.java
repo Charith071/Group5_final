@@ -19,4 +19,30 @@ public interface MapDao extends CrudRepository<Map, Long>{
 	@Query(value="select * from map where councellerId= ?1",nativeQuery=true)
 	Map findByUserCouncellerId(Integer id);
 	
+	
+	@Query(value="SELECT UPDATE_TIME FROM   information_schema.tables WHERE  TABLE_SCHEMA = 'mind' AND TABLE_NAME = 'map'",nativeQuery=true)
+	String getLastUptadeTime();
+	
+	@Query(value="select * from map order by id desc limit 1",nativeQuery=true)
+	Map getLastRecord();
+	
+	@Query(value="select * from map where counceller_id=?1 and user_id=?2",nativeQuery=true)
+	Map getInstanceBycouncellerId_and_userId(Integer councellerId,Integer userId);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

@@ -70,10 +70,20 @@ public class CouncellerService {
 		}
 		
 		
+		//============= realtime====================
+		public String getLastUptadeTime() {
+			return councellerDao.getLastUptadeTime();
+		}
 		
+		//===============get number of rows======================
+		public Long get_number_of_rows() {
+			return councellerDao.count();
+		}
 		
-		
-		
+		//====================get last recode=======================
+		public Counceller getLastRecorde() {
+			return councellerDao.getLastRecord();
+		}
 		
 		
 		

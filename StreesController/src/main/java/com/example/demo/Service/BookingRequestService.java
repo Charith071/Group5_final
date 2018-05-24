@@ -34,11 +34,23 @@ public class BookingRequestService {
 	}
 	
 	
+	//============= realtime====================
+		public String getLastUptadeTime() {
+			return bookingRequestDao.getLastUptadeTime();
+		}
+	//===============get number of rows======================
+	public Long get_number_of_rows() {
+		return bookingRequestDao.count();
+	}
 	
+	//====================get last recode=======================
+	public Booking_request getLastRecorde() {
+		return bookingRequestDao.getLastRecord();
+	}
 	
-	
-	
-	
-	
+	//===========get instance by counceller id and user id and status="true" date============
+	public Booking_request get_instance_by_councellerId_userId_status_date(String coincellerId,String UserId,String date) {
+		return bookingRequestDao.getInstanceBy_councellerId_user_id_status_date(Integer.parseInt(coincellerId), Integer.parseInt(UserId),date);
+	}
 	
 }

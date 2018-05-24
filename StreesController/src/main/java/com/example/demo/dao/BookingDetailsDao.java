@@ -15,4 +15,12 @@ public interface BookingDetailsDao extends CrudRepository<Booking_details, Long>
 	
 	@Query(value="select * from booking_details where request_id= ?1",nativeQuery=true)
 	Booking_details findByReqIds(Integer id);
+	
+	
+	@Query(value="SELECT UPDATE_TIME FROM   information_schema.tables WHERE  TABLE_SCHEMA = 'mind' AND TABLE_NAME = 'booking_details'",nativeQuery=true)
+	String getLastUptadeTime();
+	
+	
+	@Query(value="select * from booking_details order by id desc limit 1",nativeQuery=true)
+	 Booking_details getLastRecord();
 }

@@ -5,8 +5,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+
 import com.example.demo.Entity.AllUsers;
-import com.example.demo.Entity.Counceller;;
+
 
 
 
@@ -27,4 +28,16 @@ public interface AlluserDao extends CrudRepository<AllUsers, Long>{
 	
 	/*@Query(value="SELECT * FROM all_users RIGHT JOIN counceller ON all_users.id=counceller.id " , nativeQuery = true)
 	Object findJoin();*/
+	
+	
+	
+	@Query(value="SELECT UPDATE_TIME FROM   information_schema.tables WHERE  TABLE_SCHEMA = 'mind' AND TABLE_NAME = 'all_users'",nativeQuery=true)
+	String getLastUptadeTime();
+	
+	@Query(value="select * from all_users order by id desc limit 1",nativeQuery=true)
+	AllUsers getLastRecord();
+	
+	
+	
+	
 }

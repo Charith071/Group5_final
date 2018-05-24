@@ -29,4 +29,37 @@ public class TipsService {
 	
 	
 	
+	
+	
+	
+	//============= realtime====================
+	
+	public String getLastUptadeTime() {
+		
+		return tipsDao.getLastUptadeTime();
+	}
+	
+	//===============get number of rows======================
+	public Long get_number_of_rows() {
+		return tipsDao.count();
+	}
+	
+	//====================get last recode=======================
+	public Tips getLastRecorde() {
+		return tipsDao.getLastRecord();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

@@ -59,8 +59,20 @@ public class MusicTrackService {
 		return true;
 	}
 	
+	//============= realtime====================
+		public String getLastUptadeTime() {
+			return musicTrackDao.getLastUptadeTime();
+		}
+		
+	//===============get number of rows======================
+	public Long get_number_of_rows() {
+		return musicTrackDao.count();
+	}
 	
-	
+	//====================get last recode=======================
+	public MusicTrack getLastRecorde() {
+		return musicTrackDao.getLastRecord();
+	}
 	
 	
 	

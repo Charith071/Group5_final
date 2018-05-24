@@ -59,7 +59,12 @@ public class AllusersService {
 				u1.setName(signupjson.getName());
 				u1.setPassword(cmnFunction.string_encript(signupjson.getPassword()));
 				u1.setPhone_number(signupjson.getPhone_number());
-				u1.setStatus("enable"); 
+				if(signupjson.getType().equals("user")) {
+					u1.setStatus("enable"); 
+				}else {
+					u1.setStatus("disable"); 
+				}
+				
 				u1.setType(signupjson.getType());
 				u1.setUsername(signupjson.getUsername());
 				alluserDao.save(u1);
@@ -167,6 +172,25 @@ public class AllusersService {
 		return true;
 	}
 	
+	
+	
+	
+	//============= realtime====================
+		public String getLastUptadeTime() {
+			return alluserDao.getLastUptadeTime();
+		}
+	
+		//===============get number of rows======================
+		public Long get_number_of_rows() {
+			return alluserDao.count();
+		}
+	
+	
+		//====================get last recode=======================
+		public AllUsers getLastRecorde() {
+			return alluserDao.getLastRecord();
+		}
+		
 	
 	//*********************************************************************************
 	

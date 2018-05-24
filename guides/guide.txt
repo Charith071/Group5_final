@@ -654,3 +654,24 @@ if type is counceller  ..only counceller can view this notice   like vice
 
 
 ********************thats it for now***************************
+
+
+
+
+
+====================real time scenario===========================
+
+	type
+		1 msg
+		2 notification  
+				1 booking request
+				2 booking response
+				3 booking response confirm
+				4 join new counceller
+				5 counceller maping
+				6 cansal booking request by councellr
+
+		3 other
+			1 add tips
+			2 add admin msg
+			3 add music track

@@ -26,4 +26,21 @@ public class StressLevelHistoryService {
 	}
 	
 	
+	//============= realtime====================
+		public String getLastUptadeTime() {
+			return stressLevelHistoryDao.getLastUptadeTime();
+		}
+	
+	//===============get number of rows======================
+	public Long get_number_of_rows() {
+		return stressLevelHistoryDao.count();
+	}
+	
+	//====================get last recode=======================
+	public StressLevelHistory getLastRecorde() {
+		return stressLevelHistoryDao.getLastRecord();
+	}
+	
+	
+	
 }
