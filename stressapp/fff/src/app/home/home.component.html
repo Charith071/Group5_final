@@ -33,16 +33,245 @@
   </div>
 </nav>
 
-
-
     <div class="jumbotron text-center slide">
         <h1>Stress controller System</h1>
         <p>We specialize in stress peoples</p>
-        <button class="btn success">Get Start</button>
+        <button class="btn success" (click) = "started=true">Get Start</button>
+        <br/>
+        <br />
+
+
+        <div *ngIf="started">
+          <button class="btn success" (click) = "login=true">Login</button>
+          <button class="btn success" (click) = "signup=true">SignUp</button>
+        </div>
+
 
     </div>
 
+    <!--login-->
+    <div id="login" class="overlay" *ngIf="login">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <div class="overlay-content">
+            <div class="container-fluid slide text-center" style="padding: 0 20% 0 20%;">
+                <form class="form-horizontal" action="/action_page.php" #loginForm = "ngForm" (ngSubmit) = "onSignIn(loginForm.value)">
+                  <div class="form-group">
+                    <label class="control-label col-sm-2" for="username">Username:</label>
+                    <div class="col-sm-10">
+                      <input type="username" class="form-control" id="username" name="username" [(ngModel)] = "username" placeholder="Enter username" required>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-2" for="pwd">Password:</label>
+                    <div class="col-sm-10">
+                      <input type="password" class="form-control" id="pwd" name="pwd" [(ngModel)] = "password" placeholder="Enter password" required>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                      <div class="checkbox">
+                        <label><input type="checkbox"> Remember me</label>
+                      </div>
+                    </div>
+                  </div>
+                 <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                      <button type="submit" class="btn btn-default" id="showweb" [disabled] = "!loginForm.valid">Submit</button>
+                    </div>
+                  </div>
+                </form>
+            </div>
 
+        </div>
+      </div>
+
+    <!--signup-->
+    <!--<script>
+        boolean function myFunction() {
+        var pass1 = document.getElementById("password").value;
+        var pass2 = document.getElementById("conpassword").value;
+        var ok = true;
+        if (pass1 != pass2) {
+            //alert("Passwords Do not match");
+            document.getElementById("password").style.borderColor = "#E34234";
+            document.getElementById("conpassword").style.borderColor = "#E34234";
+            ok = false;
+        }
+        else {
+            alert("Passwords Match!!!");
+        }
+        return ok;
+      }
+
+    </script>-->
+
+
+
+      <div id="Sign_Up" class="overlay" *ngIf="signup">
+          <a href="javascript:void(0)" class="closebtn" onclick="closeSignUP()">&times;</a>
+          <div class="overlay-content">
+              <div class="container-fluid slide text-center" style="padding: 0 10% 0 10%;">
+                  <form class="form-horizontal" #signupForm="ngForm" (ngSubmit)="onSignUp(signupForm.value)">
+
+
+
+                      <div class="form-group">
+                          <label class="control-label col-sm-2" for="name">Name:</label>
+                          <div class="col-sm-10">
+                            <input type="name" class="form-control" id="name" name="name" [(ngModel)]="user.name" placeholder="Enter Name" required>
+                          </div>
+                        </div>
+
+                    <div class="form-group">
+                      <label class="control-label col-sm-2" for="email">Email:</label>
+                      <div class="col-sm-10">
+                        <input type="email" class="form-control" id="email" name="email" [(ngModel)]="user.email" placeholder="Enter email" required pattern="[^ @]*@[^ @]*">
+                      </div>
+                      <!--<small [hidden]="email.valid || (email.pristine && !signupForm.submitted)">
+                          Email is required and format should be <i>john@doe.com</i>.
+                      </small>-->
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="email">Username:</label>
+                        <div class="col-sm-10">
+                          <input type="username" class="form-control" id="username" name="username" [(ngModel)]="user.username" placeholder="Enter Username" required>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                          <label class="control-label col-sm-2" for="password">Password:</label>
+                          <div class="col-sm-10">
+                            <input type="password" class="form-control" id="password" name="password" [(ngModel)]="user.password" placeholder="Enter password" required>
+                          </div>
+                        <!--  <small [hidden]="password.valid || (password.pristine && !signupForm.submitted)">
+                              Password is required
+                          </small>-->
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="conpassword">Confirm Password:</label>
+                            <div class="col-sm-10">
+                              <input type="password" class="form-control" id="conpassword" placeholder="Confirm password" required  #confirmPassword="ngModel">
+                            </div>
+                          <!--  <small [hidden]="confirmPassword.valid || (confirmPassword.pristine && !signupForm.submitted)">
+                              Password mismatch
+                            </small>-->
+                          </div>
+
+
+
+
+                          <div class="form-group">
+                              <label class="control-label col-sm-2" for="job">Job:</label>
+                              <div class="col-sm-10">
+                                <input type="text" class="form-control" id="job"  name="job" [(ngModel)]="user.job" placeholder="Enter Your Job" required>
+                              </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="address">Address:</label>
+                                <div class="col-sm-10">
+                                  <input type="text" class="form-control" id="address" name="address" [(ngModel)]="user.address" placeholder="Enter Address" required>
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                  <label class="control-label col-sm-2" for="phone_number">Phone No:</label>
+                                  <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="phone_number" name="phone_number" [(ngModel)]="user.phone_number" placeholder="Enter Phone No" required>
+                                  </div>
+                                </div>
+
+                                  <div class="form-group">
+                                      <label class="control-label col-sm-2" for="gender">Gender :</label>
+                                      <div class="col-sm-10">
+                                          <p>
+                                              <input id = "male" type = "radio" name = "gender" [(ngModel)]="user.gender"
+                                                 value = "male" checked/>
+                                              <label for = "male"><h6 class="black" style="font-size: 15px;">Male</h6></label>
+
+                                              <input id = "female" type = "radio" name = "gender" [(ngModel)]="user.gender"
+                                                 value = "female" checked/>
+                                              <label for = "female"><h6 class="black" style="font-size: 15px;">Female</h6></label>
+                                           </p>
+                                      </div>
+                                    </div>
+
+                                      <div class="form-group">
+                                          <label class="control-label col-sm-2" for="birth_date">Birthday :</label>
+                                          <div class="col-sm-10">
+                                            <input type="date" class="form-control" id="birth_date"  name="birth_date" [(ngModel)]="user.birth_date" placeholder="Enter Birthday" required>
+                                          </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-2" for="profile_pic_name">Image:</label>
+                                            <div class="col-sm-10">
+                                              <input type="text" class="form-control" id="profile_pic_name"  name="profile_pic_name" [(ngModel)]="user.profile_pic_name" placeholder="Enter Birthday" required>
+                                            </div>
+                                          </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-2" for="type">Type :</label>
+                                            <div class="col-sm-10">
+                                                <p>
+                                                    <input id = "user" type = "radio" name = "type" [(ngModel)]="user.type"
+                                                       value = "user" (click)="cuser=true"/>
+                                                    <label for = "user"><h6 class="black" style="font-size: 15px;">User</h6></label>
+
+                                                    <input id = "counceller" type = "radio" name = "type" [(ngModel)]="user.type"
+                                                       value = "counceller" (click)="ccounceller=true"/>
+                                                    <label for = "counceller"><h6 class="black" style="font-size: 15px;">Counceller</h6></label>
+                                                 </p>
+                                            </div>
+                                          </div>
+
+                                        <div *ngIf="ccounceller">
+                                          <div class="form-group">
+                                              <label class="control-label col-sm-2" for="qualification">Qualification:</label>
+                                              <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="qualification" name="qualification" [(ngModel)]="user.qualification" placeholder="Enter qualification">
+                                              </div>
+                                          </div>
+
+                                          <div class="form-group">
+                                              <label class="control-label col-sm-2" for="certificate">Certificate:</label>
+                                              <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="certificate" name="certificate" [(ngModel)]="user.certificate" placeholder="Enter certificate">
+                                              </div>
+                                          </div>
+                                        </div>
+
+
+                                          <div class="form-group" *ngIf="cuser">
+                                              <label class="control-label col-sm-2" for="guadiant_phone_number">Guardian Phone Number</label>
+                                              <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="guadiant_phone_number" name="guadiant_phone_number" [(ngModel)]="user.guadiant_phone_number" placeholder="Enter guadiant_phone_number">
+                                              </div>
+                                          </div>
+
+
+
+                                          <div class="form-group">
+                                              <label class="control-label col-sm-2" for="gps">GPS:</label>
+                                              <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="gps" name="gps" [(ngModel)]="user.gps" placeholder="Enter gps" required>
+                                              </div>
+                                            </div>
+
+
+                    <div class="form-group">
+                      <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-default" id="showweb" [disabled]="!signupForm.valid">Submit</button>
+                      </div>
+                    </div>
+                  </form>
+
+
+              </div>
+
+          </div>
+    </div>
 
 
       <div id="about" class="container-fluid" >
@@ -191,186 +420,6 @@ To help improve relationships and empower individuals to have healthier and happ
     <span class="sr-only">Next</span>
   </a>
 </div>
-
-<!--sign in-->
-
-<div>
-  <form  #loginForm = "ngForm" (ngSubmit) = "onSignIn(loginForm.value)">
-
-        <div>
-          <div>
-
-              <input type="text" name="username"  [(ngModel)] = "username"  required/>
-              <label for="username">Username</label>
-
-          </div>
-        </div>
-
-        <div>
-          <div>
-
-
-              <input type="password" name="password"  [(ngModel)] = "password"  required/>
-              <label for="password">Password</label>
-
-          </div>
-        </div>
-
-
-        <div>
-          <div>
-            <button type="submit" >Login</button>
-          </div>
-        </div>
-
-      </form>
-      <p>
-        {{errorMsg}}
-      </p>
-
-
-</div>
-
-<!-- end of sign in  -->
-<!-- signup-->
-
-<div>
-        <form #signupForm = "ngForm" (ngSubmit)="onSignUp(signupForm.value)">
-
-
-          <div>
-            <div>
-                <input type="text" name="name"  [(ngModel)] = "name" required/>
-                <label for="name">Name</label>
-            </div>
-          </div>
-
-          <div>
-            <div>
-                <input type="text" name="address"  [(ngModel)] = "address" required/>
-                <label for="address">Address</label>
-            </div>
-          </div>
-
-          <div>
-            <div>
-                <input type="text" name="email"  [(ngModel)] = "email" required/>
-                <label for="email">Email</label>
-            </div>
-          </div>
-
-
-          <div>
-            <div>
-                <input type="date" class="datepicker" name="birth_date" [(ngModel)] ="birth_date" required/>
-                <label for="birth_date">B date</label>
-            </div>
-          </div>
-
-          <div>
-            <div>
-                <input type="text" name="phone_number"  [(ngModel)] = "phone_number" required/>
-                <label for="phone_number">Phone Number</label>
-            </div>
-          </div>
-
-
-          <p>
-            <label>
-              <p>Gender</p>
-              <br />
-              <input name="gender" type="radio" value = "male" [(ngModel)]="gender" required/>
-              <span>Male</span>
-            </label>
-            <label>
-              <input name="gender" type="radio" value="female" [(ngModel)]="gender" required/>
-              <span>Female</span>
-            </label>
-          </p>
-
-
-
-          <div>
-            <div>
-                <input type="text" name="username" [(ngModel)] = "uname" required/>
-                <label for="username">Username</label>
-            </div>
-          </div>
-
-
-          <div>
-            <div>
-                <input type="password" name="password"  [(ngModel)] = "pass" required/>
-                <label for="password">Paasword</label>
-            </div>
-          </div>
-
-              <div>
-                <label>
-                  <p>User Type</p>
-                  <br />
-                  <input name="type" type="radio" id="userr"  value="user" [(ngModel)]="type" />
-                  <span>User</span>
-                </label>
-
-                <label>
-                  <input name="type" type="radio" id="coucellerr"  value="counceller" [(ngModel)]="type"/>
-                  <span>Counceller</span>
-                </label>
-              </div>
-
-          <div class="coun" >
-
-            <div>
-              <div>
-                  <input type="text" name="qualification" [(ngModel)] = "qualification"/>
-                  <label for="qualification">Qualification</label>
-              </div>
-            </div>
-
-            <div>
-              <div>
-                  <input type="text" name="certificate" [(ngModel)] = "certificate"/>
-                  <label for="certificate">Certificate</label>
-              </div>
-            </div>
-
-          </div>
-
-          <div class="use">
-
-            <div>
-              <div>
-                  <input type="text" name="guadiant_phone_number" [(ngModel)] = "guadiant_phone_number"/>
-                  <label for="guadiant_phone_number">Guardian Phone Number</label>
-              </div>
-            </div>
-
-          </div>
-
-
-
-
-          <div>
-            <div>
-                <input type="text" name="gps" [(ngModel)]= "gps" required/>
-                <label for="gps">GPS</label>
-            </div>
-          </div>
-
-
-          <div>
-            <div>
-              <button type="submit" [disabled] = "!signupForm.valid">SignUp</button>
-            </div>
-          </div>
-
-        </form>
-        <p>
-
-        </p>
-      </div>
-    <!--  end of sign up-->
 
 
 <footer class="container-fluid text-center" >

@@ -1,21 +1,20 @@
 export class AllUser{
 
-  password:string;
-  username:string;
-  address:string;
-  birth_date:string;
-  gps:string;
-  type:string;
-  name:string;
-  age:number;
-  create_date:string;
-  email:string
-​  gender:string;
-​  id:string;
-​  phone_number:string;
-​  status:string;
-  guadiant_phone_number:string;
-  qualification:string;
-  certificate:string;
+  constructor(
+  public password:string='',
+  public username:string ='',
+  public type:string='',
+  public address:string ='',
+  public birth_date:string='',
+  public email:string='',
+​  public gender:string='',
+  public name:string='',
+  public phone_number:string='',
+  public gps:string='',
+  public guadiant_phone_number:string='',
+  public job:string='', 
+  public profile_pic_name:string='',
+  public qualification:string='',
+  public certificate:string=''){ }
 ​
 }

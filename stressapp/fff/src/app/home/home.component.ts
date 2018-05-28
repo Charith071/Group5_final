@@ -13,28 +13,13 @@ export class HomeComponent implements OnInit {
   password:string;
   errorMsg:string;
 
-  address:string;
-  birth_date:string;
-  gps:string;
-  type:string;
-  name:string;
-  age:number;
-  create_date:string;
-  email:string
-​  gender:string;
-​  id:string;
-​  phone_number:string;
-​  status:string;
-  guadiant_phone_number:string;
-  qualification:string;
-  certificate:string;
-  uname:string;
-  pass:string;
+  user:AllUser = new AllUser();
 
 
   constructor(private homeService:HomeServiceService) { }
 
   ngOnInit() {
+
   }
 
   onSignIn(){
@@ -59,22 +44,8 @@ export class HomeComponent implements OnInit {
   }
 
   onSignUp(){
-    this.homeService.get_signup(
-      this.uname,
-      this.pass,
-      this.address,
-      this.birth_date,
-      this.gps,
-      this.type,
-      this.name,
-      this.email,
-    ​  this.gender,
-    ​  this.phone_number,
-      this.guadiant_phone_number,
-      this.qualification,
-      this.certificate
 
-    ).subscribe(
+    this.homeService.get_signup(this.user).subscribe(
       (req)=>{
          // this part will recive only success response object from server
 

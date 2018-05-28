@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient,HttpResponse,HttpErrorResponse} from '@angular/common/http';
-import { AllUser }from './home/all_user';
+import { HttpClient,HttpResponse,HttpErrorResponse,HttpHeaders} from '@angular/common/http';
+import { Headers,RequestOptions } from '@angular/http';
+import { AllUser } from './home/all_user';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,9 @@ import { AllUser }from './home/all_user';
 export class HomeServiceService {
 
   private baseUrl:string = 'http://localhost:8081/api';
+   httpOptions = {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  };
 
 
 
@@ -20,37 +24,12 @@ export class HomeServiceService {
 
   }
 
-  get_signup(
-    username:string,
-    password:string,
-    address:string,
-    birth_date:string,
-    gps:string,
-    type:string,
-    name:string,
-    email:string,
-  ​  gender:string,
-  ​  phone_number:string,
-    guadiant_phone_number:string,
-    qualification:string,
-    certificate:string
-  ){
-    return this.http.post(this.baseUrl+'/signup',{
-      username,
-      password,
-      address,
-      birth_date,
-      gps,
-      type,
-      name,
-      email,
-    ​  gender,
-    ​  phone_number,
-      guadiant_phone_number,
-      qualification,
-      certificate
-    });
+  get_signup(user:AllUser){
+    console.log(JSON.stringify(user));
+    return this.http.post(this.baseUrl+'/signup',JSON.stringify(user),this.httpOptions);
   }
+
+
 
 
 
