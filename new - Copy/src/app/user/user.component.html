@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+ 
+</head>
+<body id="main">
+
+    <app-user-mainbanner></app-user-mainbanner>
+
+   <app-user-navbar></app-user-navbar>
+
+<!--<div class="navbar navbar-inverse" data-spy="affix" data-offset-top="550" id="main">
+  <ul class="nav navbar-nav"  >
+    <li class="active"  onclick="openNav()"><button class="button">to My Profile</button> </li>
+    <li><button class="btn"><i class="glyphicon glyphicon-home"></i> Check Your Stress</button></li>
+    <li><a href="#">Page 2</a></li>
+    <li><a href="#">Page 3</a></li>
+  </ul>
+</div>-->
+
+
+<div id="mySidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <a href="#">About</a>
+  <a href="#">Services</a>
+  <a href="#">Clients</a>
+  <a href="#">Contact</a>
+</div>
+
+
+<h4>Music.<span class="glyphicon glyphicon-music" style="padding-top: 10px;color: DodgerBlue"></span> </h4>
+<div class="container-fluid bg-grey">
+  
+      
+  <div class="row">
+     
+    <div class="col-sm-4">
+     
+      <img src="../../assets/images/images.png"  alt="doc" width="500px" >
+    </div>
+    <div class="col-sm-8">
+      <h2>About Company Page</h2>
+     
+      <p>Lorem ipsum..</p>
+      
+      <button class="btn btn-default btn-lg" id="myBtn" >Get in Touch</button>
+    </div>
+  </div>
+</div>
+
+
+ <!-- Modal -->
+ <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+       
+        <div class="modal-body" style="padding:40px 50px;">
+            <div class="row">
+                <div class="col-sm-4">
+                 
+                  <img src="../../assets/images/images.png"  alt="doc" width="200px" >
+                </div>
+                <div class="col-sm-8">
+                  
+                 
+                  <p>song 1</p>
+                  
+                  <button class="btn btn-default btn-lg"  >play</button>
+                </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-sm-4">
+                     
+                      <img src="../../assets/images/images.png"  alt="doc" width="200px" >
+                    </div>
+                    <div class="col-sm-8">
+                      
+                     
+                      <p>song 1</p>
+                      
+                      <button class="btn btn-default btn-lg"  >play</button>
+                    </div>
+                    </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+         
+        </div>
+      </div>
+      
+    </div>
+  </div> 
+
+
+
+<app-user-checkstress></app-user-checkstress>
+
+</body>
+</html>

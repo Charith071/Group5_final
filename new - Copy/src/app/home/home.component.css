@@ -1,0 +1,240 @@
+
+.jumbotron { 
+   background-image:url("../../assets/images/bg1.jpg");
+   background-repeat: no-repeat;
+    color: #ffffff;
+    padding: 100px 20px;
+    font-family: Montserrat, sans-serif;
+}
+#doc{
+   width:600px;
+}
+
+.bg-grey {
+    background-color: #f6f6f6;
+}
+.container-fluid {
+    padding: 60px 50px;
+}
+
+
+@media screen and (max-width: 768px) {
+    .col-sm-4 {
+        text-align: center;
+        margin: 25px 0;
+    }
+}
+
+.logo-small {
+    color: #5f87ce;
+    font-size: 50px;
+}
+
+.logo {
+    color: #5f87ce;
+    font-size: 200px;
+}
+
+.thumbnail {
+    padding: 0 0 15px 0;
+    border: none;
+    border-radius: 0;
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 100%;
+    margin-bottom: 10px;
+}
+
+.carousel-control.right, .carousel-control.left {
+    background-image: none;
+    color: #5f87ce;
+}
+
+.carousel-indicators li {
+    border-color: 5f87ce;
+}
+
+.carousel-indicators li.active {
+    background-color: #5f87ce;
+}
+.carousel-inner{
+    background-image: url("../../assets/images/1.jpg");
+   height: 500px;
+}
+
+.item h4 {
+    font-size: 19px;
+    line-height: 1.375em;
+    font-weight: 400;
+    font-style: italic;
+    margin: 70px 0;
+    
+}
+
+.item span {
+    font-style: normal;
+}
+
+footer .glyphicon {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #5f87ce;
+}
+
+body {
+    font: 400 15px Lato, sans-serif;
+    line-height: 1.8;
+    color: #818181;
+}
+
+h2 {
+    font-size: 24px;
+    text-transform: uppercase;
+    color: #303030;
+    font-weight: 600;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+h4 {
+    font-size: 19px;
+    line-height: 1.375em;
+    color:black;
+    font-weight: 400;
+    margin-bottom: 30px;
+}
+
+#xy{
+    margin-left: 590px;
+}
+.slideanim {visibility:hidden;}
+.slide {
+    
+    animation-name: slide;
+    -webkit-animation-name: slide; 
+   
+    animation-duration: 2.8s; 
+    -webkit-animation-duration: 2.8s;
+   
+    visibility: visible; 
+}
+
+/* Go from 0% to 100% opacity (see-through) and specify the percentage from when to slide in the element along the Y-axis */
+@keyframes slide {
+    0% {
+        opacity: 0;
+        transform: translateY(70%);
+    } 
+    100% {
+        opacity: 1;
+        transform: translateY(0%);
+    } 
+}
+@-webkit-keyframes slide {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(70%);
+    } 
+    100% {
+        opacity: 1;
+        -webkit-transform: translateY(0%);
+    }
+}
+
+
+.navbar {
+    margin-bottom: 0;
+    background-color: #fff;
+    z-index: 9999;
+    border: 0;
+    font-size: 12px !important;
+    line-height: 1.42857143 !important;
+    letter-spacing: 4px;
+    border-radius: 0;
+}
+
+.navbar li a, .navbar .navbar-brand {
+    color: #5f87ce !important;
+}
+
+.navbar-nav li a:hover, .navbar-nav li.active a {
+    color:black !important;
+    background-color: #fff !important;
+}
+
+.navbar-default .navbar-toggle {
+    border-color: transparent;
+    color: #fff !important;
+}
+
+.success {
+    border-color: #4CAF50;
+    color: green;
+    padding: 10px 30px 10px 30px; 
+  } 
+  
+  .success:hover {
+    background-color:#5f87ce;
+    color: white;
+  }
+
+
+  /*form*/
+  .overlay {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0, 0.9);
+    overflow-x: hidden;
+    transition: 0.5s;
+}
+
+.overlay-content {
+    position: relative;
+    top: 25%;
+    width: 100%;
+    text-align: center;
+    margin-top: 30px;
+}
+
+.overlay a {
+    padding: 8px;
+    text-decoration: none;
+    font-size: 36px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+
+.overlay a:hover, .overlay a:focus {
+    color: #f1f1f1;
+}
+
+.overlay .closebtn {
+    position: absolute;
+    top: 20px;
+    right: 45px;
+    font-size: 60px;
+}
+
+@media screen and (max-height: 450px) {
+  .overlay a {font-size: 20px}
+  .overlay .closebtn {
+    font-size: 40px;
+    top: 15px;
+    right: 35px;
+  }
+}
+
+
+/*video*/
+
+/* Add some content at the bottom of the video/page */
+
+
