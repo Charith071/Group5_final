@@ -21,5 +21,6 @@ public interface ChangesDao extends CrudRepository<Changes,Long>{
 	Iterable<Changes> getAllInstanceBy_affecctec_id_and_not_send(Long affected_user_id,String value);
 	
 	
-	
+	@Query(value="select * from changes order by id desc limit 1",nativeQuery=true)
+	Changes get_last_instance();
 }

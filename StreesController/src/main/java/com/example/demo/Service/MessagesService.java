@@ -25,12 +25,12 @@ public class MessagesService {
 	}
 	
 	
-	//============= realtime====================
+	//============= realtime===================================
 		public String getLastUptadeTime() {
 			return messagesDao.getLastUptadeTime();
 		}
 	
-	//===============get number of rows======================
+	//===============get number of rows========================
 	public Long get_number_of_rows() {
 		return messagesDao.count();
 	}
@@ -40,7 +40,10 @@ public class MessagesService {
 		return messagesDao.getLastRecord();
 	}
 	
-	
+	//==============get last instance by Receiver id
+	public Messages get_last_instance_by_Receiver_id(String id) {
+		return messagesDao.getLastRecord_by_receveir_id(Long.parseLong(id));
+	}
 	
 	
 }

@@ -21,7 +21,9 @@ public class UserService {
 	//=========for user registration========================
 	public boolean update_table(Signupjson signupjson1,Long id) {
 		User u2=new User();
-		u2.setGps_location(Double.parseDouble(signupjson1.getGps()));
+		
+		u2.setLatitude(Double.parseDouble(signupjson1.getLatitude()));
+		u2.setLongitude(Double.parseDouble(signupjson1.getLongitude()));
 		u2.setGuadiant_phone_no(signupjson1.getGuadiant_phone_number());
 		u2.setId(id);
 		u2.setJob(signupjson1.getJob());
@@ -51,7 +53,8 @@ public class UserService {
 	public boolean update_user_gps_location( Gpsjson gpsjson) {
 		if(userDao.existsById(Long.parseLong(gpsjson.getId()))) {
 			User u2=userDao.findByIds(Integer.parseInt(gpsjson.getId()));
-			u2.setGps_location(Double.parseDouble(gpsjson.getGps()));
+			u2.setLatitude(Double.parseDouble(gpsjson.getLatitude()));
+			u2.setLongitude(Double.parseDouble(gpsjson.getLongitude()));
 			userDao.save(u2);
 			return true;
 		}else {

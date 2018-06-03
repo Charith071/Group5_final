@@ -1,17 +1,27 @@
 package com.example.demo.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+
 import java.awt.PageAttributes.MediaType;
+import java.io.Console;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
-
+import javax.servlet.http.HttpSession;
+import javax.validation.constraints.Null;
+import javax.websocket.Session;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +39,7 @@ import com.example.demo.Entity.Booking_request;
 import com.example.demo.Entity.Changes;
 import com.example.demo.Entity.Counceller;
 import com.example.demo.Entity.Map;
+import com.example.demo.Entity.Messages;
 import com.example.demo.Entity.MusicTrack;
 import com.example.demo.Entity.TableInfomation;
 import com.example.demo.Entity.Tips;
@@ -49,6 +60,7 @@ import com.example.demo.Service.UserService;
 import com.example.demo.commonFunction.CommnFunction;
 import com.example.demo.dao.CouncellerDao;
 import com.example.demo.dao.MapDao;
+import com.example.demo.extra.AccessControlJson;
 import com.example.demo.extra.AccountSettingjson;
 import com.example.demo.extra.AddTipsjson;
 import com.example.demo.extra.AddTrackjson;
@@ -57,10 +69,12 @@ import com.example.demo.extra.BookingRequestJson;
 import com.example.demo.extra.Chatjson;
 import com.example.demo.extra.Confirmjson;
 import com.example.demo.extra.DeleteRequestJson;
+import com.example.demo.extra.Getdatjson;
 import com.example.demo.extra.Getleveljson;
 import com.example.demo.extra.Gpsjson;
 import com.example.demo.extra.JsonResponse;
 import com.example.demo.extra.Leveljson;
+import com.example.demo.extra.LoginOutPut;
 import com.example.demo.extra.Loginjson;
 import com.example.demo.extra.Loginout;
 import com.example.demo.extra.Mappingjson;
@@ -75,6 +89,7 @@ import com.example.demo.extra.UserdetailsResponse;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins="http://localhost:4200",allowedHeaders="*")
 public class AppController {
 	
 	@Autowired
@@ -116,35 +131,57 @@ public class AppController {
 	
 
 	@RequestMapping("")
-	public ResponseEntity<?> home(){
-	
-		return ResponseEntity.ok(new JsonResponse("Home ","success"));
+	public ResponseEntity<?> home(HttpSession s){
+		try {
+			if(s.getAttribute("type").equals("user") || s.getAttribute("type").equals("admin") || s.getAttribute("type").equals("counceller")) {
+				return ResponseEntity.ok(new JsonResponse(s.getAttribute("id").toString(),"success"));
+			}else {
+				return ResponseEntity.ok(new JsonResponse("dsda".toString(),"fail"));
+			}
+			
+		} catch (Exception e) {
+			return ResponseEntity.ok(new JsonResponse("Invalid user input ","fail"));
+		}
+		
+		
 	}
 	
 	
-	// (2) =========registration====================================
+	// (2) =========registration===========================================================
 	@RequestMapping(value="/signup",method=RequestMethod.POST)
 	public ResponseEntity<?> registration(@RequestBody Signupjson signupjson){
 		try {
-			if(signupjson.getUsername().length()>0 && signupjson.getPassword().length()>0) {
-				if(allusersService.update_tables(signupjson)) {
-					AllUsers alluser=allusersService.getuserfrom_username_password(signupjson.getUsername(),signupjson.getPassword());
-					if(alluser.getType().equals("user")) {
-						//also update stress level and history
-						userService.update_table(signupjson,alluser.getId());
-						return ResponseEntity.ok(new JsonResponse("user registration is succcess!! ","success"));
-					}else if(alluser.getType().equals("counceller")) {
-						councellerService.update_table(signupjson,alluser.getId());
-						changesService.update_changed_table(new Changes("all_users",alluser.getId(),"Join New Counceller",Long.parseLong("1"),"false","notification"));
-						//changesService.update_changed_table(new Changes("all_users",alluser.getId(),"Access Denied By Administrator",Long.parseLong(alluser.getId().toString()),"false","notification"));
-						return ResponseEntity.ok(new JsonResponse("Counceller registration is succcess!! ","success"));
+			if(signupjson.getUsername().length()>0 && signupjson.getPassword().length()>0 ) {
+				try {
+					Double gps1=Double.parseDouble(signupjson.getLatitude());
+					Double gps2=Double.parseDouble(signupjson.getLongitude());
+					
+					if(allusersService.update_tables(signupjson)) {
+						AllUsers alluser=allusersService.getuserfrom_username_password(signupjson.getUsername(),signupjson.getPassword());
+						if(alluser.getType().equals("user")) {
+							//also update stress level and history
+							
+								userService.update_table(signupjson,alluser.getId());
+								return ResponseEntity.ok(new JsonResponse(alluser.getId().toString(),"success"));
+							
+							
+						}else if(alluser.getType().equals("counceller")) {
+							councellerService.update_table(signupjson,alluser.getId());
+							changesService.update_changed_table(new Changes("all_users",alluser.getId(),"Join New Counceller",Long.parseLong("1"),"false","notification",func.getCurrentdateTime()));
+							//changesService.update_changed_table(new Changes("all_users",alluser.getId(),"Access Denied By Administrator",Long.parseLong(alluser.getId().toString()),"false","notification"));
+							return ResponseEntity.ok(new JsonResponse(alluser.getId().toString(),"success"));
+						}else {
+							return ResponseEntity.status(HttpStatus.CONFLICT).body(new JsonResponse("invalid user input ","fail"));
+						}
+						//return ResponseEntity.ok("Counceller registration is succcess!!");
 					}else {
-						return ResponseEntity.status(HttpStatus.CONFLICT).body(new JsonResponse("invalid user input ","fail"));
+						return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("registration fail...change username or password ","fail"));
 					}
-					//return ResponseEntity.ok("Counceller registration is succcess!!");
-				}else {
-					return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("registration fail...change username or password ","fail"));
+				} catch (Exception e) {
+					return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("registration fail..","fail"));
 				}
+				
+				
 			}else {
 				return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("required user name and password ! ","fail"));
 			}
@@ -165,6 +202,8 @@ public class AppController {
 				//System.out.println(lj.getUsername()+" "+lj.getPassword());
 				AllUsers u3=allusersService.getuserfrom_username_password(lj.getUsername(),lj.getPassword());
 				if(u3.getStatus().equals("enable")) {
+					u3.setLastLogin(func.getCurrentdateTime());
+					allusersService.updateAlluserInstance(u3);
 					Loginout out=new Loginout("login success", "success", u3.getId().toString(), u3.getName(), u3.getAge().toString(), u3.getAddress(), u3.getBirth_date(), u3.getCreate_date(), u3.getEmail(), u3.getGender(), u3.getPhone_number(), u3.getType(), "add in Future ");
 					return ResponseEntity.ok(out);
 				}else {
@@ -180,6 +219,15 @@ public class AppController {
 		
 	}
 	
+	/*//========logout=================================
+	@RequestMapping(value="/logout",method=RequestMethod.POST)
+	public ResponseEntity<?> logout(HttpSession session){
+		session.removeAttribute("id");
+		session.removeAttribute("type");
+		session.invalidate();
+		return ResponseEntity.ok(new JsonResponse("loged out","success"));
+	}
+	*/
 	
 	// (3) ==============update stresslevel of user=======================
 	@RequestMapping(value="/level",method=RequestMethod.POST)
@@ -300,7 +348,7 @@ public class AppController {
 						}else {
 							if(mapService.updateMapDetails(mappingjson.getUser_id(),mappingjson.getCounceller_id())) {
 								Map m=mapService.getInstanceBy_councellerId_and_userId(mappingjson.getCounceller_id(), mappingjson.getUser_id());
-								changesService.update_changed_table(new Changes("map", m.getId(), "Counceller Was Mapped", Long.parseLong(mappingjson.getCounceller_id()), "false", "notification"));
+								changesService.update_changed_table(new Changes("map", m.getId(), "Counceller Was Mapped", Long.parseLong(mappingjson.getCounceller_id()), "false", "notification",func.getCurrentdateTime()));
 								return ResponseEntity.ok(new JsonResponse("counceller mapping  success","success"));
 							}else {
 								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("mapping fail","fail"));
@@ -341,6 +389,8 @@ public class AppController {
 							//===========from user to counceller=============
 							if(mapService.is_counceller_already_exist(chatjson.getSender_id(), chatjson.getReceiver_id())) {
 								if(messagesService.update_msg_details(chatjson)) {
+									Messages m=messagesService.get_last_instance_by_Receiver_id(chatjson.getReceiver_id());
+									changesService.update_changed_table(new Changes("messages", m.getId(), "New Message", m.getReceiver(), "false", "messages",func.getCurrentdateTime()));
 									return ResponseEntity.ok(new JsonResponse("msg details update successs!!","success"));
 								}else {
 									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("cannot update table!","fail"));
@@ -402,7 +452,8 @@ public class AppController {
 						userdata.setBirth_date(uu2.getBirth_date());
 						userdata.setEmail(uu2.getEmail());
 						userdata.setGender(uu2.getGender());
-						userdata.setGps_location(uu3.getGps_location().toString());
+						userdata.setLatitude(uu3.getLatitude().toString());
+						userdata.setLongitude(uu3.getLongitude().toString());
 						userdata.setGuadiant_phone_no(uu3.getGuadiant_phone_no());
 						userdata.setId(uu2.getId().toString());
 						userdata.setJob(uu3.getJob());
@@ -435,18 +486,18 @@ public class AppController {
 		
 		
 		// (11) =============================controll conceller access by admin==============================
-		@RequestMapping(value="/admin/accessControll",params= {"admin_id","controller_id","status"}, method=RequestMethod.GET)
-		public ResponseEntity<?> accessControll(@RequestParam("admin_id") String admin_id,@RequestParam("controller_id") String controller_id,@RequestParam("status") String status){
+		@RequestMapping(value="/admin/accessControll", method=RequestMethod.POST)
+		public ResponseEntity<?> accessControll(@RequestBody AccessControlJson para){
 			
 			try {
 				//System.out.println(admin_id+controller_id+status);
-				if(allusersService.is_user_exist(admin_id) && allusersService.is_user_exist(controller_id)) {
-					AllUsers adminob=allusersService.getuserfrom_id(Integer.parseInt(admin_id));
-					AllUsers userob=allusersService.getuserfrom_id(Integer.parseInt(controller_id));
+				if(allusersService.is_user_exist(para.getAdmin_id()) && allusersService.is_user_exist(para.getController_id())) {
+					AllUsers adminob=allusersService.getuserfrom_id(Integer.parseInt(para.getAdmin_id()));
+					AllUsers userob=allusersService.getuserfrom_id(Integer.parseInt(para.getController_id()));
 					if(adminob.getType().equals("admin")) {
 						if(userob.getType().equals("counceller") || userob.getType().equals("user")) {
-							if(status.equals("enable") || status.equals("disable")) {
-								userob.setStatus(status);
+							if(para.getStatus().equals("enable") || para.getStatus().equals("disable")) {
+								userob.setStatus(para.getStatus());
 								allusersService.updateAlluserInstance(userob);
 								
 								//========update changes table==============
@@ -496,6 +547,8 @@ public class AppController {
 								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("the track name is already exist!!","fail"));
 							}else {
 								musicTrackService.updateMusicTracktable(addTrackjson);
+								MusicTrack m=musicTrackService.getLastRecorde();
+								changesService.update_changed_table(new Changes("music_track", m.getId(), "Add New Music Track ", Long.parseLong("1"), "false", "notification", func.getCurrentdateTime()));
 								return ResponseEntity.ok(new JsonResponse("update success","success"));
 							}
 							
@@ -700,6 +753,15 @@ public class AppController {
 							nn.setStatus("enable");
 							nn.setType(notice.getType());
 							if(adminNotificationService.update_admin_notifcation(nn)) {
+								AdminNotification n=adminNotificationService.getLastRecorde();
+								if(notice.getType().equals("user")) {
+									changesService.update_changed_table(new Changes("admin_notification", n.getId(), "New Admin Notice", Long.parseLong("100000"), "false", "other", func.getCurrentdateTime()));
+								}else if(notice.getType().equals("counceller")) {
+									changesService.update_changed_table(new Changes("admin_notification", n.getId(), "New Admin Notice", Long.parseLong("100001"), "false", "other", func.getCurrentdateTime()));
+								}else {
+									changesService.update_changed_table(new Changes("admin_notification", n.getId(), "New Admin Notice", Long.parseLong("100002"), "false", "other", func.getCurrentdateTime()));
+
+								}
 								return ResponseEntity.ok(new JsonResponse("Notice Entered Success!!","success"));
 							}else {
 								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot enter Notice","fail"));
@@ -778,7 +840,7 @@ public class AppController {
 												bb.setStatus("true");
 												if(bookingRequestService.update_booking_request(bb)) {
 													Booking_request req2=bookingRequestService.get_instance_by_councellerId_userId_status_date(req.getCounceller_id(), req.getUser_id(), dd);
-													changesService.update_changed_table(new Changes("booking_request",req2.getId(), "You Have New Booking Request", Long.parseLong(req.getCounceller_id()), "false", "notification"));
+													changesService.update_changed_table(new Changes("booking_request",req2.getId(), "You Have New Booking Request", Long.parseLong(req.getCounceller_id()), "false", "notification",func.getCurrentdateTime()));
 													
 													return ResponseEntity.ok(new JsonResponse("request updated!","success"));
 												}else {
@@ -856,7 +918,7 @@ public class AppController {
 										Booking_request re=bookingRequestService.get_instance_by_id(para.getRequest_id());
 										re.setStatus("false");
 										bookingRequestService.update_booking_request(re);
-										changesService.update_changed_table(new Changes("booking_request", re.getId(), "Cansal Booking Request By Counceller", re.getUser_id(), "false", "notification"));
+										changesService.update_changed_table(new Changes("booking_request", re.getId(), "Cansal Booking Request By Counceller", re.getUser_id(), "false", "notification",func.getCurrentdateTime()));
 										
 										return ResponseEntity.ok(new JsonResponse("Request Cansal","success"));
 									}else if(para.getCounceller_status().equals("enable")){
@@ -873,7 +935,7 @@ public class AppController {
 										bookingRequestService.update_booking_request(bb);
 										
 										Booking_details bd=bookingDetailsService.get_instance_by_booking_request_id(para.getRequest_id());
-										changesService.update_changed_table(new Changes("booking_details",bd.getId(), "Counceller Sent Your Booking Details Please Check And Confirm",bb.getUser_id(), "false", "notification"));
+										changesService.update_changed_table(new Changes("booking_details",bd.getId(), "Counceller Sent Your Booking Details Please Check And Confirm",bb.getUser_id(), "false", "notification",func.getCurrentdateTime()));
 										return ResponseEntity.ok(new JsonResponse("Detail updated successfully!","success"));
 									}else {
 										return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid counceller status","fail"));
@@ -919,7 +981,7 @@ public class AppController {
 										dd.setStatus("enable");
 										bookingDetailsService.update_booking_details(dd);
 										
-										changesService.update_changed_table(new Changes("booking_details", dd.getId(), "Patient Confirm Your Booking Details",bookingRequestService.get_instance_by_id(dd.getRequestId().toString()).getCounceller_id(), "false", "notification"));
+										changesService.update_changed_table(new Changes("booking_details", dd.getId(), "Patient Confirm Your Booking Details",bookingRequestService.get_instance_by_id(dd.getRequestId().toString()).getCounceller_id(), "false", "notification",func.getCurrentdateTime()));
 										return ResponseEntity.ok(new JsonResponse("Reply confirmed!!","success"));
 									}else {
 										return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Reply is not exist!","fail"));
@@ -958,6 +1020,8 @@ public class AppController {
 							tip.setStatus("enable");
 							tip.setTip(para.getTip());
 							tipsService.update_table(tip);
+							Tips t=tipsService.getLastRecorde();
+							changesService.update_changed_table(new Changes("tips", t.getId(), "Add New Tip", Long.parseLong("100000"), "false", "other", func.getCurrentdateTime()));
 							return ResponseEntity.ok(new JsonResponse("Tips entered Success!!","success"));
 						}else {
 							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid Counceller","fail"));
@@ -973,7 +1037,55 @@ public class AppController {
 			}
 						
 						
-					
+		
+			
+			
+	
+		//(23) get user,counceller,admin data by id.....
+			@RequestMapping(value="/getData",method=RequestMethod.POST)
+			public ResponseEntity<?> get_data(@RequestBody Getdatjson para){
+				
+				try {
+					if(allusersService.is_user_exist(para.getId())) {
+						AllUsers u=allusersService.getuserfrom_id(Integer.parseInt(para.getId()));
+						if(u.getStatus().equals("enable")) {
+							LoginOutPut data=new LoginOutPut(u.getId(), u.getName(), u.getAge(), u.getAddress(), u.getBirth_date(), u.getCreate_date(), u.getEmail(), u.getGender(), "Access Denied!", "Access DEnied!", u.getPhone_number(), u.getType(), u.getStatus(), Double.parseDouble("0"), Double.parseDouble("0"), "null", "null", "null", "null", "null",Float.parseFloat("0"),"success","success")	;									
+							if(u.getType().equals("user")) {
+								User u2=userService.getUserby_id(para.getId());
+								data.setLatitude(u2.getLatitude());
+								data.setLongitude(u2.getLongitude());
+								data.setJob(u2.getJob());
+								data.setGender(u2.getGuadiant_phone_no());
+								data.setProfile_pic_name(u2.getProfile_pic_name());
+								data.setStress_level(u2.getStress_level());
+			
+								return ResponseEntity.ok(data);
+							}else if(u.getType().equals("counceller")) {
+								Counceller c=councellerService.get_counceller_by_id(para.getId());
+								data.setLatitude(c.getLatitude());
+								data.setLongitude(c.getLongitude());
+								data.setCertificate(c.getCertificate());
+								data.setQualification(c.getQualification());
+								data.setProfile_pic_name(c.getProfile_pic_name());
+								return ResponseEntity.ok(data);
+							}else if(u.getType().equals("admin")) {
+								return	ResponseEntity.ok(data);
+							}else {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid inputs", "fail"));
+							}
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Access Denied", "fail"));
+						}
+						
+					}else {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find user", "fail"));
+					}
+				} catch (Exception e) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user inputs", "fail"));
+				}
+				
+				
+			}
 		
 						
 						
@@ -992,9 +1104,9 @@ public class AppController {
   
 	
 			
-		
+	//(22) realtime=============================	
 		@RequestMapping(value="/realtime",method=RequestMethod.POST)
-		public ResponseEntity<?> test(@RequestBody Realtimejson para){
+		public ResponseEntity<?> test(@RequestBody Realtimejson para) throws ParseException{
 			
 			 String AdminNotification_status=adminNotificationService.getLastUptadeTime();
 			 String AllUser_status=allusersService.getLastUptadeTime();
@@ -1013,11 +1125,11 @@ public class AppController {
 			
 			boolean is_any_new_changes_found=false;
 			RealtimeOut out=new RealtimeOut();
+			AllUsers u=allusersService.getuserfrom_id(Integer.parseInt(para.getId()));
+			List<Changes> l=null;
 			if(changesService.is_exist_by_affected_user_id(para.getId())) {
-				List<Changes> l=(List<Changes>) changesService.get_all_insatnce_by_affected_id_and_notsend(para.getId());
+				 l=(List<Changes>) changesService.get_all_insatnce_by_affected_id_and_notsend(para.getId());
 				
-				out.setStatus(true);
-				out.setList(l);
 				
 				for(Changes c:l) {
 					c.setIs_notification_send("true");
@@ -1028,8 +1140,48 @@ public class AppController {
 				
 			}
 			
+			Changes c1=changesService.get_last_instance();
+			if(c1.getAffectedUserId().toString().equals("100000") || c1.getAffectedUserId().toString().equals("100001") || c1.getAffectedUserId().toString().equals("100002")) {
+				String[] datetime=c1.getAddDate().split("T");
+				String d=datetime[0];
+				String t=datetime[1];
+				String[] currentDate=func.getCurrentdateTime().split("T");
+				if(d.equals(currentDate[0])) {
+					
+					
+					SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+					Date date1 = format.parse(t);
+					Date date2 = format.parse(currentDate[1]);
+					long difference = (date2.getTime() - date1.getTime())/1000; 
+					System.out.println(difference);
+					if(difference <= 8) {
+						if(u.getType().equals("user")) {				
+							if(c1.getAffectedUserId().toString().equals("100000") || c1.getAffectedUserId().toString().equals("100002")) {
+								l.add(c1);
+								System.out.println(difference);
+								is_any_new_changes_found=true;
+							}							
+						}else if(u.getType().equals("counceller")) {
+							if(c1.getAffectedUserId().toString().equals("100001") || c1.getAffectedUserId().toString().equals("100002")) {
+								l.add(c1);
+								System.out.println(difference);
+								is_any_new_changes_found=true;
+							}	
+						}
+					}
+					
+				}						
+				
+			}
+			
+			
+			
+			
 			
 			if(is_any_new_changes_found) {
+				
+				out.setStatus(true);
+				out.setList(l);
 				return ResponseEntity.ok(out);
 			}else {
 				out.setStatus(false);

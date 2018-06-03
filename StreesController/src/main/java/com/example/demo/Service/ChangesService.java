@@ -48,7 +48,10 @@ public class ChangesService {
 		return changesDao.getAllInstanceBy_affecctec_id_and_not_send(Long.parseLong(affected_id), "false");
 	}
 	
-	
+	//========get last instance by affected user id===============================================
+	public Changes get_last_instance() {
+		return changesDao.get_last_instance();
+	}
 	
 	
 	

@@ -11,46 +11,24 @@ public class LoginOutPut {
 	private String gender;
 	private String username;
 	private String password;
-	private Integer phone_number;
+	private String phone_number;
 	private String type;
 	private String status;
 	
-	private Double gps_location;
+	private Double latitude;
+	private Double longitude;
+	
+	
 	private String certificate;
 	private String qualification;
 	private String profile_pic_name;
 	
-	private Integer guadiant_phone_no;
+	private String guadiant_phone_no;
 	private String job;
 	private Float stress_level;
 	
-	
-	
-	
-	public LoginOutPut(Long id, String name, Integer age, String address, String birth_date, String create_date,
-			String email, String gender, String username, String password, Integer phone_number, String type,
-			String status, Double gps_location, String profile_pic_name, Integer guadiant_phone_no, String job,
-			Float stress_level) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.age = age;
-		this.address = address;
-		this.birth_date = birth_date;
-		this.create_date = create_date;
-		this.email = email;
-		this.gender = gender;
-		this.username = username;
-		this.password = password;
-		this.phone_number = phone_number;
-		this.type = type;
-		this.status = status;
-		this.gps_location = gps_location;
-		this.profile_pic_name = profile_pic_name;
-		this.guadiant_phone_no = guadiant_phone_no;
-		this.job = job;
-		this.stress_level = stress_level;
-	}
+	private String response;
+	private String res_status;
 	
 	
 	
@@ -58,13 +36,12 @@ public class LoginOutPut {
 	public LoginOutPut() {
 		super();
 	}
-
-
-
-
+	
 	public LoginOutPut(Long id, String name, Integer age, String address, String birth_date, String create_date,
-			String email, String gender, String username, String password, Integer phone_number, String type,
-			String status, Double gps_location, String certificate, String qualification, String profile_pic_name) {
+			String email, String gender, String username, String password, String phone_number, String type,
+			String status, Double latitude, Double longitude, String certificate, String qualification,
+			String profile_pic_name, String guadiant_phone_no, String job, Float stress_level, String response,
+			String res_status) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -79,14 +56,33 @@ public class LoginOutPut {
 		this.phone_number = phone_number;
 		this.type = type;
 		this.status = status;
-		this.gps_location = gps_location;
+		this.latitude = latitude;
+		this.longitude = longitude;
 		this.certificate = certificate;
 		this.qualification = qualification;
 		this.profile_pic_name = profile_pic_name;
+		this.guadiant_phone_no = guadiant_phone_no;
+		this.job = job;
+		this.stress_level = stress_level;
+		this.response = response;
+		this.res_status = res_status;
 	}
 
+	public String getResponse() {
+		return response;
+	}
 
+	public void setResponse(String response) {
+		this.response = response;
+	}
 
+	public String getRes_status() {
+		return res_status;
+	}
+
+	public void setRes_status(String res_status) {
+		this.res_status = res_status;
+	}
 
 	public Long getId() {
 		return id;
@@ -148,10 +144,10 @@ public class LoginOutPut {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public Integer getPhone_number() {
+	public String getPhone_number() {
 		return phone_number;
 	}
-	public void setPhone_number(Integer phone_number) {
+	public void setPhone_number(String phone_number) {
 		this.phone_number = phone_number;
 	}
 	public String getType() {
@@ -166,11 +162,17 @@ public class LoginOutPut {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public Double getGps_location() {
-		return gps_location;
+	public Double getLatitude() {
+		return latitude;
 	}
-	public void setGps_location(Double gps_location) {
-		this.gps_location = gps_location;
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
+	public Double getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
 	}
 	public String getCertificate() {
 		return certificate;
@@ -190,10 +192,10 @@ public class LoginOutPut {
 	public void setProfile_pic_name(String profile_pic_name) {
 		this.profile_pic_name = profile_pic_name;
 	}
-	public Integer getGuadiant_phone_no() {
+	public String getGuadiant_phone_no() {
 		return guadiant_phone_no;
 	}
-	public void setGuadiant_phone_no(Integer guadiant_phone_no) {
+	public void setGuadiant_phone_no(String guadiant_phone_no) {
 		this.guadiant_phone_no = guadiant_phone_no;
 	}
 	public String getJob() {
@@ -208,6 +210,13 @@ public class LoginOutPut {
 	public void setStress_level(Float stress_level) {
 		this.stress_level = stress_level;
 	}
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

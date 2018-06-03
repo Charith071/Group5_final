@@ -8,9 +8,10 @@ import com.example.demo.Entity.Changes;
 public class RealtimeOut {
 
 	private boolean status;
-	
-
 	private List<Changes> list=new ArrayList<Changes>();
+	
+	
+	
 
 	public boolean isStatus() {
 		return status;

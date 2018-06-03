@@ -38,8 +38,13 @@ public class AllusersService {
 		for(AllUsers users:alluserDao.findAll()) {
 			
 			if(users.getUsername().equals(signupjson.getUsername())) {
+				is_duplicate_user=true;
+				
 				if(users.getPassword().equals(cmnFunction.string_encript(signupjson.getPassword()))) {
 					is_duplicate_user=true;
+					break;
+				}
+				if(is_duplicate_user) {
 					break;
 				}
 			}
@@ -61,6 +66,7 @@ public class AllusersService {
 				u1.setPhone_number(signupjson.getPhone_number());
 				if(signupjson.getType().equals("user")) {
 					u1.setStatus("enable"); 
+					u1.setLastLogin(cmnFunction.getCurrentdateTime());
 				}else {
 					u1.setStatus("disable"); 
 				}
@@ -155,8 +161,12 @@ public class AllusersService {
 		for(AllUsers users:alluserDao.findAll()) {
 			
 			if(users.getUsername().equals(username)) {
+				is_duplicate_user=true;
 				if(users.getPassword().equals(cmnFunction.string_encript(password))) {
 					is_duplicate_user=true;
+					break;
+				}
+				if(is_duplicate_user) {
 					break;
 				}
 			}

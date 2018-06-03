@@ -12,4 +12,7 @@ public interface MessagesDao extends CrudRepository<Messages,Long>{
 	
 	@Query(value="select * from messages order by id desc limit 1",nativeQuery=true)
 	Messages getLastRecord();
+	
+	@Query(value="select * from messages where receiver = ?1 order by id desc limit 1",nativeQuery=true)
+	Messages getLastRecord_by_receveir_id(Long id);
 }

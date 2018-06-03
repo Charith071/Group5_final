@@ -20,7 +20,8 @@ public class CouncellerService {
 	public boolean update_table(Signupjson signupjson, Long id) {
 		Counceller c1=new Counceller();
 		c1.setCertificate(signupjson.getCertificate());
-		c1.setGps_location(Double.parseDouble(signupjson.getGps()));
+		c1.setLatitude(Double.parseDouble(signupjson.getLatitude()));
+		c1.setLongitude(Double.parseDouble(signupjson.getLongitude()));
 		c1.setId(id);
 		c1.setProfile_pic_name(signupjson.getProfile_pic_name()+id.toString());
 		c1.setQualification(signupjson.getQualification());
@@ -33,7 +34,9 @@ public class CouncellerService {
 	public boolean update_gps_location(Gpsjson gpsjson1){
 		if(councellerDao.existsById(Long.parseLong(gpsjson1.getId()))) {
 			Counceller c=councellerDao.findByIds(Integer.parseInt(gpsjson1.getId()));
-			c.setGps_location(Double.parseDouble(gpsjson1.getGps()));
+			
+			c.setLatitude(Double.parseDouble(gpsjson1.getLatitude()));
+			c.setLongitude(Double.parseDouble(gpsjson1.getLongitude()));
 			councellerDao.save(c);
 			return true;
 		}else {

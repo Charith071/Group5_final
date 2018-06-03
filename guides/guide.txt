@@ -29,11 +29,30 @@
 			type       			**(user)
 			birth_date			**format=1994-5-19
 			phone_number       	** no spaces between numbers
-			gps
+			latitude
+			longitude
 			guadiant_phone_number
 			job
 			profile_pic_name
 
+
+
+				{
+				"name":"gp2s",
+				"address":"kaluthra ",
+				"email":"charith@gmail.com",
+				"gender":"male",
+				"username":"12s3ssrrr456",
+				"password":"123sds456",
+				"type":"counceller",
+				"birth_date":"1994-5-10",
+				"phone_number":"0773412086",
+				"latitude":"76.234",
+				"longitude":"23.455",
+				"profile_pic_name":"image",
+				"certificate":"noooo",
+				"qualification":"mokuth nee"
+			}
 
 			if(success){
 					status:200 (OK)
@@ -100,7 +119,8 @@
 
 		parameters should be json object
 			id          ** id of user
-			gps			** gps location
+			latitude			** gps location
+			longitude
 
 			if(success){
 					status:200 (OK)
@@ -122,7 +142,8 @@
 
 		parameters should be json object
 			id          ** id of counceller
-			gps			** gps location
+			latitude			** gps location
+			longitude
 
 			if(success){
 					status:200 (OK)
@@ -659,19 +680,97 @@ if type is counceller  ..only counceller can view this notice   like vice
 
 
 
-====================real time scenario===========================
+(22)====================real time scenario===========================
++++++++++++++++++++http://localhost:8081/api/realtime
+
+	req: 
+			{
+				"id": "1"     ** id of logged user
+	
+			}
 
 	type
 		1 msg
 		2 notification  
-				1 booking request
-				2 booking response
-				3 booking response confirm
-				4 join new counceller
-				5 counceller maping
-				6 cansal booking request by councellr
+				1  Counceller Was Mapped  
+				2  You Have New Booking Request  
+				3 Cansal Booking Request By Counceller
+				4  Counceller Sent Your Booking Details Please Check And Confirm
+				5  Patient Confirm Your Booking Details 
+				6  Join New Counceller 
+				7 Add New Music Track  
+				8  Counceller Was Mapped 
 
 		3 other
-			1 add tips
-			2 add admin msg
-			3 add music track
+			1 Add New Tip
+			2 New Admin Notice
+			
+
+
+
+			if any changes...its return json array
+			response:
+				{
+				    "status": true,
+				    "list": [
+				        {
+				            "id": 42,
+				            "updatedTableName": "all_users",
+				            "updatedRecodeId": 62,
+				            "updatedStatus": "Join New Counceller",
+				            "affectedUserId": 1,
+				            "is_notification_send": "true",
+				            "type": "notification",
+				            "notificationSendDate": "2018-06-03",
+				            "addDate": "2018-06-03T21:56:28.831"
+				        }
+				    ]
+				}
+
+				if not any changes==
+				{
+				    "status": false,
+				    "list": []
+				}
+
+
+
+					get any user data by id
+(23)++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		http://localhost:8081/api/getData
+
+		req:
+			{
+				"id":"4"
+			}
+
+
+		res:
+
+			{
+			    "id": 4,
+			    "name": "new dddd",
+			    "age": 24,
+			    "address": "dd",
+			    "birth_date": "1994-5-10",
+			    "create_date": "2018-05-16",
+			    "email": "charith@gmail.com",
+			    "gender": "male",
+			    "username": "Access Denied!",
+			    "password": "Access DEnied!",
+			    "phone_number": "ggggg",
+			    "type": "counceller",
+			    "status": "enable",
+			    "certificate": "dsasdadsad",
+			    "qualification": "mokuth nee",
+			    "profile_pic_name": "image4",
+			    "guadiant_phone_no": "null",
+			    "job": "null",
+			    "stress_level": 0,
+			    "response": "success",
+			    "res_status": "success"
+			}
+
+
+
+			

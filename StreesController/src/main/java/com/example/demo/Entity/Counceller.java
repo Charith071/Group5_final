@@ -7,7 +7,8 @@ import javax.persistence.Id;
 public class Counceller {
 	@Id//(should be foreign key of alluser.id)
 	private Long id;
-	private Double gps_location;
+	private Double latitude;
+	private Double longitude;
 	private String certificate;
 	private String qualification;
 	private String profile_pic_name;
@@ -19,11 +20,18 @@ public class Counceller {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Double getGps_location() {
-		return gps_location;
+	
+	public Double getLatitude() {
+		return latitude;
 	}
-	public void setGps_location(Double gps_location) {
-		this.gps_location = gps_location;
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
+	public Double getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
 	}
 	public String getCertificate() {
 		return certificate;

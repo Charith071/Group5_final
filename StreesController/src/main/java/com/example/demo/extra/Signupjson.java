@@ -11,13 +11,13 @@ public class Signupjson {
 	private String gender;
 	private String name;
 	private String phone_number;
-	private String gps;
+	private String latitude;
+	private String longitude;
 	private String guadiant_phone_number;
 	private String job;
 	private String profile_pic_name;
 	private String qualification;
 	private String certificate;
-	
 	
 	
 	public String getUsername() {
@@ -74,11 +74,17 @@ public class Signupjson {
 	public void setPhone_number(String phone_number) {
 		this.phone_number = phone_number;
 	}
-	public String getGps() {
-		return gps;
+	public String getLatitude() {
+		return latitude;
 	}
-	public void setGps(String gps) {
-		this.gps = gps;
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+	public String getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
 	}
 	public String getGuadiant_phone_number() {
 		return guadiant_phone_number;
@@ -110,6 +116,8 @@ public class Signupjson {
 	public void setCertificate(String certificate) {
 		this.certificate = certificate;
 	}
+	
+	
 	
 	
 	

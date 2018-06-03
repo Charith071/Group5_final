@@ -22,10 +22,27 @@ public class AllUsers {
 	private String phone_number;
 	private String type;
 	private String status;
+	private String lastLogin;
+	private String lastLogout;
 	
 	
 	
-	
+	public String getLastLogin() {
+		return lastLogin;
+	}
+
+	public void setLastLogin(String lastLogin) {
+		this.lastLogin = lastLogin;
+	}
+
+	public String getLastLogout() {
+		return lastLogout;
+	}
+
+	public void setLastLogout(String lastLogout) {
+		this.lastLogout = lastLogout;
+	}
+
 	public Long getId() {
 		return id;
 	}

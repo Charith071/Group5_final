@@ -18,11 +18,20 @@ public class Changes {
 	private String is_notification_send;
 	private String type;
 	private String notificationSendDate;
+	private String addDate;
 	
 	
 	
 	
 	
+	public String getAddDate() {
+		return addDate;
+	}
+
+	public void setAddDate(String addDate) {
+		this.addDate = addDate;
+	}
+
 	public Changes() {
 		super();
 	}
@@ -36,7 +45,7 @@ public class Changes {
 	}
 
 	public Changes(String updatedTableName, Long updatedRecodeId, String updatedStatus, Long affectedUserId,
-			String is_notification_send, String type) {
+			String is_notification_send, String type,String addDate) {
 		super();
 		this.updatedTableName = updatedTableName;
 		this.updatedRecodeId = updatedRecodeId;
@@ -44,6 +53,7 @@ public class Changes {
 		this.affectedUserId = affectedUserId;
 		this.is_notification_send = is_notification_send;
 		this.type = type;
+		this.addDate=addDate;
 	}
 
 	public Long getId() {

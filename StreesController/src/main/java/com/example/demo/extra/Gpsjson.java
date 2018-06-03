@@ -2,20 +2,28 @@ package com.example.demo.extra;
 
 public class Gpsjson {
 	private String id;
-	private String gps;
-	
+	private String latitude;
+	private String longitude;
 	public String getId() {
 		return id;
 	}
 	public void setId(String id) {
 		this.id = id;
 	}
-	public String getGps() {
-		return gps;
+	public String getLatitude() {
+		return latitude;
 	}
-	public void setGps(String gps) {
-		this.gps = gps;
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
 	}
+	public String getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+	
+	
 	
 	
 }
