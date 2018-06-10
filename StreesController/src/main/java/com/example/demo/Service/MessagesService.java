@@ -45,5 +45,36 @@ public class MessagesService {
 		return messagesDao.getLastRecord_by_receveir_id(Long.parseLong(id));
 	}
 	
+	//================get last records by affected id===========================
+	public Object get_last_records_by_id(Long id,Integer number) {
+		return messagesDao.get_LastRecords_by__id(id,number);
+	}
+	
+	//================get all recordes by affected id=============================
+	public Object get_all_records_by_id(Long id) {
+		return messagesDao.get_All_Records_by__id(id);
+	}
+	
+	//=============get all record according to two ids===========================
+	public Object get_all_records_by_two_ids(Long id1,Long id2) {
+		return messagesDao.get_All_Records_by__two_ids(id1, id2);
+	}
+	
+	//==============get last records according to two ids==========================
+	public Object get_last_records_by_two_ids(Long id1,Long id2,Integer n) {
+		return messagesDao.get_LastRecords_by__two_ids(id1, id2, n);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }

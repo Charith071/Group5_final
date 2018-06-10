@@ -15,6 +15,7 @@ public class ChangesService {
 	
 	//==============update chyanges table============================
 	public boolean update_changed_table(Changes data) {
+		//System.out.println("testin");
 		changesDao.save(data);
 		return true;
 	}

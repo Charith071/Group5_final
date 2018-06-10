@@ -25,7 +25,11 @@ public class MapService {
 		
 	}
 	
-	
+	//===============update table by instance==================
+	public boolean updateTableByInstance(Map m) {
+		mapDao.save(m);
+		return true;
+	}
 	
 	//===========exist by userid=============
 	public boolean existByuser_id(String  user_id) {

@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+//import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 
 import java.awt.PageAttributes.MediaType;
 import java.io.Console;
@@ -66,9 +66,14 @@ import com.example.demo.extra.AddTipsjson;
 import com.example.demo.extra.AddTrackjson;
 import com.example.demo.extra.AdminNotificationjson;
 import com.example.demo.extra.BookingRequestJson;
+import com.example.demo.extra.ChangeCouncellerjson;
 import com.example.demo.extra.Chatjson;
 import com.example.demo.extra.Confirmjson;
 import com.example.demo.extra.DeleteRequestJson;
+import com.example.demo.extra.GetAllCouncellerOut;
+import com.example.demo.extra.GetMessageOut;
+import com.example.demo.extra.GetMessagesJson;
+import com.example.demo.extra.GetOneChatJson;
 import com.example.demo.extra.Getdatjson;
 import com.example.demo.extra.Getleveljson;
 import com.example.demo.extra.Gpsjson;
@@ -390,6 +395,7 @@ public class AppController {
 							if(mapService.is_counceller_already_exist(chatjson.getSender_id(), chatjson.getReceiver_id())) {
 								if(messagesService.update_msg_details(chatjson)) {
 									Messages m=messagesService.get_last_instance_by_Receiver_id(chatjson.getReceiver_id());
+									//System.out.println("tset2");
 									changesService.update_changed_table(new Changes("messages", m.getId(), "New Message", m.getReceiver(), "false", "messages",func.getCurrentdateTime()));
 									return ResponseEntity.ok(new JsonResponse("msg details update successs!!","success"));
 								}else {
@@ -402,6 +408,9 @@ public class AppController {
 							//=====from counceler to user============
 							if(mapService.is_counceller_already_exist(chatjson.getReceiver_id(), chatjson.getSender_id())) {
 								if(messagesService.update_msg_details(chatjson)) {
+									Messages m=messagesService.get_last_instance_by_Receiver_id(chatjson.getReceiver_id());
+									changesService.update_changed_table(new Changes("messages", m.getId(), "New Message", m.getReceiver(), "false", "messages",func.getCurrentdateTime()));
+
 									return ResponseEntity.ok(new JsonResponse("msg details update successs!!","success"));
 								}else {
 									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("cannot update table!","fail"));
@@ -831,7 +840,7 @@ public class AppController {
 										AllUsers u=allusersService.getuserfrom_id(Integer.parseInt(req.getUser_id()));
 										AllUsers c=allusersService.getuserfrom_id(Integer.parseInt(req.getCounceller_id()));
 										if(u.getType().equals("user") && u.getStatus().equals("enable") && c.getType().equals("counceller") && c.getStatus().equals("enable")) {
-											if(mapService.is_counceller_already_exist(req.getUser_id(), req.getCounceller_id())) {
+											//if(mapService.is_counceller_already_exist(req.getUser_id(), req.getCounceller_id())) {
 												Booking_request bb=new Booking_request();
 												bb.setCounceller_id(Long.parseLong(req.getCounceller_id()));
 												String dd=func.getCurrentdateTime();
@@ -847,9 +856,9 @@ public class AppController {
 													return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot update table","fail"));
 
 												}
-											}else {
-												return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Initialy you want to map this counceller","fail"));
-											}
+										//	}else {
+										//		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Initialy you want to map this counceller","fail"));
+										//	}
 										}else {
 											return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user or counceller","fail"));
 										}
@@ -863,6 +872,7 @@ public class AppController {
 								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user inputs","fail"));
 
 							}		
+							
 							
 				}
 				
@@ -1036,9 +1046,95 @@ public class AppController {
 				
 			}
 						
+			//(22) realtime=============================	
+			@RequestMapping(value="/realtime",method=RequestMethod.POST)
+			public ResponseEntity<?> test(@RequestBody Realtimejson para) throws ParseException{
+				
+				 String AdminNotification_status=adminNotificationService.getLastUptadeTime();
+				 String AllUser_status=allusersService.getLastUptadeTime();
+				 String BookingDetails_status=bookingDetailsService.getLastUptadeTime();
+				 String BookingRequest_status=bookingRequestService.getLastUptadeTime();
+				 String Counceller_status=councellerService.getLastUptadeTime();
+				 String Map_status=mapService.getLastUptadeTime();
+				 String Message_status=messagesService.getLastUptadeTime();
+				 String MusicTrack_status=musicTrackService.getLastUptadeTime();
+				 String StressLevelHistory_status=stressLevelHistoryService.getLastUptadeTime();
+				 String Tips_status=tipsService.getLastUptadeTime();
+				 String User_status=userService.getLastUptadeTime();
+				 
+			//	 changesService.update_changed_table(new Changes("all_users",alluser.getId(),"Join New Counceller",Long.parseLong("1"),"false","notification"));
+				 
+				
+				boolean is_any_new_changes_found=false;
+				RealtimeOut out=new RealtimeOut();
+				AllUsers u=allusersService.getuserfrom_id(Integer.parseInt(para.getId()));
+				List<Changes> l=null;
+				if(changesService.is_exist_by_affected_user_id(para.getId())) {
+					 l=(List<Changes>) changesService.get_all_insatnce_by_affected_id_and_notsend(para.getId());
+					
+					
+					for(Changes c:l) {
+						c.setIs_notification_send("true");
+						c.setNotificationSendDate(func.getCurrentdate());
+						changesService.update_changed_table(c);
+						is_any_new_changes_found=true;
+					}
+					
+				}
+				
+				Changes c1=changesService.get_last_instance();
+				if(c1.getAffectedUserId().toString().equals("100000") || c1.getAffectedUserId().toString().equals("100001") || c1.getAffectedUserId().toString().equals("100002")) {
+					String[] datetime=c1.getAddDate().split("T");
+					String d=datetime[0];
+					String t=datetime[1];
+					String[] currentDate=func.getCurrentdateTime().split("T");
+					if(d.equals(currentDate[0])) {
 						
-		
+						
+						SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+						Date date1 = format.parse(t);
+						Date date2 = format.parse(currentDate[1]);
+						long difference = (date2.getTime() - date1.getTime())/1000; 
+						System.out.println(difference);
+						if(difference <= 8) {
+							if(u.getType().equals("user")) {				
+								if(c1.getAffectedUserId().toString().equals("100000") || c1.getAffectedUserId().toString().equals("100002")) {
+									l.add(c1);
+									System.out.println(difference);
+									is_any_new_changes_found=true;
+								}							
+							}else if(u.getType().equals("counceller")) {
+								if(c1.getAffectedUserId().toString().equals("100001") || c1.getAffectedUserId().toString().equals("100002")) {
+									l.add(c1);
+									System.out.println(difference);
+									is_any_new_changes_found=true;
+								}	
+							}
+						}
+						
+					}						
+					
+				}
+				
+				
+				
+				
+				
+				if(is_any_new_changes_found) {
+					
+					out.setStatus(true);
+					out.setList(l);
+					return ResponseEntity.ok(out);
+				}else {
+					out.setStatus(false);
+					return ResponseEntity.ok(out);
+				}
+				 
+				
+			}
 			
+					
+								
 			
 	
 		//(23) get user,counceller,admin data by id.....
@@ -1089,111 +1185,179 @@ public class AppController {
 		
 						
 						
+		//(24) get last number of  messages according to affected user===================
+			@RequestMapping(value="/getMessages",method=RequestMethod.POST)
+			public ResponseEntity<?> getMessages(@RequestBody GetMessagesJson para){
+				try {
+					if(allusersService.is_user_exist(para.getId())) {
+						AllUsers a=allusersService.getuserfrom_id(Integer.parseInt(para.getId()));
+						if(a.getStatus().equals("enable")) {
+							GetMessageOut out=new GetMessageOut();
+							if(para.getNumberOfRecords().equals("all")) {
+								List<Messages> mmm=(List<Messages>) messagesService.get_all_records_by_id(Long.parseLong(para.getId()));
+								if(mmm.isEmpty()) {
+									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("No Any related Messages", "false"));
+								}else {
+									out.setRes_status("true");
+									out.setList(mmm);
+									return ResponseEntity.ok(out);
+								}
+								
+							}else {
+								List<Messages> mm=(List<Messages>) messagesService.get_last_records_by_id(Long.parseLong(para.getId()), Integer.parseInt(para.getNumberOfRecords()));
+								if(mm.isEmpty()) {
+									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("No Any related Messages", "false"));
+								}else {
+									out.setRes_status("true");
+									out.setList(mm);
+									return ResponseEntity.ok(out);
+								}
+								
+							}
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Access Denid By Admin", "false"));
+						}
+					}else {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot Find user", "false"));
+					}
+				} catch (Exception e) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid User inputs", "false"));
+				}
+				
+				
+				
+			}
+						
+						
+		//(25) get all councellers ======================================
+			@RequestMapping(value="/getAllCouncellers",method=RequestMethod.POST)
+			public ResponseEntity<?> getAllCouncellers(){
+				try {
+					List<AllUsers> l=(List<AllUsers>) allusersService.get_all_councellers("enable");
+					if(l.isEmpty()) {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find any Counceller","fail"));
+						
+					}else {
+						GetAllCouncellerOut out=new GetAllCouncellerOut();
+						out.setRes_status("true");
+						List<UserdetailsResponse> ll=new ArrayList<UserdetailsResponse>();
+						UserdetailsResponse data=new UserdetailsResponse();
+						for(AllUsers c:l) {
+							Counceller cc=councellerService.get_counceller_by_id(c.getId().toString());
+							data.setAddress(c.getAddress());
+							data.setAge(c.getAge().toString());
+							data.setBirth_date(c.getBirth_date());
+							data.setEmail(c.getEmail());
+							data.setGender(c.getGender());
+							data.setId(c.getId().toString());
+							
+							data.setLatitude(cc.getLatitude().toString());
+							data.setLongitude(cc.getLongitude().toString());
+							
+							
+							data.setName(c.getName());
+							data.setPhone_number(c.getPhone_number());
+							ll.add(data);
+						}
+						out.setList(ll);
+						return ResponseEntity.ok(out);
+					}
 					
-						
-						
-						
+				} catch (Exception e) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot Return data because latitude and logitudes are NULL","fail"));
+				}
+				
+			}
 	
+			
+		//(26) change exist mapped Counceller by user
+			@RequestMapping(value="/user/ChangeCounceller",method=RequestMethod.POST)
+			public ResponseEntity<?> change_mapped_counceller(@RequestBody ChangeCouncellerjson para){
+				
+				try {
+					if(allusersService.is_user_exist(para.getUserId())) {
+						//System.out.println(para.getUserId()+"\t"+para.getCurrentCouncellerId()+"\t"+para.getNewCouncellerId());
+						if(allusersService.is_user_exist(para.getCurrentCouncellerId()) && allusersService.is_user_exist(para.getNewCouncellerId()) ) {
+							AllUsers u=allusersService.getuserfrom_id(Integer.parseInt(para.getUserId()));
+							AllUsers c=allusersService.getuserfrom_id(Integer.parseInt(para.getNewCouncellerId()));
+							if(u.getType().equals("user") && c.getType().equals("counceller") && c.getStatus().equals("enable") ) {
+								if(mapService.is_counceller_already_exist(para.getUserId(), para.getCurrentCouncellerId())) {
+									if(!mapService.is_counceller_already_exist(para.getUserId(), para.getNewCouncellerId())) {
+										Map m=mapService.getInstanceBy_councellerId_and_userId(para.getCurrentCouncellerId(), para.getUserId());
+										m.setCouncellerId(Long.parseLong(para.getNewCouncellerId()));
+										mapService.updateTableByInstance(m);
+										changesService.update_changed_table(new Changes("map", m.getId(), "Counceller Was Mapped", Long.parseLong(para.getNewCouncellerId()), "false", "notification", func.getCurrentdateTime()));
+										return ResponseEntity.ok(new JsonResponse("Counceller mapping Success", "true"));
+									}else {
+										return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Counceller is Allready Mapped", "fail"));
+									}
+								}else {
+									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid Mapping", "fail"));
+								}
+							}else {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid User or Counceller", "fail"));
+							}
+						//	return ResponseEntity.ok("lol");
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Counceller is Not Exist", "fail"));
+						}
+						//return ResponseEntity.ok("lol");
+					}else {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("User is Not Exist", "fail"));
+					}
+				} catch (Exception e) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid User Inputs", "fail"));
+				}
+				
+				
+				//return ResponseEntity.ok("lol");
+			}
+
+		
+		//(27) get last number of msges acording to one cht session
+			@RequestMapping(value="/getOneChat",method=RequestMethod.POST)
+			public ResponseEntity<?> getOneChat(@RequestBody GetOneChatJson para){
+				try {
+					if(allusersService.is_user_exist(para.getId1()) && allusersService.is_user_exist(para.getId2())) {
+						AllUsers u1=allusersService.getuserfrom_id(Integer.parseInt(para.getId1()));
+						AllUsers u2=allusersService.getuserfrom_id(Integer.parseInt(para.getId2()));
+						if(u1.getStatus().equals("enable") && u2.getStatus().equals("enable")) {
+							GetMessageOut out=new GetMessageOut();
+							if(para.getNumberOfInstance().equals("all")) {
+								List<Messages> mm=(List<Messages>) messagesService.get_all_records_by_two_ids(Long.parseLong(para.getId1()), Long.parseLong(para.getId2()));
+								if(mm.isEmpty()) {
+									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find any related megs", "false"));
+								}else {
+									out.setRes_status("true");
+									out.setList(mm);
+									return ResponseEntity.ok(out);
+								}
+							}else {
+								List<Messages> mmm=(List<Messages>) messagesService.get_last_records_by_two_ids(Long.parseLong(para.getId1()), Long.parseLong(para.getId2()), Integer.parseInt(para.getNumberOfInstance()));
+								out.setRes_status("true");
+								out.setList(mmm);
+								return ResponseEntity.ok(out);
+							}
+							
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Access Denied by Admin", "false"));
+						}
 						
-		
-		
-		
+					}else {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find any user", "false"));
+					}
+				} catch (Exception e) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid USer inputs", "false"));
+				}
+				
+			}
 						
 //*****************************************************************************************	***********
 						
   
 	
 			
-	//(22) realtime=============================	
-		@RequestMapping(value="/realtime",method=RequestMethod.POST)
-		public ResponseEntity<?> test(@RequestBody Realtimejson para) throws ParseException{
-			
-			 String AdminNotification_status=adminNotificationService.getLastUptadeTime();
-			 String AllUser_status=allusersService.getLastUptadeTime();
-			 String BookingDetails_status=bookingDetailsService.getLastUptadeTime();
-			 String BookingRequest_status=bookingRequestService.getLastUptadeTime();
-			 String Counceller_status=councellerService.getLastUptadeTime();
-			 String Map_status=mapService.getLastUptadeTime();
-			 String Message_status=messagesService.getLastUptadeTime();
-			 String MusicTrack_status=musicTrackService.getLastUptadeTime();
-			 String StressLevelHistory_status=stressLevelHistoryService.getLastUptadeTime();
-			 String Tips_status=tipsService.getLastUptadeTime();
-			 String User_status=userService.getLastUptadeTime();
-			 
-		//	 changesService.update_changed_table(new Changes("all_users",alluser.getId(),"Join New Counceller",Long.parseLong("1"),"false","notification"));
-			 
-			
-			boolean is_any_new_changes_found=false;
-			RealtimeOut out=new RealtimeOut();
-			AllUsers u=allusersService.getuserfrom_id(Integer.parseInt(para.getId()));
-			List<Changes> l=null;
-			if(changesService.is_exist_by_affected_user_id(para.getId())) {
-				 l=(List<Changes>) changesService.get_all_insatnce_by_affected_id_and_notsend(para.getId());
-				
-				
-				for(Changes c:l) {
-					c.setIs_notification_send("true");
-					c.setNotificationSendDate(func.getCurrentdate());
-					changesService.update_changed_table(c);
-					is_any_new_changes_found=true;
-				}
-				
-			}
-			
-			Changes c1=changesService.get_last_instance();
-			if(c1.getAffectedUserId().toString().equals("100000") || c1.getAffectedUserId().toString().equals("100001") || c1.getAffectedUserId().toString().equals("100002")) {
-				String[] datetime=c1.getAddDate().split("T");
-				String d=datetime[0];
-				String t=datetime[1];
-				String[] currentDate=func.getCurrentdateTime().split("T");
-				if(d.equals(currentDate[0])) {
-					
-					
-					SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-					Date date1 = format.parse(t);
-					Date date2 = format.parse(currentDate[1]);
-					long difference = (date2.getTime() - date1.getTime())/1000; 
-					System.out.println(difference);
-					if(difference <= 8) {
-						if(u.getType().equals("user")) {				
-							if(c1.getAffectedUserId().toString().equals("100000") || c1.getAffectedUserId().toString().equals("100002")) {
-								l.add(c1);
-								System.out.println(difference);
-								is_any_new_changes_found=true;
-							}							
-						}else if(u.getType().equals("counceller")) {
-							if(c1.getAffectedUserId().toString().equals("100001") || c1.getAffectedUserId().toString().equals("100002")) {
-								l.add(c1);
-								System.out.println(difference);
-								is_any_new_changes_found=true;
-							}	
-						}
-					}
-					
-				}						
-				
-			}
-			
-			
-			
-			
-			
-			if(is_any_new_changes_found) {
-				
-				out.setStatus(true);
-				out.setList(l);
-				return ResponseEntity.ok(out);
-			}else {
-				out.setStatus(false);
-				return ResponseEntity.ok(out);
-			}
-			 
-			
-		}
-		
-				
-				
-		
+	
 				
 						
 						
@@ -1237,12 +1401,12 @@ public class AppController {
 			
 			
 	
-	//=================get_all_councellerIds========================================
+	/*//=================get_all_councellerIds========================================
 	@RequestMapping(value="user/getAllCouncellers",method=RequestMethod.POST)
 	public ResponseEntity<?> getAllCouncellers(){
 		
 		return ResponseEntity.ok(allusersService.get_all_councellers("enable"));
-	}
+	}*/
 	
 	
 //===================remove exist maped counceller by user=======================================
