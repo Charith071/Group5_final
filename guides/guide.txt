@@ -1,3 +1,5 @@
+
+	clean install
 1:	localhost:8081/api/signin  				(method=post)
 		parameters should be json object like below
 			{
@@ -774,3 +776,58 @@ if type is counceller  ..only counceller can view this notice   like vice
 
 
 			
+(24) ========================= get last number of  messages according to affected user=============
+	http://localhost:8081/api/getMessages
+
+	request:
+
+				{
+					"id":"4",
+					"numberOfRecords":"2"
+				}
+
+		** if you want to get last 3 record the "numberOfRecords"="3"
+		** if you want to get All record the "numberOfRecords"="all"
+
+		response:  is a json array
+
+			{
+			    "res_status": "true",
+			    "list": [
+			        {
+			            "id": 5,
+			            "sender": 4,
+			            "receiver": 2,
+			            "msg": "third mesage message",
+			            "date_time": "1223244"
+			        },
+			        {
+			            "id": 4,
+			            "sender": 3,
+			            "receiver": 4,
+			            "msg": "third mesage message",
+			            "date_time": "1223244"
+			        }
+			    ]
+			}
+
+
+
+(26) change exist mapped Counceller by user==========================================
+====================http://localhost:8081/api/user/ChangeCounceller===========================
+
+	request:
+			{
+				"userId": "2",
+				"currentCouncellerId":"5",
+				"newCouncellerId":"6"
+			
+			}
+
+
+	response:
+
+				 {
+				    "response": "Counceller mapping Success",
+				    "res_status": "true"
+				}
