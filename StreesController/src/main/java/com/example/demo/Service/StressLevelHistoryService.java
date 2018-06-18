@@ -16,9 +16,9 @@ public class StressLevelHistoryService {
 	//====================update previous stress level of user===================
 	public boolean update_history_strees_level_details(String user_id,String strees_level) {
 		StressLevelHistory history=new StressLevelHistory();
-		history.setUser_id(Long.parseLong(user_id));
-		history.setStress_level(Double.parseDouble(strees_level));
-		history.setDate_time(func.getCurrentdate());
+		history.setUserId(Long.parseLong(user_id));
+		history.setStressLevel(Double.parseDouble(strees_level));
+		history.setDateTime(func.getCurrentdate());
 		
 		stressLevelHistoryDao.save(history);
 		
@@ -41,6 +41,15 @@ public class StressLevelHistoryService {
 		return stressLevelHistoryDao.getLastRecord();
 	}
 	
+	//=============get instances by userId=========================
+	public Object getInstancesByUserId(String UserId){
+		return stressLevelHistoryDao.getRegdcordsByUserId(Long.parseLong(UserId));
+	}
+	
+	//===============check is exist by userId======================
+	public boolean Is_exist_by_userId(String userId) {
+		return stressLevelHistoryDao.existsByUserId(Long.parseLong(userId));
+	}
 	
 	
 }

@@ -17,6 +17,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.constraints.Null;
 import javax.websocket.Session;
 
+import org.mockito.internal.verification.Only;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -42,6 +43,7 @@ import com.example.demo.Entity.Counceller;
 import com.example.demo.Entity.Map;
 import com.example.demo.Entity.Messages;
 import com.example.demo.Entity.MusicTrack;
+import com.example.demo.Entity.StressLevelHistory;
 import com.example.demo.Entity.TableInfomation;
 import com.example.demo.Entity.Tips;
 import com.example.demo.Entity.User;
@@ -81,7 +83,9 @@ import com.example.demo.extra.GetOneChatJson;
 import com.example.demo.extra.Getdatjson;
 import com.example.demo.extra.Getleveljson;
 import com.example.demo.extra.Gpsjson;
+import com.example.demo.extra.IdOnly;
 import com.example.demo.extra.JsonResponse;
+import com.example.demo.extra.LevelHistoryjson;
 import com.example.demo.extra.Leveljson;
 import com.example.demo.extra.LoginOutPut;
 import com.example.demo.extra.Loginjson;
@@ -144,13 +148,13 @@ public class AppController {
 	
 
 	@RequestMapping("")
-	public ResponseEntity<?> home(@RequestHeader(value="Authorization") String token){
+	public ResponseEntity<?> home(){
 		
-		if(keycloakTokenValidater.Validate(token).equals("admin")) {
+		//if(keycloakTokenValidater.Validate(token).equals("admin")) {
 			return ResponseEntity.ok(new JsonResponse("Authorized","fail"));
-		}else {
-			return ResponseEntity.ok(new JsonResponse("Unauthorized","fail"));
-		}
+	//	}else {
+		//	return ResponseEntity.ok(new JsonResponse("Unauthorized","fail"));
+		//}
 				
 			
 		
@@ -1456,6 +1460,47 @@ public class AppController {
 				}
 				
 			}
+			
+			
+			
+			
+		//(29)=================get StressLevelHistory according to user=======================
+			@PostMapping("/user/LevelHistory")
+			public ResponseEntity<?> getUserStressLevelHistory(@RequestBody IdOnly para,@RequestHeader(value="Authorization") String token){
+				try {
+					if(keycloakTokenValidater.Validate(token).equals("user") || keycloakTokenValidater.Validate(token).equals("counceller")) {
+						if(allusersService.is_user_exist(para.getId())) {
+							if(stressLevelHistoryService.Is_exist_by_userId(para.getId())) {
+								List<StressLevelHistory> list=(List<StressLevelHistory>) stressLevelHistoryService.getInstancesByUserId(para.getId());
+								LevelHistoryjson data=new LevelHistoryjson();
+								data.setRes_status("true");
+								data.setHistoryList(list);
+								return ResponseEntity.ok(data);
+								
+							}else {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("No Avalable History", "fail"));
+							}
+							
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find Any user", "fail"));
+						}					}else {
+						return ResponseEntity.ok(new JsonResponse("Unauthorized","fail"));
+					}
+					
+				} catch (Exception e) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user inputs", "fail"));
+				}
+				
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			
 			
 			
