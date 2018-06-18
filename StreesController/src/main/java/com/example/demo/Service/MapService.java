@@ -36,6 +36,11 @@ public class MapService {
 		return mapDao.existsByUserId(Long.parseLong(user_id));
 	}
 	
+	//=====get instance fron user id==================
+	public Iterable<Map> getInstanceFromUserId(String userId) {
+		return mapDao.findByUserIds(Integer.parseInt(userId));
+	}
+	
 	
 	//=================count number of instance by user_id==================
 	public Long numberOfinstance_by_userId(String user_id) {

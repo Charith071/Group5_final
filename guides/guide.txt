@@ -93,7 +93,7 @@
 
 
 
-***********update stress level of user*********************8
+***********update stress level of user*********************(Secure : access only for users)
 3: localhost:8081/api/level  				(method=post)
 		parameters should be json object
 
@@ -116,7 +116,7 @@
 
 
 
-4:localhost:8081/api/user/gps				(method=post)
+4:localhost:8081/api/user/gps				(method=post)(Secure : access only for users)
 	**update user current gps location
 
 		parameters should be json object
@@ -139,7 +139,7 @@
 
 
 
-5: localhost:8081/api/counceller/gps				(method=post)
+5: localhost:8081/api/counceller/gps				(method=post)(Secure : access only for counceller)
 	**update counceller gps location
 
 		parameters should be json object
@@ -161,7 +161,7 @@
 
 
 
-6: localhost:8081/api/ChangeProfilePicture				(method=post)
+6: localhost:8081/api/ChangeProfilePicture				(method=post)(Secure : access any role)
 	**change profile picture
 
 		parameters should be json object
@@ -191,7 +191,7 @@
 
 
 
-7: localhost:8081/api/getLevel				(method=post)
+7: localhost:8081/api/getLevel				(method=post)(Secure : access only for users)
 	**get user stress level
 
 		parameters should be json object
@@ -217,7 +217,7 @@
 
 
 
-8:  localhost:8081/api/user/mapCounceller			(method=post)
+8:  localhost:8081/api/user/mapCounceller			(method=post)(Secure : access only for users)
 	**map counceller by user*******
 
 		parameters:should be json object
@@ -260,7 +260,7 @@
 
 
 9: localhost:8081/api/chat			(method=post)
-*****************chat counceller vs user*******************
+*****************chat counceller vs user*******************(Secure : access only for users or counceller)
 (pre requariments:for chat....user have mapped councellers)
 
 
@@ -273,7 +273,7 @@
 
 
 
-10: localhost:8081/api/PatientDetails		(method=post)
+10: localhost:8081/api/PatientDetails		(method=post) (Secure : access only for counceller)
 ----------------(get patient details by counceller)------------
 	preRequirements: user belongs to counceller(should be map)
 
@@ -307,7 +307,7 @@
 
 
 
-11: localhost:8081/api/admin/accessControll		(method=get)
+11: localhost:8081/api/admin/accessControll		(method=get) (Secure : access only for admin)
 	-------------(admin can cotroll access of any user by changing all_user.status as "enable" or "disable")---------------------------------
 
 	** not a json request...its a like a form type get request........
@@ -354,7 +354,7 @@
 
 
 
-12: http://localhost:8081/api/addTrack    (method =post)
+12: http://localhost:8081/api/addTrack    (method =post) (Secure : access only for counceller or admin)
 ++++++++++++++++++(counceller or admin can add misuc track=============)
 	the parameter should be json object
 
@@ -403,7 +403,7 @@
 
 
 
-13: http://localhost:8081/api/admin/controllTracks    (methos=get)
+13: http://localhost:8081/api/admin/controllTracks    (methos=get)(Secure : access only for admin)
 	+++++++++++++++controll music track by admin+++++++++++++
 		admin can cotroll music track by changig status as enable,disable,delete
 
@@ -453,7 +453,7 @@
 
 
 
-14: http://localhost:8081/api/accountSetting    (method=post)
+14: http://localhost:8081/api/accountSetting    (method=post)(Secure : access only for admin || user || counceller)
 ++++++++++++update account details+++++++++++++++++++++++
 
 	you can change anything y want to change
@@ -484,7 +484,7 @@
 
 
 
-15: http://localhost:8081/api/admin/addNotification    method:post
+15: http://localhost:8081/api/admin/addNotification    method:post  (Secure : access only for admin)
 ++++++++++++++++++++++add admin_notification by admin++++++++++++++++++++++
 
 adminitrator can enter notice to all,or to councellers or to users
@@ -534,7 +534,7 @@ if type is counceller  ..only counceller can view this notice   like vice
 
 
 
-16:  http://localhost:8081/api/admin/ControllNotice  method (post)
+16:  http://localhost:8081/api/admin/ControllNotice  method (post)  (Secure : access only for admin)
 	++++++++admin can delete or change status of exist notification by changing status to delete or enable or disable;
 
 	pre requirements: notice must exist in admin_notification table
@@ -576,7 +576,7 @@ if type is counceller  ..only counceller can view this notice   like vice
 
 
 
-17:   http://localhost:8081/api/user/Request    method (post)
+17:   http://localhost:8081/api/user/Request    method (post)(Secure : access only for user)
 	++++++++send bookinng request by patient to counceller+++++++++++
 
 	patiant can send booking request to mapped counceller
@@ -591,7 +591,7 @@ if type is counceller  ..only counceller can view this notice   like vice
 
 
 
-18: 	http://localhost:8081/api/user/deleterequest   method(POSt)
+18: 	http://localhost:8081/api/user/deleterequest   method(POSt) (Secure : access only for user)
 	+++++++++++++delete submited booking  request by user+++++++++++++++
 
 	*****please See the Scenario in top*****************
@@ -604,7 +604,7 @@ if type is counceller  ..only counceller can view this notice   like vice
 							"request_id":"2"
 						}
 
-19:  	http://localhost:8081/api/counceller/Response   method(post)
+19:  	http://localhost:8081/api/counceller/Response   method(post)  (Secure : access only for counceller)
 	+++++++++++++++response to booking request by counceller++++++++++++++++
 
 		*****please See the Scenario in top*****************
@@ -633,7 +633,7 @@ if type is counceller  ..only counceller can view this notice   like vice
 
 
 
-20:  http://localhost:8081/api/user/confirm   (methos=post)
+20:  http://localhost:8081/api/user/confirm   (methos=post)  (Secure : access only for user)
 ++++++++++++++++++confirm counceller booking reply by patient++++++++++++++++++
 
 	user can confrom rreply that send by the counceller
@@ -659,7 +659,7 @@ if type is counceller  ..only counceller can view this notice   like vice
 
 
 
-21:  http://localhost:8081/api/counceller/AddTips  (method post)
+21:  http://localhost:8081/api/counceller/AddTips  (method post)  (Secure : access only for counceller)
 ++++++++++++++add tips by counceller++++++++++++++++++++++++++
 
 		parametrs:
@@ -737,7 +737,7 @@ if type is counceller  ..only counceller can view this notice   like vice
 
 
 
-					get any user data by id
+					get any user data by id  (Secure : access only for admin || user || counceller)
 (23)++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		http://localhost:8081/api/getData
 
@@ -775,9 +775,14 @@ if type is counceller  ..only counceller can view this notice   like vice
 
 
 
+	//(25) get all councellers ======================================(only foe users )
+				http://localhost:8081/api/getAllCouncellers
+
+
+
 			
 (24) ========================= get last number of  messages according to affected user=============
-	http://localhost:8081/api/getMessages
+	http://localhost:8081/api/getMessages     (Secure : access only for user || counceller)
 
 	request:
 
@@ -813,7 +818,7 @@ if type is counceller  ..only counceller can view this notice   like vice
 
 
 
-(26) change exist mapped Counceller by user==========================================
+(26) change exist mapped Counceller by user==========================================(Secure : access only for user)
 ====================http://localhost:8081/api/user/ChangeCounceller===========================
 
 	request:
@@ -831,3 +836,34 @@ if type is counceller  ..only counceller can view this notice   like vice
 				    "response": "Counceller mapping Success",
 				    "res_status": "true"
 				}
+
+
+
+//(27) get last number of msges acording to one cht session  (only for user and counceller)
+			http://localhost:8081/api/getOneChat
+
+				{
+					"id1":"4",
+					"id2":"2"
+					"numberOfInstance":"2"
+				}
+
+		** if you want to get last 3 record the "numberOfInstance"="3"
+		** if you want to get All record the "numberOfInstance"="all"
+
+
+
+
+
+
+(28)======================get avalable mapped councellers by user==============(only for user)
+			http://localhost:8081/api/getMappedCouncellers
+
+
+			parameres:
+
+				** also requrire the Header
+			{
+					"id":"4"
+			}		
+

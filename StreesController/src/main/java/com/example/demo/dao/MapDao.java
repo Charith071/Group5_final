@@ -1,10 +1,12 @@
 package com.example.demo.dao;
 
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 
 import com.example.demo.Entity.Map;
+import com.mysql.jdbc.IterateBlock;
 
 public interface MapDao extends CrudRepository<Map, Long>{
 	boolean existsByUserId(Long user_id);
@@ -13,10 +15,10 @@ public interface MapDao extends CrudRepository<Map, Long>{
 	Long countByCouncellerId(Long counceller_id);
 	
 	
-	@Query(value="select * from map where userId= ?1",nativeQuery=true)
-	Map findByUserIds(Integer id);
+	@Query(value="select * from map where user_id= ?1",nativeQuery=true)
+	Iterable<Map> findByUserIds(Integer id);
 	
-	@Query(value="select * from map where councellerId= ?1",nativeQuery=true)
+	@Query(value="select * from map where counceller_id= ?1",nativeQuery=true)
 	Map findByUserCouncellerId(Integer id);
 	
 	
