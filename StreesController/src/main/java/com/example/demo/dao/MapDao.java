@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 
 import com.example.demo.Entity.Map;
-import com.mysql.jdbc.IterateBlock;
+
 
 public interface MapDao extends CrudRepository<Map, Long>{
 	boolean existsByUserId(Long user_id);

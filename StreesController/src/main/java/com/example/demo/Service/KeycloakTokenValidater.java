@@ -1,12 +1,18 @@
 package com.example.demo.Service;
 
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.example.demo.Entity.AllUsers;
 
 @Service
 public class KeycloakTokenValidater {
 	
-	public String Validate(String jwtToken) {
+	@Autowired
+	private AllusersService allusersService;
+	
+	public String Validate(String jwtToken,String secId) {
 		try {
 			 System.out.println("------------ Decode JWT ------------");
 		        String[] split_string = jwtToken.split("\\.");
@@ -31,22 +37,32 @@ public class KeycloakTokenValidater {
 		      //return the role
 		       String role1=body.split(":")[17].split("}")[0].replaceAll("\\[", "").replaceAll("\\]","").split(",")[0].replaceAll("^\"|\"$", "").trim();
 		       String role2=body.split(":")[17].split("}")[0].replaceAll("\\[", "").replaceAll("\\]","").split(",")[1].replaceAll("^\"|\"$", "").trim();
+		       String kid=body.split(":")[9].split(",")[0].trim().replaceAll("^\"|\"$", "");
+		       System.out.println(kid);
 		       
-		       
-		       if(type.contentEquals("JWT")) {
-		    	   if(role1.equals("user") || role2.equals("user")) {
-		    		   return "user";
-		    	   }else if(role1.equals("counceller") || role2.equals("counceller")) {
-		    		   return "counceller";
-		    	   }else if(role1.equals("admin") || role2.equals("admin")) {
-		    		   return "admin";
-		    	   }else {
-		    		   return "Fail";
-		    	   }
+		       if(allusersService.is_exisit_by_keycloakId(kid)) {
+		    	 if(allusersService.getInstanceFrom_keycloakId(kid).getId().toString().equals(secId)) {
+		    		 if(type.contentEquals("JWT")) {
+				    	   if(role1.equals("user") || role2.equals("user")) {
+				    		   return "user";
+				    	   }else if(role1.equals("counceller") || role2.equals("counceller")) {
+				    		   return "counceller";
+				    	   }else if(role1.equals("admin") || role2.equals("admin")) {
+				    		   return "admin";
+				    	   }else {
+				    		   return "Fail";
+				    	   }
+				       }else {
+				    	   return "Fail";
+				       }
+		    	 }else {
+		    		 return "Fail";
+		    	 }
+		    	   
 		       }else {
 		    	   return "Fail";
 		       }
-			
+		       		
 
 		      // System.out.println(role1+ "\n"+role2);
 		       // return body+header;

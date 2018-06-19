@@ -15,6 +15,9 @@ import com.example.demo.Entity.AllUsers;
 public interface AlluserDao extends CrudRepository<AllUsers, Long>{
 	boolean existsByUsername(String username);
 	boolean existsByPassword(String password);
+	boolean existsByKeycloakId(String keycloakId);
+	AllUsers findByKeycloakId(String keycloakId);
+	
 	Iterable<AllUsers> findAllByType(String type);
 	
 	@Query(value="SELECT * FROM all_users WHERE username = ?1 and password = ?2 " , nativeQuery = true)

@@ -211,7 +211,15 @@ public class AllusersService {
 		//return alluserDao.findAllByType("counceller");
 	}
 	
+	//============get instance from keycloak id=============================
+	public AllUsers getInstanceFrom_keycloakId(String keycloakId) {
+		return alluserDao.findByKeycloakId(keycloakId);
+	}
 	
+	//==============check existby keycloak id=====================
+	public boolean is_exisit_by_keycloakId(String keycloakId) {
+		return alluserDao.existsByKeycloakId(keycloakId);
+	}
 	
 	
 	

@@ -5,7 +5,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import lombok.Data;
+
 @Entity
+@Data
 public class AllUsers {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -24,10 +27,12 @@ public class AllUsers {
 	private String status;
 	private String lastLogin;
 	private String lastLogout;
+	private String keycloakId;
 	
 	
 	
-	public String getLastLogin() {
+	
+	/*public String getLastLogin() {
 		return lastLogin;
 	}
 
@@ -128,6 +133,6 @@ public class AllUsers {
 				+ birth_date + ", create_date=" + create_date + ", email=" + email + ", gender=" + gender
 				+ ", username=" + username + ", password=" + password + ", phone_number=" + phone_number + ", type="
 				+ type + ", status=" + status + "]";
-	}
+	}*/
 	
 }

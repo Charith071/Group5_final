@@ -77,15 +77,18 @@ public class Origine {
 						
 						if(allusersService.update_tables(signupjson)) {
 							AllUsers alluser=allusersService.getuserfrom_username_password(signupjson.getUsername(),signupjson.getPassword());
+							String kid=keyClockService.createUserInKeyCloak(signupjson);
+							alluser.setKeycloakId(kid);
+							allusersService.updateAlluserInstance(alluser);
 							if(alluser.getType().equals("user")) {
 								//also update stress level and history								
-									keyClockService.createUserInKeyCloak(signupjson);
+									//keyClockService.createUserInKeyCloak(signupjson);
 									userService.update_table(signupjson,alluser.getId());
 									return ResponseEntity.ok(new JsonResponse(alluser.getId().toString(),"success"));
 								
 								
 							}else if(alluser.getType().equals("counceller")) {
-								keyClockService.createUserInKeyCloak(signupjson);
+							//	keyClockService.createUserInKeyCloak(signupjson);
 								councellerService.update_table(signupjson,alluser.getId());
 								changesService.update_changed_table(new Changes("all_users",alluser.getId(),"Join New Counceller",Long.parseLong("1"),"false","notification",func.getCurrentdateTime()));
 								//changesService.update_changed_table(new Changes("all_users",alluser.getId(),"Access Denied By Administrator",Long.parseLong(alluser.getId().toString()),"false","notification"));

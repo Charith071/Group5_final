@@ -24,6 +24,7 @@ import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -50,6 +51,7 @@ public class KeyCloakService {
 	private String REALM;
 	
 	CommnFunction func=new CommnFunction();
+	
 
 	public String getToken(Loginjson userCredentials) {
 
@@ -101,9 +103,10 @@ public class KeyCloakService {
 	
 	
 //==============signup======================================
-	public int createUserInKeyCloak(Signupjson userDTO) {
+	public String createUserInKeyCloak(Signupjson userDTO) {
 
 		int statusId = 0;
+		String userId="";
 		try {
 
 			UsersResource userRessource = getKeycloakUserResource();
@@ -123,7 +126,7 @@ public class KeyCloakService {
 
 			if (statusId == 201) {
 
-				String userId = result.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
+				 userId = result.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
 
 				System.out.println("User created with userId:" + userId);
 
@@ -171,7 +174,7 @@ public class KeyCloakService {
 
 		}
 
-		return statusId;
+		return userId;
 
 	}
 
