@@ -22,9 +22,17 @@ public interface MessagesDao extends CrudRepository<Messages,Long>{
 	@Query(value="select * from messages where receiver = ?1 OR sender= ?1",nativeQuery=true)
 	Iterable<Messages>  get_All_Records_by__id(Long id);
 	
-	@Query(value="select * from messages where receiver = ?1 AND sender= ?2 OR receiver =?1 AND sender =?2 order by id desc",nativeQuery=true)
+	@Query(value="select * from messages where receiver = ?1 AND sender= ?2 OR receiver =?2 AND sender =?1 order by id desc",nativeQuery=true)
 	Iterable<Messages>  get_All_Records_by__two_ids(Long id1,Long id2);
 	
-	@Query(value="select * from messages where receiver = ?1 AND sender= ?2 OR receiver =?1 AND sender =?2 order by id desc limit ?3",nativeQuery=true)
+	/*@Query(value="select * from messages where receiver = ?1 AND sender= ?2 OR receiver =?1 AND sender =?2 order by id desc limit ?3",nativeQuery=true)
+	Iterable<Messages>  get_LastRecords_by__two_ids(Long id1,Long id2,Integer n);*/
+	
+	@Query(value="select * from (select * from messages where receiver = ?1 AND sender= ?2 OR receiver =?2 AND sender =?1 order by id desc limit ?3) t order by t.id asc",nativeQuery=true)
 	Iterable<Messages>  get_LastRecords_by__two_ids(Long id1,Long id2,Integer n);
+	
+	
+	
+	
+	
 }

@@ -53,6 +53,7 @@ import com.example.demo.Service.BookingDetailsService;
 import com.example.demo.Service.BookingRequestService;
 import com.example.demo.Service.ChangesService;
 import com.example.demo.Service.CouncellerService;
+import com.example.demo.Service.KeyCloakService;
 import com.example.demo.Service.KeycloakTokenValidater;
 import com.example.demo.Service.MapService;
 import com.example.demo.Service.MessagesService;
@@ -80,9 +81,11 @@ import com.example.demo.extra.GetMappedCouncellers;
 import com.example.demo.extra.GetMessageOut;
 import com.example.demo.extra.GetMessagesJson;
 import com.example.demo.extra.GetOneChatJson;
+import com.example.demo.extra.GetTips;
 import com.example.demo.extra.Getdatjson;
 import com.example.demo.extra.Getleveljson;
 import com.example.demo.extra.Gpsjson;
+import com.example.demo.extra.GrtTipsOut;
 //import com.example.demo.extra.HeaderData;
 import com.example.demo.extra.IdOnly;
 import com.example.demo.extra.JsonResponse;
@@ -137,6 +140,8 @@ public class AppController {
 	private ChangesService changesService;
 	@Autowired 
 	private KeycloakTokenValidater keycloakTokenValidater;
+	@Autowired
+	private KeyCloakService keyCloakService;
 	
 	private CommnFunction func=new CommnFunction();
 	
@@ -1496,13 +1501,98 @@ public class AppController {
 			}
 			
 			
+		//(30)================logout =========================================================
+			@PostMapping("/logout")
+			public ResponseEntity<?> logout(@RequestBody IdOnly para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
+				try {
+					if(keycloakTokenValidater.Validate(token,secId).equals("user") || keycloakTokenValidater.Validate(token,secId).equals("counceller") || keycloakTokenValidater.Validate(token,secId).equals("admin")) {
+						if(allusersService.is_user_exist(para.getId())) {
+							AllUsers u=allusersService.getuserfrom_id(Integer.parseInt(secId));
+							u.setLogingStatus("false");
+							allusersService.updateAlluserInstance(u);
+							String kid=allusersService.getuserfrom_id(Integer.parseInt(para.getId())).getKeycloakId();
+							keyCloakService.logoutUser(kid);
+							return ResponseEntity.ok(new JsonResponse("logout success","success"));
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find user", "fail"));
+						}
+					}else {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Error", "fail"));
+					}
+					
+					
+				} catch (Exception e) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user inputs", "fail"));
+				}
+				
+				
+			}
 			
 			
+			//(31)==================check_login=========================================================
+			@PostMapping("/is_loging")
+			public ResponseEntity<?> is_loging(@RequestBody IdOnly para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
+				try {
+					if(keycloakTokenValidater.Validate(token,secId).equals("user") || keycloakTokenValidater.Validate(token,secId).equals("counceller") || keycloakTokenValidater.Validate(token,secId).equals("admin")) {
+						if(allusersService.getuserfrom_id(Integer.parseInt(secId)).getLogingStatus().equals("true")) {
+							return ResponseEntity.ok(new JsonResponse("login success", "success"));
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("loging fail", "fail"));
+						}
+					}else {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("loging fail", "fail"));
+
+					}
+				} catch (Exception e) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user inputs", "fail"));
+				}
+				
+			}
 			
 			
-			
-			
-			
+		//(32) ==========================getTips=============================================================
+			@PostMapping("/getTips")
+			public ResponseEntity<?> getTips(@RequestBody GetTips para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
+				try {
+					if(keycloakTokenValidater.Validate(token, secId).equals("user") || keycloakTokenValidater.Validate(token, secId).equals("counceller")) {
+						if(allusersService.is_user_exist(para.getId())) {
+							AllUsers c=allusersService.getuserfrom_id(Integer.parseInt(para.getId()));
+							if((c.getType().equals("counceller") || c.getType().equals("user")) && c.getStatus().equals("enable")) {
+								List<Tips> list=new ArrayList<>();
+								if(para.getNumberOfInstance().equals("all")) {
+									for(Tips t:tipsService.getAllrecords()) {
+										list.add(t);
+									}
+								}else{
+									for(Tips t:tipsService.getlastRecords(Integer.parseInt(para.getNumberOfInstance()))) {
+											list.add(t);
+									}
+								}
+								GrtTipsOut output=new GrtTipsOut();
+								if(list.size()>0) {
+									output.setResponse("success");
+									output.setRes_status("success");
+									output.setData(list);
+									return ResponseEntity.ok(output);
+								}else {
+									output.setResponse("No any Tips");
+									output.setRes_status("fail");
+									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(output);
+								}
+							}else {
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid Counceller", "fail"));
+							}
+						}else {
+							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find counceller or user", "fail"));
+						}
+					}else {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("unAuthorized", "fail"));
+					}
+				} catch (Exception e) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("invalid user inputs", "fail"));
+				}
+				
+			}
 			
 			
 			

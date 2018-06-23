@@ -865,5 +865,52 @@ if type is counceller  ..only counceller can view this notice   like vice
 				** also requrire the Header
 			{
 					"id":"4"
-			}		
+			}	
 
+
+
+
+//(29)=================get StressLevelHistory according to user=======================(only for user and counceller)
+		http://localhost:8081/api/user/LevelHistory	
+
+		parameters: (nead heders )
+
+				{
+					"id":"17"
+				}
+
+(30)=========================logout =========================================================
+					http://localhost:8081/api/logout
+
+					parametrs: (need headers)
+
+					{
+						"id":"17"
+					}
+
+
+
+
+(31)=============================check_login=========================================================
+				http://localhost:8081/api/is_loging
+
+				parametrs: (need headers)
+
+					{
+						"id":"17"
+					}
+
+
+
+
+
+(32)===============================getTips=============================================================(only for user and councellers)
+				http://localhost:8081/api/getTips
+
+				parametrs: (need headers)
+
+					{
+						"id":"17",
+						"numberOfInstance":"5"     ** if u want to getll all instance
+														numberOfInstance:"all"
+					}

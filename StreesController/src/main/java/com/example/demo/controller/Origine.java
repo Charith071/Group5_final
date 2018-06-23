@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,6 +33,7 @@ import com.example.demo.extra.Signupjson;
 
 @RestController
 @RequestMapping("/org")
+@CrossOrigin(origins="*",allowedHeaders="*")
 public class Origine {
 	@Autowired
 	private AllusersService allusersService;
@@ -128,6 +130,7 @@ public class Origine {
 					AllUsers u3=allusersService.getuserfrom_username_password(lj.getUsername(),lj.getPassword());
 					if(u3.getStatus().equals("enable")) {
 						u3.setLastLogin(func.getCurrentdateTime());
+						u3.setLogingStatus("true");
 						allusersService.updateAlluserInstance(u3);
 						 String token="";
 						 token=keyClockService.getToken(lj).split(":")[1].split(",")[0];

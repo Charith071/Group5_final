@@ -28,6 +28,7 @@ public class AllUsers {
 	private String lastLogin;
 	private String lastLogout;
 	private String keycloakId;
+	private String logingStatus="false";
 	
 	
 	

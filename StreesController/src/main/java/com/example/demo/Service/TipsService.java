@@ -24,9 +24,18 @@ public class TipsService {
 	
 	//==================exist by tip id==========================
 	public boolean is_tip_exist_by_tip_id(String tip_id) {
+	
 		return tipsDao.existsById(Long.parseLong(tip_id));
 	}
+	//==============get all record=========================
+	public Iterable<Tips> getAllrecords() {
+		return tipsDao.findAll();
+	}
 	
+	//============getLAstRecords=====================
+	public Iterable<Tips> getlastRecords(Integer n) {
+		return tipsDao.getLastRecords(n);
+	}
 	
 	
 	

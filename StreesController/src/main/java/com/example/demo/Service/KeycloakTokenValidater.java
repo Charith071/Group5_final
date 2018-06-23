@@ -41,27 +41,32 @@ public class KeycloakTokenValidater {
 		       System.out.println(kid);
 		       
 		       if(allusersService.is_exisit_by_keycloakId(kid)) {
-		    	 if(allusersService.getInstanceFrom_keycloakId(kid).getId().toString().equals(secId)) {
-		    		 if(type.contentEquals("JWT")) {
-				    	   if(role1.equals("user") || role2.equals("user")) {
-				    		   return "user";
-				    	   }else if(role1.equals("counceller") || role2.equals("counceller")) {
-				    		   return "counceller";
-				    	   }else if(role1.equals("admin") || role2.equals("admin")) {
-				    		   return "admin";
-				    	   }else {
-				    		   return "Fail";
-				    	   }
+		    	   if(allusersService.getInstanceFrom_keycloakId(kid).getLogingStatus().equals("true")) {
+		    		   if(allusersService.getInstanceFrom_keycloakId(kid).getId().toString().equals(secId)) {
+				    		 if(type.contentEquals("JWT")) {
+						    	   if(role1.equals("user") || role2.equals("user")) {
+						    		   return "user";
+						    	   }else if(role1.equals("counceller") || role2.equals("counceller")) {
+						    		   return "counceller";
+						    	   }else if(role1.equals("admin") || role2.equals("admin")) {
+						    		   return "admin";
+						    	   }else {
+						    		   return "Fail";
+						    	   }
+						       }else {
+						    	   return "Fail";
+						       }
+				    	 }else {
+				    		 return "Fail";
+				    	 }
+				    	   
 				       }else {
 				    	   return "Fail";
 				       }
-		    	 }else {
-		    		 return "Fail";
-		    	 }
-		    	   
-		       }else {
-		    	   return "Fail";
-		       }
+		    	   }else {
+		    		   return "Fail";
+		    	   }
+		    	 
 		       		
 
 		      // System.out.println(role1+ "\n"+role2);

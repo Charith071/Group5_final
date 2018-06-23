@@ -120,6 +120,7 @@ public class KeyCloakService {
 
 			// Create user
 			Response result = userRessource.create(user);
+			
 			System.out.println("Keycloak create user response code>>>>" + result.getStatus());
 
 			statusId = result.getStatus();
