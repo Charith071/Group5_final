@@ -156,15 +156,19 @@ public class AllusersService {
 	
 	
 	//================check duplicate user============================
-	public boolean check_is_duplicate_user(String username,String password) {
+	public boolean check_is_duplicate_user(String username,String password,String id) {
 		boolean is_duplicate_user=false;
 		for(AllUsers users:alluserDao.findAll()) {
 			
 			if(users.getUsername().equals(username)) {
-				is_duplicate_user=true;
-				if(users.getPassword().equals(cmnFunction.string_encript(password))) {
+				if(!users.getId().toString().equals(id)) {
 					is_duplicate_user=true;
-					break;
+				}
+				if(users.getPassword().equals(cmnFunction.string_encript(password))) {
+					if(!users.getId().toString().equals(id)) {
+						is_duplicate_user=true;
+						break;
+					}
 				}
 				if(is_duplicate_user) {
 					break;

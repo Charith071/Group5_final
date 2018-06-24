@@ -12,7 +12,7 @@ public class KeycloakTokenValidater {
 	@Autowired
 	private AllusersService allusersService;
 	
-	public String Validate(String jwtToken,String secId) {
+	public String Validate(String jwtToken,String secId,String bodyId) {
 		try {
 			 System.out.println("------------ Decode JWT ------------");
 		        String[] split_string = jwtToken.split("\\.");
@@ -43,7 +43,8 @@ public class KeycloakTokenValidater {
 		       if(allusersService.is_exisit_by_keycloakId(kid)) {
 		    	   if(allusersService.getInstanceFrom_keycloakId(kid).getLogingStatus().equals("true")) {
 		    		   if(allusersService.getInstanceFrom_keycloakId(kid).getId().toString().equals(secId)) {
-				    		 if(type.contentEquals("JWT")) {
+		    			   if(bodyId.equals(secId)) {
+		    				   if(type.contentEquals("JWT")) {
 						    	   if(role1.equals("user") || role2.equals("user")) {
 						    		   return "user";
 						    	   }else if(role1.equals("counceller") || role2.equals("counceller")) {
@@ -56,6 +57,10 @@ public class KeycloakTokenValidater {
 						       }else {
 						    	   return "Fail";
 						       }
+		    			   }else {
+		    				   return "Fail";
+		    			   }
+				    		
 				    	 }else {
 				    		 return "Fail";
 				    	 }

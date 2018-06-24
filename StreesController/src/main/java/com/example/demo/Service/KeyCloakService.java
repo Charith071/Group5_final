@@ -117,7 +117,7 @@ public class KeyCloakService {
 			user.setFirstName(userDTO.getName());
 			//user.setLastName(userDTO.getLastName());
 			user.setEnabled(true);
-
+			
 			// Create user
 			Response result = userRessource.create(user);
 			
@@ -186,6 +186,7 @@ public class KeyCloakService {
 		UsersResource userRessource = getKeycloakUserResource();
 
 		userRessource.get(userId).logout();
+		
 
 	}
 
@@ -203,7 +204,15 @@ public class KeyCloakService {
 		// Set password credential
 		userResource.get(userId).resetPassword(passwordCred);
 		
+		
+		
+		
 
+	}
+	
+	public void deleteUser(String id) {
+		UsersResource userResource = getKeycloakUserResource();
+		userResource.delete(id);
 	}
 
 	private UsersResource getKeycloakUserResource() {

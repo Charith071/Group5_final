@@ -460,7 +460,7 @@
 
 	parameters:
 			{
-				"id": "1",
+				"id": "17",
 				"name":"Charith madushanka liyanage",
 				"address": "",
 				"birth_date":"1990-4-5", 
@@ -470,12 +470,14 @@
 				"password": "",  
 				"phone_number": "", 
 				"guadiant_phone_no": "dfgfg",
-				"gps_location": "",  
+				"latitude": "",
+				"longitude":"",
 				"job": "student", 
 				"profile_pic_name": "",  
 				"certificate": "dsasdadsad", 
 				"qualification": ""
-			}
+	
+}
 
 
 				** change karanna ooni eva witharak fill karala anith eva 

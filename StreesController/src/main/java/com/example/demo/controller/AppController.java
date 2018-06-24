@@ -185,7 +185,7 @@ public class AppController {
 	@RequestMapping(value="/level",method=RequestMethod.POST)
 	public ResponseEntity<?> level_update(@RequestBody Leveljson leveljson ,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 		try {
-			if(keycloakTokenValidater.Validate(token,secId).equals("user")) {
+			if(keycloakTokenValidater.Validate(token,secId,leveljson.getId()).equals("user")) {
 				if(userService.update_user_stress_level(leveljson.getId(),leveljson.getLevel())) {
 					// update history table
 					 boolean g=stressLevelHistoryService.update_history_strees_level_details(leveljson.getId(), leveljson.getLevel());
@@ -209,7 +209,7 @@ public class AppController {
 	@RequestMapping(value="/user/gps",method=RequestMethod.POST)
 	public ResponseEntity<?> update_user_gps_location( @RequestBody Gpsjson gpsjson,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 		try {
-			if(keycloakTokenValidater.Validate(token,secId).equals("user")) {
+			if(keycloakTokenValidater.Validate(token,secId,gpsjson.getId()).equals("user")) {
 				if(userService.update_user_gps_location(gpsjson)) {
 					return ResponseEntity.ok(new JsonResponse(" gps update success!! ","success"));
 				}else {
@@ -229,7 +229,7 @@ public class AppController {
 	@RequestMapping(value="/counceller/gps",method=RequestMethod.POST)
 	public ResponseEntity<?> update_counceller_gps( @RequestBody Gpsjson gpsjson1,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 		try {
-			if(keycloakTokenValidater.Validate(token,secId).equals("counceller")) {
+			if(keycloakTokenValidater.Validate(token,secId,gpsjson1.getId()).equals("counceller")) {
 				if(councellerService.update_gps_location(gpsjson1)) {
 					return ResponseEntity.ok(new JsonResponse(" update success!! ","success"));
 				}else {
@@ -250,7 +250,7 @@ public class AppController {
 	public ResponseEntity<?> changeProfilePicture(@RequestBody Profilepicjson profilepicjson,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 		
 		try {
-			if(keycloakTokenValidater.Validate(token,secId).equals("admin") || keycloakTokenValidater.Validate(token,secId).equals("user") || keycloakTokenValidater.Validate(token,secId).equals("counceller")) {
+			if(keycloakTokenValidater.Validate(token,secId,profilepicjson.getId()).equals("admin") || keycloakTokenValidater.Validate(token,secId,profilepicjson.getId()).equals("user") || keycloakTokenValidater.Validate(token,secId,profilepicjson.getId()).equals("counceller")) {
 				if(allusersService.is_user_exist(profilepicjson.getId())) {
 					AllUsers au1=allusersService.getuserfrom_id(Integer.parseInt(profilepicjson.getId()));
 					if(au1.getType().equals("user")) {
@@ -288,7 +288,7 @@ public class AppController {
 	public ResponseEntity<?> getStressLevel(@RequestBody Getleveljson getleveljson,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 		
 		try {
-			if(keycloakTokenValidater.Validate(token,secId).equals("user")) {
+			if(keycloakTokenValidater.Validate(token,secId,getleveljson.getId()).equals("user")) {
 				if(userService.is_user_exist(getleveljson.getId())) {
 					User u1=userService.getUserby_id(getleveljson.getId());
 					
@@ -312,7 +312,7 @@ public class AppController {
 		@RequestMapping(value="/user/mapCounceller",method=RequestMethod.POST)
 		public ResponseEntity<?> mapcounceller(@RequestBody Mappingjson mappingjson,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 			try {
-				if(keycloakTokenValidater.Validate(token,secId).equals("user")) {
+				if(keycloakTokenValidater.Validate(token,secId,mappingjson.getUser_id()).equals("user")) {
 
 					if(allusersService.getuserfrom_id(Integer.parseInt(mappingjson.getUser_id())).getType().equals("user") && allusersService.getuserfrom_id(Integer.parseInt(mappingjson.getCounceller_id())).getType().equals("counceller")) {
 						
@@ -357,7 +357,7 @@ public class AppController {
 		@RequestMapping(value="/chat",method=RequestMethod.POST)
 		public ResponseEntity<?> chat(@RequestBody Chatjson chatjson,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 			try {
-				if(keycloakTokenValidater.Validate(token,secId).equals("user") || keycloakTokenValidater.Validate(token,secId).equals("counceller")) {
+				if(keycloakTokenValidater.Validate(token,secId,chatjson.getSender_id()).equals("user") || keycloakTokenValidater.Validate(token,secId,chatjson.getSender_id()).equals("counceller")) {
 					if(allusersService.is_user_exist(chatjson.getSender_id()) && allusersService.is_user_exist(chatjson.getReceiver_id()) ) {
 						AllUsers sender=allusersService.getuserfrom_id(Integer.parseInt(chatjson.getSender_id()));
 						AllUsers receiver=allusersService.getuserfrom_id(Integer.parseInt(chatjson.getReceiver_id()));
@@ -420,7 +420,7 @@ public class AppController {
 		@RequestMapping(value="/PatientDetails",method=RequestMethod.POST)
 		public ResponseEntity<?> getpatiantDetails(@RequestBody PatiantDetailsjson details,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 			try {
-				if(keycloakTokenValidater.Validate(token,secId).equals("counceller")) {
+				if(keycloakTokenValidater.Validate(token,secId,details.getCounceller_id()).equals("counceller")) {
 					if(allusersService.is_user_exist(details.getPatient_id()) && allusersService.is_user_exist(details.getCounceller_id())
 							&& allusersService.getuserfrom_id(Integer.parseInt(details.getPatient_id())).getType().equals("user")
 							&& allusersService.getuserfrom_id(Integer.parseInt(details.getPatient_id())).getStatus().equals("enable")
@@ -478,7 +478,7 @@ public class AppController {
 		public ResponseEntity<?> accessControll(@RequestBody AccessControlJson para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 			
 			try {
-				if(keycloakTokenValidater.Validate(token,secId).equals("admin")) {
+				if(keycloakTokenValidater.Validate(token,secId,para.getAdmin_id()).equals("admin")) {
 					//System.out.println(admin_id+controller_id+status);
 					if(allusersService.is_user_exist(para.getAdmin_id()) && allusersService.is_user_exist(para.getController_id())) {
 						AllUsers adminob=allusersService.getuserfrom_id(Integer.parseInt(para.getAdmin_id()));
@@ -530,7 +530,7 @@ public class AppController {
 		@RequestMapping(value="/addTrack",method=RequestMethod.POST)
 		public ResponseEntity<?> addMusicTrack(@RequestBody AddTrackjson addTrackjson,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 			try {
-				if(keycloakTokenValidater.Validate(token,secId).equals("counceller")) {
+				if(keycloakTokenValidater.Validate(token,secId,addTrackjson.getCounceller_id()).equals("counceller")) {
 					if(allusersService.is_user_exist(addTrackjson.getCounceller_id())) {
 						if((allusersService.getuserfrom_id(Integer.parseInt(addTrackjson.getCounceller_id())).getType().equals("counceller")
 								&& allusersService.getuserfrom_id(Integer.parseInt(addTrackjson.getCounceller_id())).getStatus().equals("enable")) ||
@@ -621,7 +621,7 @@ public class AppController {
 		public ResponseEntity<?> updateAccountDetails(@RequestBody AccountSettingjson account,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 			
 			try {
-				if(keycloakTokenValidater.Validate(token,secId).equals("admin") || keycloakTokenValidater.Validate(token,secId).equals("counceller") || keycloakTokenValidater.Validate(token,secId).equals("user")) {
+				if(keycloakTokenValidater.Validate(token,secId,account.getId()).equals("admin") || keycloakTokenValidater.Validate(token,secId,account.getId()).equals("counceller") || keycloakTokenValidater.Validate(token,secId,account.getId()).equals("user")) {
 					if(allusersService.is_user_exist(account.getId())) {
 						if(allusersService.getuserfrom_id(Integer.parseInt(account.getId())).getStatus().equals("enable")) {
 							AllUsers user=allusersService.getuserfrom_id(Integer.parseInt(account.getId()));
@@ -631,25 +631,44 @@ public class AppController {
 							if(account.getUsername().length()>0 || account.getPassword().length()>0) {
 								
 								if(account.getPassword().length()>0 && account.getUsername().length()>0 ){
-									if(allusersService.check_is_duplicate_user(account.getUsername(), account.getPassword())) {
+									if(allusersService.check_is_duplicate_user(account.getUsername(), account.getPassword(),account.getId())) {
 										is_password_duplicate=true;
 										is_username_duplicate=true;
 										System.out.println(account.getUsername()+ account.getPassword());
 									}else {
 										user.setUsername(account.getUsername());
 										user.setPassword(func.string_encript(account.getPassword()));
+										
+										//update keycloak database
+										keyCloakService.deleteUser(user.getKeycloakId());
+										Signupjson data=new Signupjson();
+										data.setType(user.getType());
+										data.setUsername(account.getUsername());
+										data.setPassword(account.getPassword());
+										String kid=keyCloakService.createUserInKeyCloak(data);
+										user.setKeycloakId(kid);
 									}
 								}else if(account.getUsername().length()>0) {
-									if(allusersService.check_is_duplicate_user(account.getUsername(), func.string_decode(user.getPassword()))) {
+									if(allusersService.check_is_duplicate_user(account.getUsername(), func.string_decode(user.getPassword()),account.getId())) {
 										is_username_duplicate=true;
 									}else {
 										user.setUsername(account.getUsername());
+										//update keycloak database
+										keyCloakService.deleteUser(user.getKeycloakId());
+										Signupjson data=new Signupjson();
+										data.setType(user.getType());
+										data.setUsername(account.getUsername());
+										data.setPassword(func.string_decode(user.getPassword()));
+										String kid=keyCloakService.createUserInKeyCloak(data);
+										user.setKeycloakId(kid);
 									}
 								}else if(account.getPassword().length()>0) {
-									if(allusersService.check_is_duplicate_user(user.getUsername(), account.getPassword())) {
+									if(allusersService.check_is_duplicate_user(user.getUsername(), account.getPassword(),account.getId())) {
 										is_password_duplicate=true;
 									}else {
 										user.setPassword(func.string_encript(account.getPassword()));
+										//update keycloak database
+										keyCloakService.resetPassword(func.string_encript(account.getPassword()), user.getKeycloakId());
 									}
 								}
 								
@@ -689,6 +708,10 @@ public class AppController {
 											uu.setProfile_pic_name(account.getProfile_pic_name()+account.getId());
 										}if(account.getJob().length()>0) {
 											uu.setJob(account.getJob());
+										}if(account.getLatitude().length()>0) {
+											uu.setLatitude(Double.parseDouble(account.getLatitude()));
+										}if(account.getLongitude().length()>0) {
+											uu.setLongitude(Double.parseDouble(account.getLongitude()));
 										}
 										if(userService.update_edited_user_details(uu)) {
 											return ResponseEntity.ok(new JsonResponse("Update success 1","success"));
@@ -702,6 +725,10 @@ public class AppController {
 											cc.setCertificate(account.getCertificate());
 										}if(account.getQualification().length()>0) {
 											cc.setQualification(account.getQualification());
+										}if(account.getLatitude().length()>0) {
+											cc.setLatitude(Double.parseDouble(account.getLatitude()));
+										}if(account.getLongitude().length()>0) {
+											cc.setLongitude(Double.parseDouble(account.getLongitude()));
 										}
 										
 										if(councellerService.update_Edited_counceller_details(cc)) {
@@ -748,7 +775,7 @@ public class AppController {
 			public ResponseEntity<?> add_admin_notification(@RequestBody AdminNotificationjson notice,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 				
 				try {
-					if(keycloakTokenValidater.Validate(token,secId).equals("admin")) {
+					if(keycloakTokenValidater.Validate(token,secId,notice.getAdmin_id()).equals("admin")) {
 						if(allusersService.getuserfrom_id(Integer.parseInt(notice.getAdmin_id())).getType().equals("admin")) {
 							if(notice.getType().equals("all") || notice.getType().equals("user") || notice.getType().equals("counceller")) {
 								AdminNotification nn=new AdminNotification();
@@ -793,7 +820,7 @@ public class AppController {
 			public ResponseEntity<?> Controll_notice(@RequestBody AdminNotificationjson noty,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 				
 				try {
-					if(keycloakTokenValidater.Validate(token,secId).equals("admin")) {
+					if(keycloakTokenValidater.Validate(token,secId,noty.getAdmin_id()).equals("admin")) {
 						if(allusersService.is_user_exist(noty.getAdmin_id())) {
 							if(allusersService.getuserfrom_id(Integer.parseInt(noty.getAdmin_id())).getType().equals("admin")) {
 								if(adminNotificationService.is_notice_exisit(noty.getNotice_id())) {
@@ -840,7 +867,7 @@ public class AppController {
 				@RequestMapping(value="/user/Request",method=RequestMethod.POST)
 				public ResponseEntity<?> send_request_to_counceller(@RequestBody BookingRequestJson req,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 							try {
-								if(keycloakTokenValidater.Validate(token,secId).equals("user")) {
+								if(keycloakTokenValidater.Validate(token,secId,req.getUser_id()).equals("user")) {
 									if(allusersService.is_user_exist(req.getUser_id())) {
 										if(allusersService.is_user_exist(req.getCounceller_id())) {
 											AllUsers u=allusersService.getuserfrom_id(Integer.parseInt(req.getUser_id()));
@@ -895,7 +922,7 @@ public class AppController {
 		@RequestMapping(value="/user/deleterequest",method=RequestMethod.POST)				
 		public ResponseEntity<?> delete_request(@RequestBody DeleteRequestJson param,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 			try {
-				if(keycloakTokenValidater.Validate(token,secId).equals("user")) {
+				if(keycloakTokenValidater.Validate(token,secId,param.getUser_id()).equals("user")) {
 					if(allusersService.is_user_exist(param.getUser_id())) {
 						if(allusersService.getuserfrom_id(Integer.parseInt(param.getUser_id())).getType().equals("user") && allusersService.getuserfrom_id(Integer.parseInt(param.getUser_id())).getStatus().equals("enable")) {
 							if(bookingRequestService.is_request_exist_by_id(param.getRequest_id())) {
@@ -934,7 +961,7 @@ public class AppController {
 			@RequestMapping(value="/counceller/Response",method=RequestMethod.POST)
 			public ResponseEntity<?> Response_to_booking_request(@RequestBody ResponseJson para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 				try {
-					if(keycloakTokenValidater.Validate(token,secId).equals("counceller")) {
+					if(keycloakTokenValidater.Validate(token,secId,para.getCounceller_id()).equals("counceller")) {
 						if(allusersService.is_user_exist(para.getCounceller_id())) {
 							AllUsers cc=allusersService.getuserfrom_id(Integer.parseInt(para.getCounceller_id()));
 							if(cc.getType().equals("counceller") && cc.getStatus().equals("enable")) {
@@ -1003,7 +1030,7 @@ public class AppController {
 			@RequestMapping(value="/user/confirm",method=RequestMethod.POST)
 			public ResponseEntity<?> Confirm_counceller_booking_reply_by_user(@RequestBody Confirmjson para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 				try {
-					if(keycloakTokenValidater.Validate(token,secId).equals("user")) {
+					if(keycloakTokenValidater.Validate(token,secId,para.getUser_id()).equals("user")) {
 						if(allusersService.is_user_exist(para.getUser_id())) {
 							AllUsers aa=allusersService.getuserfrom_id(Integer.parseInt(para.getUser_id()));
 							if(aa.getType().equals("user") && aa.getStatus().equals("enable")) {
@@ -1050,7 +1077,7 @@ public class AppController {
 			@RequestMapping(value="/counceller/AddTips",method=RequestMethod.POST)
 			public ResponseEntity<?> add_tips(@RequestBody AddTipsjson para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 				try {
-					if(keycloakTokenValidater.Validate(token,secId).equals("counceller")) {
+					if(keycloakTokenValidater.Validate(token,secId,para.getCounceller_id()).equals("counceller")) {
 						if(allusersService.is_user_exist(para.getCounceller_id())) {
 							AllUsers user=allusersService.getuserfrom_id(Integer.parseInt(para.getCounceller_id()));
 							if(user.getType().equals("counceller") && user.getStatus().equals("enable")) {
@@ -1177,7 +1204,7 @@ public class AppController {
 			public ResponseEntity<?> get_data(@RequestBody Getdatjson para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 				
 				try {
-					if(keycloakTokenValidater.Validate(token,secId).equals("counceller") || keycloakTokenValidater.Validate(token,secId).equals("user") || keycloakTokenValidater.Validate(token,secId).equals("admin")) {
+					if(keycloakTokenValidater.Validate(token,secId,para.getId()).equals("counceller") || keycloakTokenValidater.Validate(token,secId,para.getId()).equals("user") || keycloakTokenValidater.Validate(token,secId,para.getId()).equals("admin")) {
 						if(allusersService.is_user_exist(para.getId())) {
 							AllUsers u=allusersService.getuserfrom_id(Integer.parseInt(para.getId()));
 							if(u.getStatus().equals("enable")) {
@@ -1230,7 +1257,7 @@ public class AppController {
 			@RequestMapping(value="/getMessages",method=RequestMethod.POST)
 			public ResponseEntity<?> getMessages(@RequestBody GetMessagesJson para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 				try {
-					if(keycloakTokenValidater.Validate(token,secId).equals("user") || keycloakTokenValidater.Validate(token,secId).equals("counceller")) {
+					if(keycloakTokenValidater.Validate(token,secId,para.getId()).equals("user") || keycloakTokenValidater.Validate(token,secId,para.getId()).equals("counceller")) {
 						if(allusersService.is_user_exist(para.getId())) {
 							AllUsers a=allusersService.getuserfrom_id(Integer.parseInt(para.getId()));
 							if(a.getStatus().equals("enable")) {
@@ -1280,7 +1307,7 @@ public class AppController {
 			@RequestMapping(value="/getAllCouncellers",method=RequestMethod.POST)
 			public ResponseEntity<?> getAllCouncellers(@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 				try {
-					if(keycloakTokenValidater.Validate(token,secId).equals("user")) {
+					if(keycloakTokenValidater.Validate(token,secId,secId).equals("user")) {
 						List<AllUsers> l=(List<AllUsers>) allusersService.get_all_councellers("enable");
 						if(l.isEmpty()) {
 							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot find any Counceller","fail"));
@@ -1331,7 +1358,7 @@ public class AppController {
 			public ResponseEntity<?> change_mapped_counceller(@RequestBody ChangeCouncellerjson para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 				
 				try {
-					if(keycloakTokenValidater.Validate(token,secId).equals("user")) {
+					if(keycloakTokenValidater.Validate(token,secId,para.getUserId()).equals("user")) {
 						if(allusersService.is_user_exist(para.getUserId())) {
 							//System.out.println(para.getUserId()+"\t"+para.getCurrentCouncellerId()+"\t"+para.getNewCouncellerId());
 							if(allusersService.is_user_exist(para.getCurrentCouncellerId()) && allusersService.is_user_exist(para.getNewCouncellerId()) ) {
@@ -1380,7 +1407,7 @@ public class AppController {
 			@RequestMapping(value="/getOneChat",method=RequestMethod.POST)
 			public ResponseEntity<?> getOneChat(@RequestBody GetOneChatJson para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 				try {
-					if(keycloakTokenValidater.Validate(token,secId).equals("counceller") || keycloakTokenValidater.Validate(token,secId).equals("user")) {
+					if(keycloakTokenValidater.Validate(token,secId,para.getId1()).equals("counceller") || keycloakTokenValidater.Validate(token,secId,para.getId1()).equals("user")) {
 						if(allusersService.is_user_exist(para.getId1()) && allusersService.is_user_exist(para.getId2())) {
 							AllUsers u1=allusersService.getuserfrom_id(Integer.parseInt(para.getId1()));
 							AllUsers u2=allusersService.getuserfrom_id(Integer.parseInt(para.getId2()));
@@ -1426,7 +1453,7 @@ public class AppController {
 			@PostMapping("/getMappedCouncellers")
 			public ResponseEntity<?> getAvalabaleMappedCouncellers(@RequestBody GetMappedCounceller para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 				try {
-					if(keycloakTokenValidater.Validate(token,secId).equals("user")) {
+					if(keycloakTokenValidater.Validate(token,secId,para.getId()).equals("user")) {
 						if(allusersService.is_user_exist(para.getId())) {
 							if(allusersService.getuserfrom_id(Integer.parseInt(para.getId())).getType().equals("user")) {
 								
@@ -1475,7 +1502,7 @@ public class AppController {
 			@PostMapping("/user/LevelHistory")
 			public ResponseEntity<?> getUserStressLevelHistory(@RequestBody IdOnly para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 				try {
-					if(keycloakTokenValidater.Validate(token,secId).equals("user") || keycloakTokenValidater.Validate(token,secId).equals("counceller")) {
+					if(keycloakTokenValidater.Validate(token,secId,para.getId()).equals("user") || keycloakTokenValidater.Validate(token,secId,para.getId()).equals("counceller")) {
 						if(allusersService.is_user_exist(para.getId())) {
 							if(stressLevelHistoryService.Is_exist_by_userId(para.getId())) {
 								List<StressLevelHistory> list=(List<StressLevelHistory>) stressLevelHistoryService.getInstancesByUserId(para.getId());
@@ -1505,7 +1532,7 @@ public class AppController {
 			@PostMapping("/logout")
 			public ResponseEntity<?> logout(@RequestBody IdOnly para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 				try {
-					if(keycloakTokenValidater.Validate(token,secId).equals("user") || keycloakTokenValidater.Validate(token,secId).equals("counceller") || keycloakTokenValidater.Validate(token,secId).equals("admin")) {
+					if(keycloakTokenValidater.Validate(token,secId,para.getId()).equals("user") || keycloakTokenValidater.Validate(token,secId,para.getId()).equals("counceller") || keycloakTokenValidater.Validate(token,secId,para.getId()).equals("admin")) {
 						if(allusersService.is_user_exist(para.getId())) {
 							AllUsers u=allusersService.getuserfrom_id(Integer.parseInt(secId));
 							u.setLogingStatus("false");
@@ -1533,8 +1560,8 @@ public class AppController {
 			@PostMapping("/is_loging")
 			public ResponseEntity<?> is_loging(@RequestBody IdOnly para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 				try {
-					if(keycloakTokenValidater.Validate(token,secId).equals("user") || keycloakTokenValidater.Validate(token,secId).equals("counceller") || keycloakTokenValidater.Validate(token,secId).equals("admin")) {
-						if(allusersService.getuserfrom_id(Integer.parseInt(secId)).getLogingStatus().equals("true")) {
+					if(keycloakTokenValidater.Validate(token,secId,para.getId()).equals("user") || keycloakTokenValidater.Validate(token,secId,para.getId()).equals("counceller") || keycloakTokenValidater.Validate(token,secId,para.getId()).equals("admin")) {
+						if(allusersService.getuserfrom_id(Integer.parseInt(para.getId())).getLogingStatus().equals("true")) {
 							return ResponseEntity.ok(new JsonResponse("login success", "success"));
 						}else {
 							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("loging fail", "fail"));
@@ -1554,7 +1581,7 @@ public class AppController {
 			@PostMapping("/getTips")
 			public ResponseEntity<?> getTips(@RequestBody GetTips para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 				try {
-					if(keycloakTokenValidater.Validate(token, secId).equals("user") || keycloakTokenValidater.Validate(token, secId).equals("counceller")) {
+					if(keycloakTokenValidater.Validate(token, secId,para.getId()).equals("user") || keycloakTokenValidater.Validate(token, secId,para.getId()).equals("counceller")) {
 						if(allusersService.is_user_exist(para.getId())) {
 							AllUsers c=allusersService.getuserfrom_id(Integer.parseInt(para.getId()));
 							if((c.getType().equals("counceller") || c.getType().equals("user")) && c.getStatus().equals("enable")) {
@@ -1599,7 +1626,11 @@ public class AppController {
 						
 //*****************************************************************************************	***********
 						
-  
+  @PostMapping("/test")
+  public ResponseEntity<?> deletuser(){
+	  keyCloakService.deleteUser("1c0bff04-e4b3-4f9e-b9cf-4c92263d38e8");
+	  return ResponseEntity.ok("lol");
+  }
 	
 			
 	

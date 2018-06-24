@@ -11,7 +11,8 @@ public class AccountSettingjson {
 	private String password;
 	private String phone_number;
 	private String guadiant_phone_no;
-	private String gps_location;
+	private String latitude;
+	private String longitude;
 	private String job;
 	private String profile_pic_name;
 	private String certificate;
@@ -81,11 +82,18 @@ public class AccountSettingjson {
 	public void setGuadiant_phone_no(String guadiant_phone_no) {
 		this.guadiant_phone_no = guadiant_phone_no;
 	}
-	public String getGps_location() {
-		return gps_location;
+	
+	public String getLatitude() {
+		return latitude;
 	}
-	public void setGps_location(String gps_location) {
-		this.gps_location = gps_location;
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+	public String getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
 	}
 	public String getJob() {
 		return job;
