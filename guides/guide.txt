@@ -51,7 +51,7 @@
 				"phone_number":"0773412086",
 				"latitude":"76.234",
 				"longitude":"23.455",
-				"profile_pic_name":"image",
+	
 				"certificate":"noooo",
 				"qualification":"mokuth nee"
 			}
@@ -473,7 +473,7 @@
 				"latitude": "",
 				"longitude":"",
 				"job": "student", 
-				"profile_pic_name": "",  
+				 
 				"certificate": "dsasdadsad", 
 				"qualification": ""
 	
@@ -881,7 +881,7 @@ if type is counceller  ..only counceller can view this notice   like vice
 					"id":"17"
 				}
 
-(30)=========================logout =========================================================
+(30)=========================logout ===============================================================================
 					http://localhost:8081/api/logout
 
 					parametrs: (need headers)
@@ -893,7 +893,7 @@ if type is counceller  ..only counceller can view this notice   like vice
 
 
 
-(31)=============================check_login=========================================================
+(31)=============================check_login=======================================================================
 				http://localhost:8081/api/is_loging
 
 				parametrs: (need headers)
@@ -916,3 +916,25 @@ if type is counceller  ..only counceller can view this notice   like vice
 						"numberOfInstance":"5"     ** if u want to getll all instance
 														numberOfInstance:"all"
 					}
+
+
+
+(33)==============================uploading images===================================(only for user and councellers)
+						http://206.189.89.19:8081/api/uploadPicture
+
+						need Authorization and id in header part;
+						and in body section: (parametrs):
+								 file: (type of file)
+								 id:  
+
+
+(34)===========================download images=========================(only for user and councellers)
+						http://206.189.89.19:8081/api/getImage
+
+						parametrs:
+
+								{
+									"id":"26"
+								}
+
+						** also need headers**

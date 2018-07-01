@@ -14,7 +14,7 @@ public class AccountSettingjson {
 	private String latitude;
 	private String longitude;
 	private String job;
-	private String profile_pic_name;
+	private String profile_pic_name; //** not required
 	private String certificate;
 	private String qualification;
 	

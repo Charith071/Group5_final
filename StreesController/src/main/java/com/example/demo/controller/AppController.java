@@ -630,7 +630,7 @@ public class AppController {
 		
 		
 		
-		// (14) ==================update account details=================================
+		// (14) ==================update account details==========================================
 		@RequestMapping(value="/accountSetting",method=RequestMethod.POST)
 		public ResponseEntity<?> updateAccountDetails(@RequestBody AccountSettingjson account,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 			
@@ -719,7 +719,7 @@ public class AppController {
 										if(account.getGuadiant_phone_no().length()>0) {
 											uu.setGuadiant_phone_no(account.getGuadiant_phone_no());
 										}if(account.getProfile_pic_name().length()>0) {
-											uu.setProfile_pic_name(account.getProfile_pic_name()+account.getId());
+											//uu.setProfile_pic_name(account.getProfile_pic_name()+account.getId());
 										}if(account.getJob().length()>0) {
 											uu.setJob(account.getJob());
 										}if(account.getLatitude().length()>0) {
@@ -1570,26 +1570,26 @@ public class AppController {
 			}
 			
 			
-			//(31)==================check_login=========================================================
-			@PostMapping("/is_loging")
-			public ResponseEntity<?> is_loging(@RequestBody IdOnly para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
-				try {
-					if(keycloakTokenValidater.Validate(token,secId,para.getId()).equals("user") || keycloakTokenValidater.Validate(token,secId,para.getId()).equals("counceller") || keycloakTokenValidater.Validate(token,secId,para.getId()).equals("admin")) {
-						if(allusersService.getuserfrom_id(Integer.parseInt(para.getId())).getLogingStatus().equals("true")) {
-							return ResponseEntity.ok(new JsonResponse("login success", "success"));
-						}else {
-							return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("loging fail", "fail"));
-						}
+		//(31)==================check_login=========================================================
+		@PostMapping("/is_loging")
+		public ResponseEntity<?> is_loging(@RequestBody IdOnly para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
+			try {
+				if(keycloakTokenValidater.Validate(token,secId,para.getId()).equals("user") || keycloakTokenValidater.Validate(token,secId,para.getId()).equals("counceller") || keycloakTokenValidater.Validate(token,secId,para.getId()).equals("admin")) {
+					if(allusersService.getuserfrom_id(Integer.parseInt(para.getId())).getLogingStatus().equals("true")) {
+						return ResponseEntity.ok(new JsonResponse("login success", "success"));
 					}else {
 						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("loging fail", "fail"));
-
 					}
-				} catch (Exception e) {
-					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user inputs", "fail"));
+				}else {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("loging fail", "fail"));
+
 				}
-				
+			} catch (Exception e) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Invalid user inputs", "fail"));
 			}
 			
+		}
+		
 			
 		//(32) ==========================getTips=============================================================
 			@PostMapping("/getTips")
@@ -1637,112 +1637,209 @@ public class AppController {
 			
 			
 		
-			
-			
-			
-			
-			
-			
-						
-//*****************************************************************************************	***********
 		//(33)=================uploading images====================================================				
 		  @PostMapping("/uploadPicture")
-		  public ResponseEntity<?> deletuser(@RequestParam("file") MultipartFile file,@RequestParam("id") String id){
-			  String imagename=file.getOriginalFilename();
-			  String needle1=".jpg";
-			  String needle2=".jpeg";
-			  String newimagename="";
-			  boolean status=false;
-			  if(imagename.toLowerCase().indexOf(needle1) != -1) {
-				  newimagename=imagename.split(".jpg")[0]+id+".jpg";
-				  status=true;
-			  }else if(imagename.toLowerCase().indexOf(needle2) != -1) {
-				  newimagename=imagename.split(".jpeg")[0]+id+".jpeg";
-				  status=true;
-			  }else {
-				  status=false;
-			  }
+		  public ResponseEntity<?> uploadPicture(@RequestParam("file") MultipartFile file,@RequestParam("id") String id,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
 			  
-			  if(status && newimagename.length()>0) {
-				  File convertfile=new File(imagepath+newimagename);
-				  try {
-					  AllUsers u=allusersService.getuserfrom_id(Integer.parseInt(id));
-					  if(u.getType().equals("user")) {
-							User user=userService.getUserby_id(id);
-							if(user.getProfile_pic_name()==null) {
-								//System.out.println("image is  null");
-								convertfile.createNewFile();
-								FileOutputStream out=new FileOutputStream(convertfile);
-								out.write(file.getBytes());
-								out.close();
-								user.setProfile_pic_name(newimagename);
-								userService.update_edited_user_details(user);
-								return ResponseEntity.ok(new JsonResponse("image upload succes", "success"));
-							}else {
-								System.out.println("image is not null");
-								if(user.getProfile_pic_name().equals(newimagename)) {
-									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("you allready using this image", "fail"));
-								}else {
-									File convertfileOld=new File(imagepath+user.getProfile_pic_name());
-									convertfileOld.delete();
-									
-									convertfile.createNewFile();
-									FileOutputStream out=new FileOutputStream(convertfile);
-									out.write(file.getBytes());
-									out.close();
-									user.setProfile_pic_name(newimagename);
-									userService.update_edited_user_details(user);
-									return ResponseEntity.ok(new JsonResponse("image upload succes", "success"));
-								}
-								
-							}
-
-						}else if(u.getType().equals("counceller")) {
-							Counceller cou=councellerService.get_counceller_by_id(id);
-							
-						}
+			try {
+				if(keycloakTokenValidater.Validate(token, secId,id).equals("user") || keycloakTokenValidater.Validate(token, secId,id).equals("counceller")) {
+					String imagename=file.getOriginalFilename();
+					  String needle1=".jpg";
+					  String needle2=".jpeg";
+					  String newimagename="";
+					  boolean status=false;
+					  if(imagename.toLowerCase().indexOf(needle1) != -1) {
+						  newimagename=imagename.split(".jpg")[0]+id+".jpg";
+						  status=true;
+					  }else if(imagename.toLowerCase().indexOf(needle2) != -1) {
+						  newimagename=imagename.split(".jpeg")[0]+id+".jpeg";
+						  status=true;
+					  }else {
+						  status=false;
+					  }
 					  
-						
-						
-						
-						
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Uploading success", "success"));
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Uploading fail", "fail"));
+					  if(status && newimagename.length()>0) {
+						  File convertfile=new File(imagepath+newimagename);
+						  try {
+							  AllUsers u=allusersService.getuserfrom_id(Integer.parseInt(id));
+							  if(u.getType().equals("user")) {
+									User user=userService.getUserby_id(id);
+									if(user.getProfile_pic_name()==null) {
+										//System.out.println("image is  null");
+										convertfile.createNewFile();
+										FileOutputStream out=new FileOutputStream(convertfile);
+										out.write(file.getBytes());
+										out.close();
+										user.setProfile_pic_name(newimagename);
+										userService.update_edited_user_details(user);
+										return ResponseEntity.ok(new JsonResponse("image upload succes", "success"));
+									}else {
+										//System.out.println("image is not null");
+										if(user.getProfile_pic_name().equals(newimagename)) {
+											return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("you allready using this image", "fail"));
+										}else {
+											File convertfileOld=new File(imagepath+user.getProfile_pic_name());
+											try {
+												convertfileOld.delete();
+											} catch (Exception e) {
+												System.out.println(e);
+											}
+											
+											convertfile.createNewFile();
+											FileOutputStream out=new FileOutputStream(convertfile);
+											out.write(file.getBytes());
+											out.close();
+											user.setProfile_pic_name(newimagename);
+											userService.update_edited_user_details(user);
+											return ResponseEntity.ok(new JsonResponse("image upload succes", "success"));
+										}
+										
+									}
 
-					}
-			  }else {
-				  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Uploadinf fail", "fail"));
-			  }
-			  
+								}else if(u.getType().equals("counceller")) {
+									Counceller cou=councellerService.get_counceller_by_id(id);
+									
+									if(cou.getProfile_pic_name()==null) {
+										//System.out.println("image is  null");
+										convertfile.createNewFile();
+										FileOutputStream out=new FileOutputStream(convertfile);
+										out.write(file.getBytes());
+										out.close();
+										cou.setProfile_pic_name(newimagename);
+										councellerService.update_Edited_counceller_details(cou);
+										return ResponseEntity.ok(new JsonResponse("image upload succes", "success"));
+									}else {
+										System.out.println("image is not null");
+										if(cou.getProfile_pic_name().equals(newimagename)) {
+											return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("you allready using this image", "fail"));
+										}else {
+											File convertfileOld=new File(imagepath+cou.getProfile_pic_name());
+											try {
+												convertfileOld.delete();
+											} catch (Exception e) {
+												System.out.println(e);
+											}
+											
+											
+											convertfile.createNewFile();
+											FileOutputStream out=new FileOutputStream(convertfile);
+											out.write(file.getBytes());
+											out.close();
+											cou.setProfile_pic_name(newimagename);
+											councellerService.update_Edited_counceller_details(cou);
+											return ResponseEntity.ok(new JsonResponse("image upload succes", "success"));
+										}
+										
+									}
+									
+								}
+							  
+								
+								
+								
+								
+								return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Uploading success", "success"));
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+								  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Uploading fail", "fail"));
+
+							}
+					  }else {
+						  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Uploadinf fail", "fail"));
+					  }
+					  
+				}else {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Unauthorized", "fail"));
+				}				  
+				  
+			} catch (Exception e) {
+				  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot process", "fail"));
+			}
 			  
 			  
 			
 		  }
-	
+		
 			
-  //(34) ==========================download images====================================
+		//(34) ==========================download images====================================
 		  @PostMapping("/getImage")
-		  public ResponseEntity<?> getImage(){
-			  try {
-				  File file = new File(imagepath);
-				  InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
-				  return ResponseEntity.ok()
-				            .header(HttpHeaders.CONTENT_DISPOSITION,
-				                  "attachment;filename=" + file.getName())
-				            .contentType(MediaType.IMAGE_JPEG).contentLength(file.length())
-				            .body(resource);
+		  public ResponseEntity<?> getImage(@RequestBody IdOnly para,@RequestHeader(value="Authorization") String token,@RequestHeader(value="id") String secId){
+			 try {
+				if(keycloakTokenValidater.Validate(token, secId,para.getId()).equals("user") || keycloakTokenValidater.Validate(token, secId,para.getId()).equals("counceller")) {
+					
+					 String id=para.getId();
+					 if(allusersService.is_user_exist(id)) {
+						 AllUsers all=allusersService.getuserfrom_id(Integer.parseInt(id));
+						 String image="";
+						 if(all.getType().equals("user")) {
+							 User u=userService.getUserby_id(id);
+							 if(u.getProfile_pic_name()==null) {
+								 if(all.getGender().equals("male")) {
+									 image="default1.jpg";
+								 }else {
+									 image="default2.jpg";
+								 }
+								
+							 }else {
+								 image=u.getProfile_pic_name();
+							 }
+						 }else if(all.getType().equals("counceller")) {
+							 Counceller c=councellerService.get_counceller_by_id(id);
+							 if(c.getProfile_pic_name()==null) {
+								 if(all.getGender().equals("male")) {
+									 image="default1.jpg";
+								 }else {
+									 image="default2.jpg";
+								 }
+							 }else {
+								 image=c.getProfile_pic_name();
+							 }
+						 }
+						 
+						try {
+							  File file = new File(imagepath+image);
+							  InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+							  return ResponseEntity.ok()
+							            .header(HttpHeaders.CONTENT_DISPOSITION,
+							                  "attachment;filename=" + file.getName())
+							            .contentType(MediaType.IMAGE_JPEG).contentLength(file.length())
+							            .body(resource);
+						} catch (Exception e) {
+							System.out.println(e);
+							 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Error1", "fail"));
+						}
+						 
+					 }else {
+						 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("cannot find user", "fail"));
+					 }
+				}else {
+					  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Unauthorized", "fail"));
+				}
+
 			} catch (Exception e) {
-				return ResponseEntity.ok(e);
-			}
+				  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Cannot process", "fail"));
+			} 
+			 
 		  }
 				
+		
+			
+			
+	
+		  
+		  
+		  
+		  
+		  
 						
+//*****************************************************************************************	***********
+		
+			
+  					
 						
 	
-			
+		 
 			
 		
 			
