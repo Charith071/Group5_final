@@ -16,7 +16,9 @@ public interface AlluserDao extends CrudRepository<AllUsers, Long>{
 	boolean existsByUsername(String username);
 	boolean existsByPassword(String password);
 	boolean existsByKeycloakId(String keycloakId);
+	boolean existsByEmail(String email);
 	AllUsers findByKeycloakId(String keycloakId);
+	AllUsers findByEmail(String email);
 	
 	Iterable<AllUsers> findAllByType(String type);
 	

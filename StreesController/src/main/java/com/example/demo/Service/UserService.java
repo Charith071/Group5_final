@@ -28,7 +28,7 @@ public class UserService {
 		u2.setId(id);
 		u2.setJob(signupjson1.getJob());
 		
-		u2.setProfile_pic_name(signupjson1.getProfile_pic_name()+id.toString());
+		//u2.setProfile_pic_name(signupjson1.getProfile_pic_name()+id.toString());
 		u2.setStress_level(Float.parseFloat("0"));
 		userDao.save(u2);
 		return true;
@@ -109,5 +109,6 @@ public class UserService {
 	public User getLastRecorde() {
 		return userDao.getLastRecord();
 	}
+	
 	
 }

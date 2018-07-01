@@ -1,10 +1,15 @@
 package com.example.demo.controller;
 
+
+
 //import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 
-import java.awt.PageAttributes.MediaType;
-import java.io.Console;
 
+import java.io.Console;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,13 +21,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.Null;
 import javax.websocket.Session;
+import javax.ws.rs.core.HttpHeaders;
 
 //import org.mockito.internal.verification.Only;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
 //import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 //import org.springframework.web.bind.annotation.GetMapping;
 //import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 //import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.Entity.AdminNotification;
 import com.example.demo.Entity.AllUsers;
@@ -104,6 +115,8 @@ import com.example.demo.extra.Return_User_Stress_leveljson;
 import com.example.demo.extra.Signupjson;
 import com.example.demo.extra.UserdetailsResponse;
 
+import org.springframework.http.MediaType;
+
 //import net.bytebuddy.jar.asm.commons.TryCatchBlockSorter;
 
 @RestController
@@ -148,7 +161,8 @@ public class AppController {
 	private JsonResponse jsonResponse=new JsonResponse();
 	
 	
-	
+	@Value("${imageStore.path}")
+	private String imagepath;
 	
 	
 	
@@ -1622,18 +1636,108 @@ public class AppController {
 			}
 			
 			
+		
+			
+			
+			
+			
+			
 			
 						
 //*****************************************************************************************	***********
+		//(33)=================uploading images====================================================				
+		  @PostMapping("/uploadPicture")
+		  public ResponseEntity<?> deletuser(@RequestParam("file") MultipartFile file,@RequestParam("id") String id){
+			  String imagename=file.getOriginalFilename();
+			  String needle1=".jpg";
+			  String needle2=".jpeg";
+			  String newimagename="";
+			  boolean status=false;
+			  if(imagename.toLowerCase().indexOf(needle1) != -1) {
+				  newimagename=imagename.split(".jpg")[0]+id+".jpg";
+				  status=true;
+			  }else if(imagename.toLowerCase().indexOf(needle2) != -1) {
+				  newimagename=imagename.split(".jpeg")[0]+id+".jpeg";
+				  status=true;
+			  }else {
+				  status=false;
+			  }
+			  
+			  if(status && newimagename.length()>0) {
+				  File convertfile=new File(imagepath+newimagename);
+				  try {
+					  AllUsers u=allusersService.getuserfrom_id(Integer.parseInt(id));
+					  if(u.getType().equals("user")) {
+							User user=userService.getUserby_id(id);
+							if(user.getProfile_pic_name()==null) {
+								//System.out.println("image is  null");
+								convertfile.createNewFile();
+								FileOutputStream out=new FileOutputStream(convertfile);
+								out.write(file.getBytes());
+								out.close();
+								user.setProfile_pic_name(newimagename);
+								userService.update_edited_user_details(user);
+								return ResponseEntity.ok(new JsonResponse("image upload succes", "success"));
+							}else {
+								System.out.println("image is not null");
+								if(user.getProfile_pic_name().equals(newimagename)) {
+									return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("you allready using this image", "fail"));
+								}else {
+									File convertfileOld=new File(imagepath+user.getProfile_pic_name());
+									convertfileOld.delete();
+									
+									convertfile.createNewFile();
+									FileOutputStream out=new FileOutputStream(convertfile);
+									out.write(file.getBytes());
+									out.close();
+									user.setProfile_pic_name(newimagename);
+									userService.update_edited_user_details(user);
+									return ResponseEntity.ok(new JsonResponse("image upload succes", "success"));
+								}
+								
+							}
+
+						}else if(u.getType().equals("counceller")) {
+							Counceller cou=councellerService.get_counceller_by_id(id);
+							
+						}
+					  
 						
-  @PostMapping("/test")
-  public ResponseEntity<?> deletuser(){
-	  keyCloakService.deleteUser("1c0bff04-e4b3-4f9e-b9cf-4c92263d38e8");
-	  return ResponseEntity.ok("lol");
-  }
+						
+						
+						
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Uploading success", "success"));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Uploading fail", "fail"));
+
+					}
+			  }else {
+				  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JsonResponse("Uploadinf fail", "fail"));
+			  }
+			  
+			  
+			  
+			
+		  }
 	
 			
-	
+  //(34) ==========================download images====================================
+		  @PostMapping("/getImage")
+		  public ResponseEntity<?> getImage(){
+			  try {
+				  File file = new File(imagepath);
+				  InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+				  return ResponseEntity.ok()
+				            .header(HttpHeaders.CONTENT_DISPOSITION,
+				                  "attachment;filename=" + file.getName())
+				            .contentType(MediaType.IMAGE_JPEG).contentLength(file.length())
+				            .body(resource);
+			} catch (Exception e) {
+				return ResponseEntity.ok(e);
+			}
+		  }
 				
 						
 						

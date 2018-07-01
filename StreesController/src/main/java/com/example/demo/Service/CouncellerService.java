@@ -23,7 +23,7 @@ public class CouncellerService {
 		c1.setLatitude(Double.parseDouble(signupjson.getLatitude()));
 		c1.setLongitude(Double.parseDouble(signupjson.getLongitude()));
 		c1.setId(id);
-		c1.setProfile_pic_name(signupjson.getProfile_pic_name()+id.toString());
+		//c1.setProfile_pic_name(signupjson.getProfile_pic_name()+id.toString());
 		c1.setQualification(signupjson.getQualification());
 		councellerDao.save(c1);
 		return true;

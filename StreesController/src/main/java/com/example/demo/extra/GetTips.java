@@ -1,5 +1,6 @@
 package com.example.demo.extra;
 
+
 public class GetTips {
 	private String id;
 	private String numberOfInstance;

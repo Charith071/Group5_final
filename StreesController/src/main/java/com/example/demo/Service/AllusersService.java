@@ -225,7 +225,15 @@ public class AllusersService {
 		return alluserDao.existsByKeycloakId(keycloakId);
 	}
 	
+	//============check exist by email===========================
+	public boolean is_exisit_by_email(String email) {
+		return alluserDao.existsByEmail(email);
+	}
 	
+	//==============get instance by email======================
+	public AllUsers get_instance_by_email(String email) {
+		return alluserDao.findByEmail(email);
+	}
 	
 	
 	
