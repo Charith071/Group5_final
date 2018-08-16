@@ -11,19 +11,24 @@ const int LED13 = 13;                  // The on-board Arduino LED, close to PIN
 int Threshold = 550;                  // Determine which Signal to "count as a beat" and which to ignore.                            
 PulseSensorPlayground pulseSensor;   // Creates an instance of the PulseSensorPlayground object called "pulseSensor"
 
-long count = 0;                          //count number of pulse that you measure
-long realBPM = 0;                      //real BPM rate
+int count = 0;                          //count number of pulse that you measure
+int realBPM = 0;                      //real BPM rate
 long totalBPM = 0;                    //total value of BPM
 double realBPMtimesecmin =0.0;       //min value of realBPm 
 double realBPMtimesecmax = 0.0; //max value of realBPm 
-long timeval = 0;      //time count
-long valraw[3];       // value of data
-long peak[100];      // value of peak
-long test = 1;      //check bluetooth receive status
-long testtime = 0; //if 1 then it count time to next pulse 
-long timedif;  
-long timevalfist = 0;               
+int timeval = 0;      //time count
+int valraw[3];       // value of data
+int peak[100];      // value of peak
+int test = 1;      //check bluetooth receive status
+int testtime = 0; //if 1 then it count time to next pulse 
+int timedif; 
+int timecount = 0;      //time count 
+int timesave[100]; //time save from peak value 
+int timesend;      //time send when it peak defined
+int timevalfist = 0;               
                  //End for count BPM rate Component
+int j = 0;
+int maxvalpeak;
                  
 
 
@@ -53,104 +58,102 @@ void setup() {
   Serial.begin(9600);          // For Serial Monitor
   serial.begin(38400);
   
-  rawdata = analogRead(0); //Read sensor value to variable
-
-  char checkres[20]="";
-  readSerial(checkres);
-  if(checkres == "test"){
+  
+  
     if(test == 1){
-      // Configure the PulseSensor object, by assigning our variables to it. 
-      pulseSensor.analogInput(PulseWire);   
-      pulseSensor.blinkOnPulse(LED13);       //auto-magically blink Arduino's LED with heartbeat.
-      pulseSensor.setThreshold(Threshold);   
-      // Double-check the "pulseSensor" object was created and "began" seeing a signal. 
-      if (pulseSensor.begin()) {
-        Serial.println("We created a pulseSensor Object !");  //This prints one time at Arduino power-up,  or on Arduino reset.  
-      }  
+        // Configure the PulseSensor object, by assigning our variables to it. 
+        pulseSensor.analogInput(PulseWire);   
+        pulseSensor.blinkOnPulse(LED13);       //auto-magically blink Arduino's LED with heartbeat.
+        pulseSensor.setThreshold(Threshold);   
+      
+        // Double-check the "pulseSensor" object was created and "began" seeing a signal. 
+         if (pulseSensor.begin()) {
+          Serial.println("We created a pulseSensor Object !");  //This prints one time at Arduino power-up,  or on Arduino reset.  
+        }
     }      
   }
-}
-void readSerial(char *inData) {
- 
-  if (Serial.available() > 0) {
-    int h = Serial.available();
-    for (int i = 0; i < h; i++) {
-      inData[i]=(char)Serial.read();
-      inData[i+1]='\0';
-    }
-  }
- 
-}
-void loop(){
-  int myBPM = pulseSensor.getBeatsPerMinute();  // Calls function on our pulseSensor object that returns BPM as an "int".
-                                               // "myBPM" hold this BPM value now. 
 
-   
-  if((test == 1) & (timeval < 30)){
+void loop(){  
+  rawdata = analogRead(0); //Read sensor value to variable
+  int myBPM = pulseSensor.getBeatsPerMinute();  // Calls function on our pulseSensor object that returns BPM as an "int".
+  if((test == 1) & (timeval < 100)){
     timeval++;
-    if (pulseSensor.sawStartOfBeat()) {            // Constantly test to see if "a beat happened". 
-      count = count + 1;
+   //if (pulseSensor.sawStartOfBeat()) {            // Constantly test to see if "a beat happened". 
+      if(myBPM != 0)
+        count = count + 1;
       totalBPM = totalBPM + myBPM;
       realBPM = totalBPM / count;
       Serial.println(realBPM);
       serial.println(realBPM);
-     }
-    delay(20);                    // considered best practice in a simple sketch.
-    realBPMtimesecmin = (60 / realBPM)*0.5;
-    realBPMtimesecmax = (60 / realBPM)*1.5;
+   //}
+  }else if(test == 1 & timeval == 100){
+      realBPMtimesecmin = (1500 / realBPM);
+      realBPMtimesecmax = (4500 / realBPM);
+      Serial.println("sdfgf");
       timeval = 0; //after count bpm set time value into 0;
-      test = 0; //set vale to check time difference
-  }   
-  //if test value = 0 then count time from one peak to other
+      test = 0; //set vale to check time difference  
+  } 
   if(test == 0){
-    countTimeForPeak(realBPMtimesecmin,realBPMtimesecmax);
-    timeval = timeval + 1;
-  }
-  
+     timeval++;
+     if((timeval > (int)realBPMtimesecmin) & (timeval < (int)realBPMtimesecmax)){
+        countTimeForPeak(realBPMtimesecmin,realBPMtimesecmax);
+        
+     }else if(timeval == (int)realBPMtimesecmax){
+        maxvalpeak = peak[0];
+        for(int k=0;k < j ;k++){
+         if(peak[k]>maxvalpeak){
+            maxvalpeak = peak[k];
+            timesend = timesave[k];
+            
+         } 
+        }
+        j = 0;
+        timeval = 0;
+        timecount = 0;
+        //Serial.println("test");  
+        takedifmeasure(timesend); 
+        
+      }
+         
+   }
+  delay(20);
 }
 //measure Time difference
 void countTimeForPeak(double minval, double maxval){
-  int j = 0;
-  int maxvalpeak;
-  if(timeval == 0){
-    if(valraw[2] = 0){
+ 
+  if(valraw[2] == 0){
+      Serial.println("peak");
       for(int i =0;i<3;i++){
         valraw[i] = rawdata;
       }
-      if((valraw[2]>valraw[0]) & (valraw[2]<valraw[1])){
+      timecount++;
+      if((valraw[1]>valraw[2]) & (valraw[0]<valraw[1])){
         j++;
         peak[j] = valraw[2];
+        
+        
       }
-      maxvalpeak = peak[0];
-      for(int k=0;k < j ;k++){
-       if(peak[k]>maxvalpeak){
-          maxvalpeak = peak[k];
-       } 
-      }
-    }
-    timeval = 1;  
-  }else{
+   }else{
+      timecount++;
       memcpy(valraw, &valraw[1], sizeof(valraw) - sizeof(int));
       valraw[2] =  rawdata;
-      if((valraw[2]>valraw[0]) & (valraw[2]<valraw[1])){
+      if((valraw[1]==valraw[2])){
         j++;
         peak[j] = valraw[2];
+        timesave[j] = timecount;
       }
-      maxvalpeak = peak[0];
-      for(int k=0;k < j ;k++){
-       if(peak[k]>maxvalpeak){
-          maxvalpeak = peak[k];
-       } 
-      }
-      takedifmeasure(timeval);
-  }
-  delay(20);
-}
+  
+   }
+   }
 void takedifmeasure(long tal1){
+  
   if(timevalfist == 0){
     timevalfist = tal1;
+    
   }else{
-     timedif = tal1 + (60 / realBPM);
+    
+     timedif = tal1 + (int)(60 / realBPM);
+     
      hrv_algo(timedif); 
   }
 }
@@ -188,10 +191,13 @@ void compareVal(int i){
   }else if(com != -1){
     if(com == 1 & i == 1){
       p++;
+      Serial.println("1");
     }else if(com == 2 & i == 2){
       p++;
+      Serial.println("1");
     }else{
        n++;
+      Serial.println("0");
     }
     com = i;
   }  
